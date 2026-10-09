@@ -96,15 +96,24 @@ func (s *server) postEvent(target, secret, event string, data map[string]any) er
 	req.Header.Set("User-Agent", "ORPay-Webhooks/1")
 	req.Header.Set("ORPay-Event", event)
 	req.Header.Set("ORPay-Signature", SignWebhook(secret, ts, body))
-	resp, err := s.hookClient.Do(req)
+	start := time.Now()
+	err := func() error {
+		resp, err := s.hookClient.Do(req)
+		if err != nil {
+			return err
+		}
+		resp.Body.Close()
+		if resp.StatusCode >= 300 {
+			return errors.New("endpoint returned " + strconv.Itoa(resp.StatusCode))
+		}
+		return nil
+	}()
+	d := HookDelivery{Event: event, At: s.now(), OK: err == nil, Millis: time.Since(start).Milliseconds()}
 	if err != nil {
-		return err
+		d.Error = err.Error()
 	}
-	resp.Body.Close()
-	if resp.StatusCode >= 300 {
-		return errors.New("endpoint returned " + strconv.Itoa(resp.StatusCode))
-	}
-	return nil
+	s.hooks.add(target, d)
+	return err
 }
 
 // checkWebhookURL requires https unless private webhooks are allowed (dev).

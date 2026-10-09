@@ -5,6 +5,7 @@ import (
 	"crypto/ed25519"
 	"encoding/hex"
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -246,6 +247,27 @@ func TestPartnerCheckoutFlow(t *testing.T) {
 	if code := e.call("POST", "/api/apps/"+app.ID+"/settings", map[string]string{"webhook_url": hook.URL}, &owner, "", nil); code != 200 {
 		t.Fatalf("set webhook: %d", code)
 	}
+	// A test event reaches the endpoint, signed, and shows on the dashboard.
+	var ping struct {
+		OK       bool         `json:"ok"`
+		Delivery HookDelivery `json:"delivery"`
+	}
+	if code := e.call("POST", "/api/apps/"+app.ID+"/webhook/test", nil, &owner, "", &ping); code != 200 || !ping.OK || ping.Delivery.Event != "ping" {
+		t.Fatalf("test webhook: %d %+v", code, ping)
+	}
+	var dash struct {
+		Webhooks []HookDelivery `json:"webhooks"`
+	}
+	e.call("GET", "/api/apps/"+app.ID+"/dashboard", nil, &owner, "", &dash)
+	if len(dash.Webhooks) != 1 || !dash.Webhooks[0].OK {
+		t.Fatalf("dashboard webhooks: %+v", dash.Webhooks)
+	}
+	mu.Lock()
+	if len(events) != 1 || events[0]["type"] != "ping" {
+		t.Fatalf("ping event: %v", events)
+	}
+	events = nil
+	mu.Unlock()
 
 	// 4. The app's server creates a checkout with its API key.
 	if code := e.call("POST", "/api/v1/checkout", map[string]string{"amount": "5"}, nil, "orp_sk_wrong", nil); code != 401 {
@@ -346,5 +368,19 @@ func TestUsernames(t *testing.T) {
 	e.call("GET", "/api/users/@gabi", nil, nil, "", &r)
 	if r["address"] != string(w.addr) {
 		t.Errorf("resolve: %v", r)
+	}
+}
+
+func TestHookLogKeepsNewestFirst(t *testing.T) {
+	var l hookLog
+	for i := 0; i < hookLogSize+5; i++ {
+		l.add("https://x", HookDelivery{Event: fmt.Sprint(i)})
+	}
+	got := l.recent("https://x")
+	if len(got) != hookLogSize || got[0].Event != fmt.Sprint(hookLogSize+4) {
+		t.Fatalf("got %d entries, newest %q", len(got), got[0].Event)
+	}
+	if len(l.recent("https://other")) != 0 {
+		t.Fatal("unexpected entries for another URL")
 	}
 }

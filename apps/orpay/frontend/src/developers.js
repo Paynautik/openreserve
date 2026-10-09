@@ -101,6 +101,7 @@ function appCard(a) {
           <button class="ghost small" data-act="key">${a.key_prefix ? 'Roll key' : 'Create API key'}</button>
         </div>
         <label>Webhook URL<input data-field="webhook_url" value="${ctx.esc(a.webhook_url ?? '')}" placeholder="https://your-app.com/orpay/webhook"></label>
+        ${a.webhook_url ? '<button class="ghost small" data-act="ping">Send test event</button>' : ''}
         <label>Settlement wallet (receives payments)<input data-field="settlement_address" class="mono" value="${ctx.esc(a.settlement_address)}"></label>
         <label>Website <span class="muted">(your logo is taken from here automatically)</span><input data-field="website" value="${ctx.esc(a.website)}" placeholder="https://yourapp.com"></label>
         <div class="logo-row">
@@ -157,7 +158,7 @@ curl -X POST ${base}/api/v1/escrows \\
 }
 
 // Activity at a glance for an approved app: money in, escrows and recent items.
-async function loadDashboard(el, id) {
+async function loadDashboard(el, id, a) {
   let d
   try {
     d = await api.appDashboard(ctx.state.seed, id)
@@ -173,7 +174,21 @@ async function loadDashboard(el, id) {
   const tile = (label, value, note = '') => `<div class="tile"><span>${label}</span><strong>${value}</strong>${note ? `<small>${note}</small>` : ''}</div>`
   const when = (t) => new Date(t).toLocaleString([], { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })
   const escrowState = (x) => x.escrow?.status ?? x.status
+  const hooks = d.webhooks ?? []
+  const steps = [
+    ['Access approved', true],
+    ['API key created', !!a?.key_prefix, 'Open “API keys & settings” and create a key.'],
+    ['Webhook URL set', !!a?.webhook_url, 'Add the URL where ORPay should send events.'],
+    ['Test event received', hooks.some((h) => h.ok), 'Press “Send test event” and return 2xx from your endpoint.'],
+    ['First checkout or escrow', !!(c.recent?.length || e.recent?.length), 'Create one with your API key (see Quick start).'],
+  ]
+  const doneCount = steps.filter((s) => s[1]).length
   el.innerHTML = `
+    ${doneCount < steps.length ? `<div class="golive">
+      <div class="golive-head"><strong>Go-live checklist</strong><span class="muted small-text">${doneCount} of ${steps.length}</span></div>
+      <div class="golive-bar"><span style="width:${(doneCount / steps.length) * 100}%"></span></div>
+      <ol>${steps.map(([t, ok, hint], i) => `<li class="${ok ? 'ok' : i === steps.findIndex((s) => !s[1]) ? 'next' : ''}"><i>${ok ? '✓' : i + 1}</i><span>${t}${!ok && hint ? `<small>${hint}</small>` : ''}</span></li>`).join('')}</ol>
+    </div>` : ''}
     <div class="tiles">
       ${tile('Paid checkouts', sum(c.paid_total), `${c.paid} paid · ${sum(c.paid_this_week)} this week`)}
       ${tile('Held in escrow', sum(e.held), `${e.open} open · ${e.awaiting_funding} awaiting funding`)}
@@ -186,6 +201,8 @@ async function loadDashboard(el, id) {
     ${c.recent?.length ? `<p class="label">Recent checkouts</p><ul class="dash-list">${c.recent.map((x) => `
       <li><span class="who"><strong>${ctx.esc(x.description || x.reference || x.id)}</strong><small>${ctx.esc(x.reference ?? '')} · ${when(x.created_at)}</small></span>
       <span class="amt">${formatMoney(x.amount, x.asset ?? '')}</span>${statusChip(x.status === 'paid' ? 'approved' : x.status === 'pending' ? 'pending' : 'rejected').replace(/>[^<]+</, `>${x.status}<`)}</li>`).join('')}</ul>` : ''}
+    ${hooks.length ? `<p class="label">Webhook deliveries</p><ul class="dash-list hooks">${hooks.slice(0, 8).map((h) => `
+      <li><span class="who"><strong class="mono">${ctx.esc(h.event)}</strong><small>${when(h.at)} · ${h.ms} ms${h.error ? ` · ${ctx.esc(h.error)}` : ''}</small></span>${statusChip(h.ok ? 'approved' : 'rejected').replace(/>[^<]+</, `>${h.ok ? 'delivered' : 'failed'}<`)}</li>`).join('')}</ul>` : ''}
     ${!e.recent?.length && !c.recent?.length ? '<p class="muted small-text">No checkouts or escrows yet. Create one with your API key and it shows up here.</p>' : ''}`
 }
 
@@ -194,7 +211,22 @@ function bindAppCards(apps) {
     const card = ctx.$(`[data-app="${a.id}"]`)
     if (!card) continue
     const dash = card.querySelector('[data-dash]')
-    if (dash) loadDashboard(dash, a.id)
+    if (dash) loadDashboard(dash, a.id, a)
+    const ping = card.querySelector('[data-act="ping"]')
+    if (ping)
+      ping.onclick = async () => {
+        ping.disabled = true
+        ping.textContent = 'Sending…'
+        try {
+          const r = await api.testWebhook(ctx.state.seed, a.id)
+          ctx.toast(r.ok ? `Test event delivered in ${r.delivery?.ms ?? '?'} ms` : `Delivery failed: ${r.error}`, r.ok ? undefined : 'err')
+          if (dash) loadDashboard(dash, a.id, a)
+        } catch (err) {
+          ctx.toast(err.message, 'err')
+        }
+        ping.disabled = false
+        ping.textContent = 'Send test event'
+      }
     const keyBtn = card.querySelector('[data-act="key"]')
     if (keyBtn)
       keyBtn.onclick = async () => {

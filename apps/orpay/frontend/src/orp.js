@@ -352,6 +352,7 @@ export const api = {
   requestApp: (seed, body) => signedCall(seed, 'POST', '/api/apps', body),
   reviewApp: (seed, id, decision, note = '') => signedCall(seed, 'POST', `/api/apps/${id}/review`, { decision, note }),
   rotateKey: (seed, id) => signedCall(seed, 'POST', `/api/apps/${id}/keys`),
+  testWebhook: (seed, id) => signedCall(seed, 'POST', `/api/apps/${id}/webhook/test`),
   createEscrowLink: (seed, body) => signedCall(seed, 'POST', '/api/escrow-links', body),
   escrowLinks: (seed) => signedCall(seed, 'GET', '/api/escrow-links'),
   cancelEscrowLink: (seed, id) => signedCall(seed, 'POST', `/api/escrow-links/${id}/cancel`),

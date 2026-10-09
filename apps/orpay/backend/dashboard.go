@@ -127,5 +127,6 @@ func (s *server) appDashboard(w http.ResponseWriter, r *http.Request) {
 		"app":       map[string]any{"id": app.ID, "name": app.Name, "status": app.Status, "webhook_url": app.WebhookURL},
 		"checkouts": cs,
 		"escrows":   es,
+		"webhooks":  s.hooks.recent(app.WebhookURL),
 	})
 }

@@ -946,3 +946,17 @@ button .ic { vertical-align: -4px; }
 .swipe-act { position: absolute; right: 0; top: 0; bottom: 0; width: 96px; border: 0; background: var(--brand-1); color: #fff; white-space: nowrap; font-weight: 600; font-size: 13px; border-radius: 0 14px 14px 0; }
 @media (pointer: fine) { .swipe-act { display: none; } }
 @media (prefers-reduced-motion: reduce) { .view-enter { animation: none; } }
+
+/* Partner go-live checklist */
+.golive { border: 1px solid var(--border); border-radius: 14px; padding: 12px 14px; margin-bottom: 14px; }
+.golive-head { display: flex; justify-content: space-between; align-items: baseline; }
+.golive-bar { height: 4px; border-radius: 4px; background: var(--border); margin: 8px 0 10px; overflow: hidden; }
+.golive-bar span { display: block; height: 100%; background: var(--brand-grad); border-radius: inherit; }
+.golive ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.golive li { display: flex; gap: 10px; align-items: flex-start; font-size: .9rem; color: var(--muted); }
+.golive li i { flex: none; width: 20px; height: 20px; border-radius: 50%; display: grid; place-items: center; font-size: 11px; font-weight: 600; font-style: normal; border: 1px solid var(--border); }
+.golive li.ok { color: var(--text); }
+.golive li.ok i { background: var(--in); border-color: var(--in); color: #fff; }
+.golive li.next { color: var(--text); font-weight: 600; }
+.golive li.next i { border-color: var(--brand-1); color: var(--brand-1); }
+.golive li small { display: block; font-weight: 400; color: var(--muted); font-size: .8rem; }

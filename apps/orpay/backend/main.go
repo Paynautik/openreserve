@@ -112,6 +112,7 @@ type server struct {
 	defaultAsset string
 	cardPayments bool
 	hookClient   *http.Client
+	hooks        hookLog
 	now          func() time.Time
 }
 
@@ -264,6 +265,7 @@ func (s *server) routes(trustProxy bool) http.Handler {
 	mux.Handle("POST /api/apps/{id}/review", strict(30, 10, reqauth.Signed(s.reviewApp)))
 	mux.Handle("POST /api/apps/{id}/keys", strict(10, 3, reqauth.Signed(s.rotateKey)))
 	mux.HandleFunc("GET /api/apps/{id}/dashboard", reqauth.Signed(s.appDashboard))
+	mux.Handle("POST /api/apps/{id}/webhook/test", strict(10, 5, reqauth.Signed(s.testWebhook)))
 	mux.Handle("POST /api/apps/{id}/settings", strict(30, 10, reqauth.Signed(s.updateApp)))
 
 	// Server-to-server API for approved apps (API key auth).
