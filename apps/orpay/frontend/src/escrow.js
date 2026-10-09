@@ -5,7 +5,7 @@ import { api, assetLabel, escrowOp, formatMoney, node, parseAmount, partnerMark,
 import { fillTrust, showTrustCard, trustOf } from './trust.js'
 import { asksToPayOutside, radarBanner, riskOf } from './radar.js'
 import { renderSVG } from 'uqr'
-import { icon, skeletonCard, skeletonRows } from './ui.js'
+import { icon, moneyHTML, skeletonCard, skeletonRows, success } from './ui.js'
 
 let ctx
 
@@ -445,7 +445,13 @@ export async function renderEscrow(id, preloaded, focus) {
         await waitForCommit(await escrowOp(args))
         if (op === 'release' && checklist.length)
           api.postEscrowMessage(ctx.state.seed, e.id, `Buyer checked before releasing: ${checklist.join('; ')}`).catch(() => {})
-        ctx.toast({ release: 'Milestone released', dispatch: 'Marked as dispatched', dispute: 'Dispute opened', resolve: 'Dispute resolved', refund: 'Buyer refunded', claim: 'Funds claimed' }[op])
+        if (op === 'release' || op === 'claim' || op === 'refund')
+          success({
+            title: { release: `Paid ${label(e.seller)}`, claim: 'Funds collected', refund: 'Money returned to the buyer' }[op],
+            amount: moneyHTML(money(op === 'release' ? e.milestones[e.released] : e.balance)),
+            lines: [['Escrow', ctx.esc(req?.description || e.ref || e.id.slice(0, 10))], ['Time', new Date().toLocaleString()]],
+          })
+        else ctx.toast({ dispatch: 'Marked as dispatched', dispute: 'Dispute opened', resolve: 'Dispute resolved' }[op])
         ctx.refresh()
         renderEscrow(e.id)
       } catch (err) {
@@ -540,7 +546,11 @@ export async function renderFundRequest(id) {
         shipBy: Date.now() + r.ship_by_days * DAY, reviewSecs: r.review_days * 86_400,
       })
       await waitForCommit(txid)
-      ctx.toast('Funds locked in escrow')
+      success({
+        title: 'Locked safely in escrow',
+        amount: moneyHTML(money(r.total)),
+        lines: [['Seller', label(r.seller)], ['Released', "only when you've checked it"], ['Time', new Date().toLocaleString()]],
+      })
       ctx.refresh()
       renderEscrow(txid)
     } catch (err) {

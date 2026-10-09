@@ -10,7 +10,6 @@ import { initDevelopers, renderDevelopers } from './developers.js'
 import { confirmDeposit, initMoney, renderAddMoney, renderWithdraw } from './money.js'
 import { initEscrow, renderEscrow, renderEscrows, renderFundRequest } from './escrow.js'
 import { renderLanding } from './landing.js'
-import { openScanner } from './scan.js'
 import { fillTrust, showTrustCard, trustChip, trustOf } from './trust.js'
 import { radarBanner, riskOf } from './radar.js'
 import { COMING, LANGS, getLang, setLang, startI18n } from './i18n.js'
@@ -459,6 +458,7 @@ async function openWallet(seed, address) {
   saveSession(seed, address)
   watchIdle()
   renderWallet()
+  if (!pullToRefresh.on) (pullToRefresh(), (pullToRefresh.on = true))
   api.config().then((c) => ((state.config = c), renderBalance())).catch(() => {})
   gateway
     .config()
@@ -493,12 +493,70 @@ function showView(view, render) {
   if (view !== 'checkout' && view !== 'escrow') cobrand(null)
   app.querySelectorAll('[data-view]').forEach((b) => b.setAttribute('aria-current', b.dataset.view === view ? 'page' : 'false'))
   window.scrollTo(0, 0)
+  const v = $('#view')
+  if (v) {
+    v.classList.remove('view-enter')
+    void v.offsetWidth // restart the animation
+    v.classList.add('view-enter')
+  }
   if (view === 'home') {
     $('#view').innerHTML = homeHTML()
     bindHome()
     return
   }
   ;(render ?? { pools: renderPools, escrow: renderEscrows, developers: renderDevelopers }[view])()
+}
+
+// Pull down at the top of Home to refresh.
+function pullToRefresh() {
+  let y0 = null, pulled = 0
+  const ind = document.createElement('div')
+  ind.className = 'ptr'
+  ind.innerHTML = '<span></span>'
+  document.body.append(ind)
+  addEventListener('touchstart', (e) => (y0 = scrollY === 0 && state.view === 'home' ? e.touches[0].clientY : null), { passive: true })
+  addEventListener('touchmove', (e) => {
+    if (y0 === null) return
+    pulled = Math.max(0, Math.min(110, e.touches[0].clientY - y0))
+    ind.style.transform = `translate(-50%, ${pulled - 50}px) rotate(${pulled * 3}deg)`
+    ind.classList.toggle('ready', pulled > 70)
+  }, { passive: true })
+  addEventListener('touchend', async () => {
+    if (y0 === null) return
+    y0 = null
+    if (pulled > 70) {
+      ind.classList.add('spin')
+      haptic(10)
+      await refresh()
+      checkReminders(true)
+    }
+    pulled = 0
+    ind.classList.remove('spin', 'ready')
+    ind.style.transform = ''
+  })
+}
+
+// Swipe a payment left to pay that person again (or pay them back).
+function bindSwipes(ul) {
+  ul.querySelectorAll('li[data-peer]').forEach((li) => {
+    let x0 = null, dx = 0
+    li.addEventListener('touchstart', (e) => ((x0 = e.touches[0].clientX), (dx = 0)), { passive: true })
+    li.addEventListener('touchmove', (e) => {
+      if (x0 === null) return
+      dx = Math.min(0, Math.max(-96, e.touches[0].clientX - x0))
+      li.querySelector('.row-body').style.transform = `translateX(${dx}px)`
+    }, { passive: true })
+    li.addEventListener('touchend', () => {
+      li.querySelector('.row-body').style.transform = dx < -60 ? 'translateX(-96px)' : ''
+      li.classList.toggle('swiped', dx < -60)
+      x0 = null
+    })
+    li.querySelector('.swipe-act').onclick = () => {
+      const name = state.names.get(li.dataset.peer)
+      showPanel('Send money')
+      renderSend({ to: name ? '@' + name : li.dataset.peer })
+    }
+  })
 }
 
 const qaIcon = {
@@ -526,13 +584,14 @@ function showPanel(title) {
 
 // Scan a QR to pay: opens the Send form filled in from the code.
 function scanToPay() {
-  openScanner((req) => {
+  // The scanner (and its QR decoder) loads only when first used.
+  import('./scan.js').then(({ openScanner }) => openScanner((req) => {
     if (req.escrow) return showView('escrow', () => renderEscrow(req.escrow, undefined, req.action))
     if (req.escrow_request) return showView('escrow', () => renderFundRequest(req.escrow_request))
     if (state.view !== 'home') showView('home')
     showPanel('Send money')
     renderSend(req)
-  }).catch((err) => toast(err.message, 'err'))
+  })).catch((err) => toast(err.message, 'err'))
 }
 
 // People this wallet paid or was paid by, most recent first.
@@ -1064,6 +1123,7 @@ function renderActivity() {
     .join('')
   ul.querySelectorAll('[data-pool]').forEach((li) => (li.onclick = () => showView('pools', () => renderPool(li.dataset.pool))))
   ul.querySelectorAll('[data-escrow]').forEach((li) => (li.onclick = () => showView('escrow', () => renderEscrow(li.dataset.escrow))))
+  if (matchMedia('(pointer: coarse)').matches) bindSwipes(ul)
 }
 
 function activityRow(e) {
@@ -1076,13 +1136,16 @@ function activityRow(e) {
       const name = state.names.get(other)
       const when = new Date(e.time).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })
       return `
-        <li>
+        <li class="swipeable" data-peer="${esc(other)}">
+          <button class="swipe-act" type="button">${out ? 'Pay again' : 'Pay back'}</button>
+          <span class="row-body">
           <span class="icon ${out ? 'out' : 'in'}" aria-hidden="true">${icon(out ? 'up' : 'down')}</span>
           <span class="who">
             <strong>${name ? `@${esc(name)}` : `<span class="mono">${short(other)}</span>`}</strong>
             <small>${when}${e.tx.memo ? ` · ${esc(e.tx.memo)}` : ''}</small>
           </span>
           <span class="amt ${out ? 'out' : 'in'}">${out ? '−' : '+'}${esc(formatMoney(e.tx.amount, e.tx.asset ?? ''))}</span>
+          </span>
         </li>`
     })
     .join('')

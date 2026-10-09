@@ -3,7 +3,7 @@
 // who is next, and a timeline of every join, contribution and claim.
 import { api, assetLabel, formatAmount, formatMoney, node, parseAmount, poolOp, waitForCommit } from './orp.js'
 import { renderSVG } from 'uqr'
-import { icon, skeletonCard, skeletonRows } from './ui.js'
+import { icon, moneyHTML, skeletonCard, skeletonRows, success } from './ui.js'
 import { fillTrust } from './trust.js'
 
 let ctx // { state, $, esc, short, toast, nameOf, resolveRecipient, root }
@@ -621,7 +621,13 @@ export async function renderPool(id, preloaded) {
         try {
           const txid = await poolOp({ seed: ctx.state.seed, op, id: p.id, asset: p.asset ?? '' })
           await waitForCommit(txid)
-          ctx.toast({ join: 'Joined the pool', contribute: 'Contribution paid', claim: `You received ${money(pot)}` }[op])
+          if (op === 'contribute' || op === 'claim')
+            success({
+              title: op === 'claim' ? 'Your ajo pot is in!' : `Paid into ${ctx.esc(p.name)}`,
+              amount: moneyHTML(money(op === 'claim' ? pot : BigInt(p.contribution) - BigInt(p.paid_amt?.[me] ?? 0))),
+              lines: [['Circle', ctx.esc(p.name)], ['Round', `${p.round + 1} of ${n}`], ['Time', new Date().toLocaleString()]],
+            })
+          else ctx.toast('Joined the pool')
           renderPool(p.id)
         } catch (err) {
           ctx.$('#err').textContent = err.message
