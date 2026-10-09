@@ -858,3 +858,71 @@ textarea { font-family: inherit; }
   background: transparent; color: var(--muted); box-shadow: inset 0 0 0 1px var(--border); white-space: nowrap; }
 .tpl:hover { color: var(--text); box-shadow: inset 0 0 0 1px var(--muted); }
 .tpl[aria-pressed='true'] { background: var(--out-bg); color: var(--brand-1); box-shadow: inset 0 0 0 1px transparent; }
+
+/* ---------- World-class polish ---------- */
+.ic { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+.tabbar .ti { display: grid; place-items: center; height: 22px; }
+.tabbar .ti .ic { width: 22px; height: 22px; }
+.mi-ico .ic { width: 18px; height: 18px; }
+.activity .icon .ic { width: 18px; height: 18px; }
+button .ic { vertical-align: -4px; }
+
+/* Amounts: steady digits, kobo smaller */
+.amount, .money, .amt, .t-amount, .tile strong { font-variant-numeric: tabular-nums; }
+.money small { font-size: .55em; font-weight: 700; opacity: .75; letter-spacing: 0; }
+
+/* Send/Receive as a bottom sheet on phones */
+@media (max-width: 600px) {
+  #panel-card:not([hidden]) {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 60; margin: 0;
+    max-height: 92vh; overflow-y: auto; border-radius: 26px 26px 0 0; border: 0;
+    padding: 26px 18px calc(18px + env(safe-area-inset-bottom));
+    box-shadow: 0 0 0 100vmax rgb(4 6 20 / .45), 0 -12px 40px -12px rgb(0 0 0 / .4);
+    animation: sheet-up .32s cubic-bezier(.2,.9,.2,1);
+  }
+  #panel-card:not([hidden])::before { content: ''; position: absolute; top: 9px; left: 50%; translate: -50% 0; width: 40px; height: 5px; border-radius: 3px; background: var(--border); }
+}
+@keyframes sheet-up { from { transform: translateY(100%); } }
+
+/* Big amount field + number pad */
+.amount-field input { font-size: 2rem; font-weight: 800; letter-spacing: -.03em; text-align: center; padding: 14px; font-variant-numeric: tabular-nums; }
+.numpad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-top: -4px; }
+.numpad button { height: 52px; border-radius: 14px; background: var(--surface-2); border: 0; box-shadow: none; color: var(--text); font-size: 1.35rem; font-weight: 600; display: grid; place-items: center; transition: transform .08s, background .15s; }
+.numpad button:active { transform: scale(.94); background: var(--border); }
+
+/* Slide to confirm */
+.slide { --p: 0; position: relative; height: 60px; border-radius: 18px; background: var(--surface-2); overflow: hidden; user-select: none; touch-action: none; box-shadow: inset 0 0 0 1px var(--border); }
+.slide::before { content: ''; position: absolute; inset: 0; background: var(--brand-grad); opacity: calc(var(--p) * .9 + .1); }
+.slide-label { position: absolute; inset: 0; display: grid; place-items: center; font-weight: 700; color: var(--text); opacity: calc(1 - var(--p)); transition: opacity .1s; }
+.slide-knob { position: absolute; top: 4px; left: 4px; width: 52px; height: 52px; border-radius: 14px; border: 0; padding: 0; display: grid; place-items: center; color: #fff; background: var(--brand-1); box-shadow: 0 6px 16px -6px rgb(79 70 229 / .7); cursor: grab; touch-action: none; }
+.slide-knob .ic { width: 24px; height: 24px; }
+.slide.done .slide-knob { animation: knob-spin 1s linear infinite; }
+.slide.done .slide-label { opacity: 0; }
+@keyframes knob-spin { 50% { box-shadow: 0 0 0 8px rgb(79 70 229 / .2); } }
+
+/* Success moment */
+.success { position: fixed; inset: 0; z-index: 100; display: grid; place-items: end center; background: rgb(4 6 20 / 0); transition: background .25s; padding: 0 12px calc(12px + env(safe-area-inset-bottom)); }
+.success.in { background: rgb(4 6 20 / .5); }
+.success-card { width: min(440px, 100%); background: var(--surface); border-radius: 26px; padding: 28px 22px 18px; text-align: center; transform: translateY(40px); opacity: 0; transition: transform .35s cubic-bezier(.2,.9,.2,1), opacity .25s; }
+.success.in .success-card { transform: none; opacity: 1; }
+@media (min-width: 601px) { .success { place-items: center; } }
+.success-tick svg { width: 72px; height: 72px; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.success-tick circle { stroke: #10b981; stroke-width: 3; stroke-dasharray: 151; stroke-dashoffset: 151; animation: draw .5s .1s forwards; }
+.success-tick path { stroke: #10b981; stroke-width: 4; stroke-dasharray: 40; stroke-dashoffset: 40; animation: draw .35s .5s forwards; }
+@keyframes draw { to { stroke-dashoffset: 0; } }
+.success-title { margin: 10px 0 2px; color: var(--muted); font-weight: 600; }
+.success-amount { margin: 0 0 14px; font-size: 2.2rem; font-weight: 800; letter-spacing: -.04em; }
+.receipt { display: grid; grid-template-columns: auto 1fr; gap: 8px 12px; text-align: left; margin: 0 0 18px; padding: 14px; border-radius: 16px; background: var(--surface-2); font-size: .88rem; }
+.receipt dt { color: var(--muted); } .receipt dd { margin: 0; text-align: right; font-weight: 600; }
+
+/* Skeleton loading */
+.sk { display: block; border-radius: 8px; background: linear-gradient(90deg, var(--surface-2) 25%, var(--border) 50%, var(--surface-2) 75%); background-size: 200% 100%; animation: shimmer 1.2s infinite; }
+@keyframes shimmer { to { background-position: -200% 0; } }
+.sk-row { display: flex; align-items: center; gap: 14px; padding: 10px 0; list-style: none; }
+.sk-ico { width: 36px; height: 36px; border-radius: 12px; }
+.sk-lines { flex: 1; display: flex; flex-direction: column; gap: 6px; }
+.sk-l1 { height: 12px; width: 60%; } .sk-l2 { height: 10px; width: 35%; }
+.sk-amt { width: 64px; height: 14px; }
+.sk-title { height: 16px; width: 40%; margin-bottom: 10px; }
+.sk-list { padding: 0; margin: 0; }
+@media (prefers-reduced-motion: reduce) { .sk { animation: none; } #panel-card:not([hidden]) { animation: none; } .success-tick * { animation: none; stroke-dashoffset: 0; } }

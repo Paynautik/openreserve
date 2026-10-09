@@ -14,6 +14,7 @@ import { openScanner } from './scan.js'
 import { fillTrust, showTrustCard, trustChip, trustOf } from './trust.js'
 import { radarBanner, riskOf } from './radar.js'
 import { COMING, LANGS, getLang, setLang, startI18n } from './i18n.js'
+import { haptic, icon, moneyHTML, numpad, skeletonRows, slider, success } from './ui.js'
 import { bioEnabled, bioSupported, disableBio, enableBio, unlockBio } from './bio.js'
 import { newSignInWords, parseSignInWords, sealSignIn, signInToken, unsealSignIn } from './signin.js'
 import { clearVault, hasVault, saveVault, unlockVault, vaultAddress } from './vault.js'
@@ -151,17 +152,17 @@ function renderProfile() {
   const item = (id, icon, title, sub, cls = '') =>
     `<button class="menu-item ${cls}" id="${id}"><span class="mi-ico">${icon}</span><span><b>${title}</b><small>${sub}</small></span></button>`
   $('#panel').innerHTML = `<div id="my-trust"></div><div class="menu">
-    ${state.username ? '' : item('m-claim', '@', 'Claim a username', 'So people can pay you by name')}
-    ${item('m-receive', '↓', 'My address & QR', 'Share to get paid')}
-    ${state.username ? item('m-invite', '🎁', 'Invite friends', 'Share your link and see who joined') : ''}
-    ${item('m-six', '6', 'Six-word sign-in', 'Open this wallet on another device')}
-    ${item('m-words', '24', 'Recovery words', 'Your offline backup')}
-    ${item('m-bio', '☝︎', 'Face ID / fingerprint', bioEnabled() ? 'On: unlock without your password' : 'Unlock without typing your password')}
-    ${item('m-notify', '🔔', 'Notifications', 'Payments, ajo turns, escrow updates')}
-    ${item('m-lang', 'Aa', 'Language', LANGS.find((l) => l.id === getLang())?.name ?? 'English')}
-    ${item('m-theme', '◐', 'Theme', { system: 'Follows your phone', light: 'Light', dark: 'Dark' }[localStorage.getItem(THEME) ?? 'system'])}
-    ${item('m-lock', '⎋', 'Sign out', 'Lock the wallet on this device', 'danger')}
-    ${item('m-forget', '✕', 'Remove from this device', 'Needs your six or 24 words to sign in again', 'danger subtle')}
+    ${state.username ? '' : item('m-claim', icon('at'), 'Claim a username', 'So people can pay you by name')}
+    ${item('m-receive', icon('down'), 'My address & QR', 'Share to get paid')}
+    ${state.username ? item('m-invite', icon('gift'), 'Invite friends', 'Share your link and see who joined') : ''}
+    ${item('m-six', icon('key'), 'Six-word sign-in', 'Open this wallet on another device')}
+    ${item('m-words', icon('words'), 'Recovery words', 'Your offline backup')}
+    ${item('m-bio', icon('finger'), 'Face ID / fingerprint', bioEnabled() ? 'On: unlock without your password' : 'Unlock without typing your password')}
+    ${item('m-notify', icon('bell'), 'Notifications', 'Payments, ajo turns, escrow updates')}
+    ${item('m-lang', icon('globe'), 'Language', LANGS.find((l) => l.id === getLang())?.name ?? 'English')}
+    ${item('m-theme', icon('moon'), 'Theme', { system: 'Follows your phone', light: 'Light', dark: 'Dark' }[localStorage.getItem(THEME) ?? 'system'])}
+    ${item('m-lock', icon('logout'), 'Sign out', 'Lock the wallet on this device', 'danger')}
+    ${item('m-forget', icon('trash'), 'Remove from this device', 'Needs your six or 24 words to sign in again', 'danger subtle')}
   </div>`
   const on = (id, fn) => $(id) && ($(id).onclick = fn)
   showTrustCard($('#my-trust'), state.address, { title: 'Your trust profile' })
@@ -574,7 +575,7 @@ function homeHTML() {
       </section>
       <section class="card">
         <div class="section-head"><h2>Recent activity</h2><button class="link" id="see-all" hidden>See all</button></div>
-        <ul class="activity" id="activity"><li class="empty"><span class="empty-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9h13l-3-3M19 15H6l3 3"/></svg></span><strong>No payments yet</strong><small>Add money or ask a friend to pay you.</small></li></ul>
+        <ul class="activity" id="activity">${skeletonRows(3)}</ul>
       </section>`
 }
 
@@ -703,10 +704,10 @@ function renderWallet() {
     <header id="header"></header>
     <main class="wallet" id="view"></main>
     <nav class="tabbar" aria-label="Main">
-      <button data-view="home"><span class="ti">⌂</span>Home</button>
-      <button data-view="pools"><span class="ti">◎</span>Pools</button>
-      <button data-view="escrow"><span class="ti">⛨</span>Escrow</button>
-      <button data-view="developers"><span class="ti">⌘</span>Developers</button>
+      <button data-view="home"><span class="ti">${icon('home')}</span>Home</button>
+      <button data-view="pools"><span class="ti">${icon('pools')}</span>Pools</button>
+      <button data-view="escrow"><span class="ti">${icon('escrow')}</span>Escrow</button>
+      <button data-view="developers"><span class="ti">${icon('code')}</span>Developers</button>
     </nav>`
   app.querySelectorAll('[data-view]').forEach((b) => (b.onclick = () => showView(b.dataset.view)))
   renderHeader()
@@ -787,7 +788,7 @@ function renderBalance() {
     return
   }
   $('#bal').innerHTML = primary
-    ? esc(formatMoney(balanceOf(primary), primary))
+    ? moneyHTML(esc(formatMoney(balanceOf(primary), primary)))
     : `${esc(formatAmount(balanceOf('')))} <span class="unit">ORP</span>`
   if ($('#bal-orp')) $('#bal-orp').textContent = formatAmount(balanceOf(''))
 }
@@ -814,7 +815,8 @@ function renderSend(prefill = {}) {
       <p class="hint" id="to-hint"></p>
       <p class="to-trust" id="to-trust"></p>
       ${curs.length > 1 ? `<div class="seg" role="radiogroup" aria-label="Currency">${curs.map((c) => `<button type="button" role="radio" data-cur="${c}">${assetLabel(c)}</button>`).join('')}</div>` : ''}
-      <label><span id="amount-label">Amount</span><input id="amount" inputmode="decimal" placeholder="0.00" required></label>
+      <label class="amount-field"><span id="amount-label">Amount</span><input id="amount" inputmode="${matchMedia('(pointer: coarse)').matches ? 'none' : 'decimal'}" placeholder="0" autocomplete="off" required></label>
+      <div id="pad-slot"></div>
       <label><span>Note <span class="muted">(optional, public)</span></span><input id="memo" maxlength="140"></label>
       <p class="hint">Network fee: <span id="fee">${feeText()}</span></p>
       <p class="error" id="err"></p>
@@ -830,6 +832,7 @@ function renderSend(prefill = {}) {
   setAsset(asset)
   let resolved = null
   const toInput = $('#to')
+  if (matchMedia('(pointer: coarse)').matches) $('#pad-slot').append(numpad($('#amount')))
   $('#scan-to').onclick = scanToPay
   app.querySelectorAll('.contact').forEach((b) => (b.onclick = () => {
     const n = state.names.get(b.dataset.addr)
@@ -885,36 +888,36 @@ function renderReview({ to, label, amount, memo, asset }) {
   $('#panel').innerHTML = `
     <div class="review">
       <p class="label">You're sending</p>
-      <p class="amount">${esc(formatMoney(amount, asset))}</p>
+      <p class="amount">${moneyHTML(esc(formatMoney(amount, asset)))}</p>
       <dl>
         <dt>To</dt><dd>${esc(label.startsWith('@') ? label : short(to))}</dd>
         <dt>Fee</dt><dd>${esc(formatMoney(feeFor(state.status, asset), asset))}</dd>
         ${memo ? `<dt>Note</dt><dd>${esc(memo)}</dd>` : ''}
       </dl>
       <p class="error" id="err"></p>
-      <div class="row">
-        <button class="ghost" id="cancel">Back</button>
-        <button class="primary" id="confirm">Send now</button>
-      </div>
+      <div id="slide-slot"></div>
+      <button class="link" id="cancel">${icon('back')} Change details</button>
     </div>`
   $('#cancel').onclick = () => renderSend({ asset })
-  $('#confirm').onclick = async () => {
-    const btn = $('#confirm')
-    btn.disabled = true
-    btn.textContent = 'Sending…'
+  $('#slide-slot').append(slider('Slide to send', async (reset) => {
+    const who = label.startsWith('@') ? label : short(to)
     try {
       const id = await send({ seed: state.seed, to, amount, memo, asset })
-      btn.textContent = 'Confirming…'
       const t = await waitForCommit(id)
-      toast(`Sent ${formatMoney(amount, asset)} · block ${t.location.height}`)
       refresh()
-      renderSend({ asset })
+      $('#panel-card').hidden = true
+      success({
+        title: `Sent to ${esc(who)}`,
+        amount: moneyHTML(esc(formatMoney(amount, asset))),
+        lines: [['Fee', esc(formatMoney(feeFor(state.status, asset), asset))], ...(memo ? [['Note', esc(memo)]] : []), ['Block', String(t.location.height)], ['Time', new Date().toLocaleString()], ['Reference', `<span class="mono">${id.slice(0, 10)}…</span>`]],
+        shareText: `ORPay receipt: ${formatMoney(amount, asset)} sent to ${who} on ${new Date().toLocaleString()}. Ref ${id}. Check it: ${location.origin}/explorer.html#/tx/${id}`,
+      })
     } catch (err) {
       $('#err').textContent = err.message
-      btn.disabled = false
-      btn.textContent = 'Send now'
+      haptic([30, 40, 30])
+      reset()
     }
-  }
+  }))
 }
 
 function renderReceive() {
@@ -1074,7 +1077,7 @@ function activityRow(e) {
       const when = new Date(e.time).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })
       return `
         <li>
-          <span class="icon ${out ? 'out' : 'in'}" aria-hidden="true">${out ? '↑' : '↓'}</span>
+          <span class="icon ${out ? 'out' : 'in'}" aria-hidden="true">${icon(out ? 'up' : 'down')}</span>
           <span class="who">
             <strong>${name ? `@${esc(name)}` : `<span class="mono">${short(other)}</span>`}</strong>
             <small>${when}${e.tx.memo ? ` · ${esc(e.tx.memo)}` : ''}</small>
@@ -1092,7 +1095,7 @@ function cashActivity(e) {
   const text = !mint ? 'Withdrawal to bank' : memo.startsWith('inv:') ? 'Card payment received' : memo.startsWith('withdrawal refund') ? 'Withdrawal refunded' : 'Added money'
   return `
     <li>
-      <span class="icon ${mint ? 'in' : 'out'}" aria-hidden="true">${mint ? '＋' : '↗'}</span>
+      <span class="icon ${mint ? 'in' : 'out'}" aria-hidden="true">${icon(mint ? 'plus' : 'out')}</span>
       <span class="who"><strong>${text}</strong><small>${when} · bank or card</small></span>
       <span class="amt ${mint ? 'in' : 'out'}">${mint ? '+' : '−'}${esc(formatMoney(e.tx.amount, e.tx.asset ?? ''))}</span>
     </li>`
@@ -1114,7 +1117,7 @@ function escrowActivity(e) {
   const id = x.op === 'create' ? e.id : x.id
   return `
     <li class="clickable" data-escrow="${id}">
-      <span class="icon pool" aria-hidden="true">⛨</span>
+      <span class="icon pool" aria-hidden="true">${icon('escrow')}</span>
       <span class="who"><strong>${text}</strong><small>${when}${x.ref ? ` · #${esc(x.ref)}` : ''} · tap to view</small></span>
       <span class="amt"></span>
     </li>`
@@ -1126,7 +1129,7 @@ function poolActivity(e) {
   const id = e.tx.pool.op === 'create' ? e.id : e.tx.pool.id
   return `
     <li class="clickable" data-pool="${id}">
-      <span class="icon pool" aria-hidden="true">◎</span>
+      <span class="icon pool" aria-hidden="true">${icon('pools')}</span>
       <span class="who"><strong>${text}</strong><small>${when} · tap to view pool</small></span>
       <span class="amt">${e.tx.pool.op === 'claim' ? '<span class="in">payout</span>' : ''}</span>
     </li>`

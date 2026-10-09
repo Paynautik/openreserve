@@ -3,6 +3,7 @@
 // who is next, and a timeline of every join, contribution and claim.
 import { api, assetLabel, formatAmount, formatMoney, node, parseAmount, poolOp, waitForCommit } from './orp.js'
 import { renderSVG } from 'uqr'
+import { icon, skeletonCard, skeletonRows } from './ui.js'
 import { fillTrust } from './trust.js'
 
 let ctx // { state, $, esc, short, toast, nameOf, resolveRecipient, root }
@@ -49,7 +50,7 @@ export async function renderPools() {
         <button class="primary small" id="new-pool">New pool</button>
       </div>
       <p class="muted small-text">Members take turns receiving the pot. Every contribution and payout is recorded on-chain, so everyone can see who has paid, who has received and who is next.</p>
-      <ul class="pool-list" id="pool-list"><li class="empty">Loading…</li></ul>
+      <ul class="pool-list" id="pool-list">${skeletonRows(3)}</ul>
     </section>`
   ctx.$('#new-pool').onclick = renderCreate
   api.invites(ctx.state.seed).then((list) => {
@@ -74,7 +75,8 @@ export async function renderPools() {
   const list = ctx.$('#pool-list')
   if (!list) return
   if (!pools.length) {
-    list.innerHTML = '<li class="empty">No pools yet. Start one with friends, family or colleagues.</li>'
+    list.innerHTML = `<li class="empty"><span class="empty-ico">${icon('pools')}</span><strong>Start your first ajo</strong><small>Save together with friends, family or colleagues. Everyone sees who paid and who's next.</small><button class="primary small" id="empty-new">Start an ajo</button></li>`
+    ctx.$('#empty-new').onclick = renderCreate
     return
   }
   list.innerHTML = pools
@@ -379,7 +381,7 @@ function watchPool(id, snapshot) {
 
 export async function renderPool(id, preloaded) {
   const root = ctx.root()
-  if (!preloaded) root.innerHTML = '<section class="card"><p class="muted">Loading pool…</p></section>'
+  if (!preloaded) root.innerHTML = skeletonCard()
   let data = preloaded
   try {
     data ??= await node.pool(id)

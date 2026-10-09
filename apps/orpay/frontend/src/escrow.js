@@ -5,6 +5,7 @@ import { api, assetLabel, escrowOp, formatMoney, node, parseAmount, partnerMark,
 import { fillTrust, showTrustCard, trustOf } from './trust.js'
 import { asksToPayOutside, radarBanner, riskOf } from './radar.js'
 import { renderSVG } from 'uqr'
+import { icon, skeletonCard, skeletonRows } from './ui.js'
 
 let ctx
 
@@ -45,7 +46,7 @@ export async function renderEscrows() {
     <section class="card">
       <div class="section-head"><h2>Escrow</h2><button class="primary small" id="new">New escrow</button></div>
       <p class="muted small-text">Lock payment until the work or goods are delivered. The seller is paid in milestones as you approve, and an independent arbiter settles disputes.</p>
-      <ul class="pool-list" id="list"><li class="empty">Loading…</li></ul>
+      <ul class="pool-list" id="list">${skeletonRows(3)}</ul>
     </section>
     <section class="card sell-card">
       <div class="section-head"><h2>Selling online?</h2></div>
@@ -68,7 +69,7 @@ export async function renderEscrows() {
   const ul = ctx.$('#list')
   if (!ul) return
   if (!list.length) {
-    ul.innerHTML = '<li class="empty">No escrows yet.</li>'
+    ul.innerHTML = `<li class="empty"><span class="empty-ico">${icon('escrow')}</span><strong>No escrows yet</strong><small>Buying from a stranger? Lock the money until you've checked the item. Selling? Create an escrow link below.</small></li>`
     return
   }
   // Arbiters see disputes waiting for them first.
@@ -201,7 +202,7 @@ let watch = { timer: null }
 
 export async function renderEscrow(id, preloaded, focus) {
   const root = ctx.root()
-  if (!preloaded) root.innerHTML = '<section class="card"><p class="muted">Loading escrow…</p></section>'
+  if (!preloaded) root.innerHTML = skeletonCard()
   let data = preloaded
   try {
     data ??= await node.escrow(id)
@@ -471,7 +472,7 @@ export async function renderEscrow(id, preloaded, focus) {
 // Funding page for a partner app's escrow request: /?escrow_request=<id>.
 export async function renderFundRequest(id) {
   const root = ctx.root()
-  root.innerHTML = '<section class="card"><p class="muted">Loading…</p></section>'
+  root.innerHTML = skeletonCard()
   let r
   try {
     r = await api.escrowRequest(id)
@@ -764,7 +765,7 @@ async function loadMyLinks() {
 
 async function renderArbiters() {
   const root = ctx.root()
-  root.innerHTML = '<section class="card"><p class="muted">Loading arbiters…</p></section>'
+  root.innerHTML = skeletonCard()
   let list = [], all = null
   try {
     list = await api.arbiters()
