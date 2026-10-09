@@ -554,7 +554,7 @@ function bindSwipes(ul) {
     li.querySelector('.swipe-act').onclick = () => {
       const name = state.names.get(li.dataset.peer)
       showPanel('Send money')
-      renderSend({ to: name ? '@' + name : li.dataset.peer })
+      renderSend({ to: name ? '@' + name : li.dataset.peer, again: true })
     }
   })
 }
@@ -865,7 +865,7 @@ function renderSend(prefill = {}) {
   const feeText = () => (state.status ? formatMoney(feeFor(state.status, asset), asset) : '…')
   $('#panel').innerHTML = `
     <form id="send" class="stack" autocomplete="off">
-      ${prefill.to ? '<p class="banner">Payment request. Check the details before you send.</p>' : ''}
+      ${prefill.to && !prefill.again ? '<p class="banner">Payment request. Check the details before you send.</p>' : ''}
       ${recentContacts().length ? `<div class="contacts" aria-label="Recent">${recentContacts().map((a) => {
         const n = state.names.get(a)
         return `<button type="button" class="contact" data-addr="${a}"><span class="avatar" style="--hue:${parseInt(a.slice(0, 4), 16) % 360}">${esc((n ?? a).slice(0, 2).toUpperCase())}</span><small>${n ? '@' + esc(n) : short(a)}</small></button>`
