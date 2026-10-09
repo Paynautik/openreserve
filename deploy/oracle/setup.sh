@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # One-command test network on an Oracle Cloud "Always Free" Ubuntu VM.
 #
-#   curl -fsSL https://raw.githubusercontent.com/raphgm/openreserve/main/deploy/oracle/setup.sh | sudo bash -s -- <ADMIN_WALLET_ADDRESS> [WEB_URL]
+#   curl -fsSL https://raw.githubusercontent.com/Paynautik/openreserve/main/deploy/oracle/setup.sh | sudo bash -s -- <ADMIN_WALLET_ADDRESS> [WEB_URL]
 #
 # It installs Docker, opens ports 80/443, creates the chain keys and genesis
 # (test network: NGN issued with a ₦20 fee, faucet on), and starts the node,
@@ -12,7 +12,7 @@ set -euo pipefail
 
 ADMIN="${1:-}"
 WEB_URL="${2:-}"
-REPO="${REPO:-https://github.com/raphgm/openreserve.git}"
+REPO="${REPO:-https://github.com/Paynautik/openreserve.git}"
 DIR=/opt/openreserve
 
 [ "$(id -u)" = 0 ] || { echo "run with sudo"; exit 1; }

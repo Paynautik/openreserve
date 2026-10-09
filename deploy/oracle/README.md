@@ -20,7 +20,7 @@ Test network only: Paystack test keys, faucet on, no real money.
 
 ```bash
 ssh ubuntu@<PUBLIC_IP>
-curl -fsSL https://raw.githubusercontent.com/raphgm/openreserve/main/deploy/oracle/setup.sh | sudo bash -s -- <YOUR_ADMIN_WALLET_ADDRESS> https://orpay.pages.dev
+curl -fsSL https://raw.githubusercontent.com/Paynautik/openreserve/main/deploy/oracle/setup.sh | sudo bash -s -- <YOUR_ADMIN_WALLET_ADDRESS> https://orpay.pages.dev
 ```
 
 When it finishes: https://<PUBLIC_IP>.sslip.io/healthz should answer. The script

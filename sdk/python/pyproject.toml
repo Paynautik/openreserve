@@ -8,7 +8,7 @@ license = { text = "Apache-2.0" }
 dependencies = []
 
 [project.urls]
-Source = "https://github.com/raphgm/openreserve/tree/main/sdk/python"
+Source = "https://github.com/Paynautik/openreserve/tree/main/sdk/python"
 
 [build-system]
 requires = ["setuptools>=61"]
