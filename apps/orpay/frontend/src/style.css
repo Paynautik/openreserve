@@ -960,3 +960,6 @@ button .ic { vertical-align: -4px; }
 .golive li.next { color: var(--text); font-weight: 600; }
 .golive li.next i { border-color: var(--brand-1); color: var(--brand-1); }
 .golive li small { display: block; font-weight: 400; color: var(--muted); font-size: .8rem; }
+.forget-confirm { margin-top: 12px; color: var(--text) !important; border: 1px solid var(--border); }
+.forget-confirm p { margin: 0 0 10px; }
+.forget-confirm .row { display: flex; gap: 8px; justify-content: flex-end; }

@@ -376,6 +376,10 @@ function renderUnlock() {
         <button class="link" id="restore">Forgot password?</button>
         <button class="link muted-link" id="forget">Use a different wallet</button>
       </div>
+      <div class="banner warn forget-confirm" id="forget-confirm" hidden>
+        <p>Remove this wallet from this device? You can only get it back with your six sign-in words or 24-word recovery key.</p>
+        <div class="row"><button class="ghost small" id="forget-no">Keep it</button><button class="danger small" id="forget-yes">Remove and continue</button></div>
+      </div>
       <p class="trust"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>Your keys are encrypted and never leave this device.</p>
     </main>`
   if ($('#bio'))
@@ -406,12 +410,17 @@ function renderUnlock() {
     $('#eye').setAttribute('aria-label', show ? 'Hide password' : 'Show password')
   }
   $('#restore').onclick = renderSignIn
+  // Confirm inline: browser confirm() popups are blocked in some webviews.
   $('#forget').onclick = () => {
-    if (confirm('Remove this wallet from this device? You can only get it back with its recovery key.')) {
-      clearVault()
-      disableBio()
-      renderWelcome()
-    }
+    const box = $('#forget-confirm')
+    box.hidden = false
+    box.scrollIntoView({ block: 'nearest', behavior: 'smooth' })
+  }
+  $('#forget-no').onclick = () => ($('#forget-confirm').hidden = true)
+  $('#forget-yes').onclick = () => {
+    clearVault()
+    disableBio()
+    renderWelcome()
   }
 }
 
