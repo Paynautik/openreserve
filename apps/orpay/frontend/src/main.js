@@ -24,13 +24,11 @@ import { exitDemo, installDemo, isDemo } from './demo.js'
 const app = document.getElementById('app')
 
 // Theme: follow the phone (default), or a fixed light/dark choice.
-const THEME = 'orpay.theme'
-function applyTheme(t = localStorage.getItem(THEME) ?? 'system') {
-  if (t === 'system') delete document.documentElement.dataset.theme
-  else document.documentElement.dataset.theme = t
-}
+// Light only: dark mode was removed by product decision.
+document.documentElement.dataset.theme = 'light'
 try {
-  applyTheme()
+  localStorage.removeItem('orpay.theme')
+  localStorage.removeItem('orpay.lpTheme')
 } catch {}
 startI18n()
 
@@ -216,7 +214,6 @@ function renderProfile() {
     ${item('m-notify', icon('bell'), 'Notifications', 'Payments, circle turns, escrow updates')}
     ${item('m-lang', icon('globe'), 'Language', LANGS.find((l) => l.id === getLang())?.name ?? 'English')}
     ${item('m-look', icon('globe'), 'Design', document.documentElement.classList.contains('y2050') ? '2050 (tap for classic)' : 'Classic (tap for 2050)')}
-    ${item('m-theme', icon('moon'), 'Theme', { system: 'Follows your phone', light: 'Light', dark: 'Dark' }[localStorage.getItem(THEME) ?? 'system'])}
     ${item('m-lock', icon('logout'), 'Sign out', 'Lock the wallet on this device', 'danger')}
     ${item('m-forget', icon('trash'), 'Remove from this device', 'Needs your six or 24 words to sign in again', 'danger subtle')}
   </div>`
@@ -261,15 +258,6 @@ function renderProfile() {
     $('#panel').innerHTML = `<div class="menu">${LANGS.map((l) => `<button class="menu-item" data-lang="${l.id}"><span class="mi-ico">${l.id === getLang() ? '✓' : ''}</span><span><b>${l.name}</b></span></button>`).join('')}</div>
       <p class="muted small-text">Coming soon: ${COMING.join(', ')}. We're having native speakers check every word first.</p>`
     app.querySelectorAll('[data-lang]').forEach((b) => (b.onclick = () => setLang(b.dataset.lang)))
-  })
-  on('#m-theme', () => {
-    const order = ['system', 'light', 'dark']
-    const next = order[(order.indexOf(localStorage.getItem(THEME) ?? 'system') + 1) % 3]
-    try {
-      localStorage.setItem(THEME, next)
-    } catch {}
-    applyTheme(next)
-    renderProfile()
   })
   on('#m-lock', lock)
   on('#m-forget', async () => {

@@ -25,7 +25,6 @@ export function renderLanding(app, { onStart, onSignIn, signInLabel }) {
         <a href="#product">Product</a><a href="#escrow">Escrow</a><a href="#developers">Developers</a><a href="/explorer.html">Explorer</a><a href="#" class="lp-menu-only" data-signin>${signInLabel}</a>
       </div>
       <div class="lp-nav-cta">
-        <button class="lp-theme" id="lp-theme" type="button" aria-label="Switch to dark mode" aria-pressed="false">${svg('<path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/>')}</button>
         <button class="lp-btn ghost" data-signin>${signInLabel}</button>
         <button class="lp-btn ink" data-start>Get started</button>
         <button class="lp-menu" id="lp-menu" aria-label="Open menu" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
@@ -273,7 +272,6 @@ escrow = orpay.create_escrow(
 
   app.querySelectorAll('[data-start]').forEach((b) => (b.onclick = onStart))
   escrowDemo(app)
-  themeToggle(app)
   codeTabs(app)
   circlesDemo(app)
   phoneSwitcher(app)
@@ -397,33 +395,6 @@ function circlesDemo(app) {
   reset()
 }
 
-// Light / dark landing page. Remembers the choice; defaults to the system.
-function themeToggle(app) {
-  const lp = app.querySelector('.lp')
-  const btn = app.querySelector('#lp-theme')
-  if (!lp || !btn) return
-  const moon = '<path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/>'
-  const sun = '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>'
-  const set = (dark) => {
-    lp.classList.toggle('dark', dark)
-    document.body.classList.toggle('lp-dark-body', dark)
-    btn.innerHTML = svg(dark ? sun : moon)
-    btn.setAttribute('aria-pressed', String(dark))
-    btn.setAttribute('aria-label', dark ? 'Switch to light mode' : 'Switch to dark mode')
-  }
-  let saved = null
-  try {
-    saved = localStorage.getItem('orpay.lpTheme')
-  } catch {}
-  set(saved ? saved === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches)
-  btn.onclick = () => {
-    const dark = !lp.classList.contains('dark')
-    set(dark)
-    try {
-      localStorage.setItem('orpay.lpTheme', dark ? 'dark' : 'light')
-    } catch {}
-  }
-}
 
 // 2050 look: live numbers from the chain, counting up when they arrive.
 function liveLedger(app) {

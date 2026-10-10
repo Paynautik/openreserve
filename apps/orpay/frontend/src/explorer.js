@@ -3,6 +3,8 @@
 import './style.css'
 import { API_BASE, api, formatMoney, isAddress, node, txID } from './orp.js'
 
+document.documentElement.dataset.theme = 'light' // light only
+
 const app = document.getElementById('app')
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c])
 const short = (a) => (a ? `${a.slice(0, 8)}…${a.slice(-6)}` : '')
