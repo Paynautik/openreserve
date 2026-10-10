@@ -155,13 +155,13 @@ export function renderLanding(app, { onStart, onSignIn, signInLabel }) {
     <section class="lp-wrap lp-sec lp-trust" id="trust">
       <div class="lp-head">
         <p class="lp-kicker">How trust works</p>
-        <h2>No guesswork about<br>where your money is.</h2>
+        <h2>Always know where<br>your money is.</h2>
       </div>
       <div class="lp-trust-grid">
-        <article class="reveal"><i>${svg('<rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>')}</i><h3>Who holds the money</h3><p>Escrow funds sit in an escrow record on the OpenReserve ledger, not in anyone's account. They only move by the deal's rules: the buyer releases, the review period ends, or an arbiter decides.</p></article>
-        <article class="reveal"><i>${svg('<path d="M12 3v18M5 7h14M7 7l-3 6a3 3 0 0 0 6 0zM17 7l-3 6a3 3 0 0 0 6 0z"/>')}</i><h3>Who decides disputes</h3><p>A neutral arbiter named in the deal, approved by ORPay. They see the chat and photos, then split the money. Every decision is recorded on-chain.</p></article>
-        <article class="reveal"><i>${svg('<path d="M4 7h16M4 12h16M4 17h10"/>')}</i><h3>What it costs</h3><p>₦20 network fee per payment. No fee to hold money in escrow. An arbiter's fee, at most 5%, applies only if there is a dispute.</p></article>
-        <article class="reveal"><i>${svg(I.eye)}</i><h3>Anyone can check</h3><p>Every escrow, circle payment and payout is on the public <a href="/explorer.html">explorer</a>. Your keys stay on your phone; ORPay cannot spend your money.</p></article>
+        <article class="reveal"><i>${svg('<rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>')}</i><span><b>Locked on-chain</b><small>Not in anyone's account. Not even ours.</small></span></article>
+        <article class="reveal"><i>${svg('<path d="M12 3v18M5 7h14M7 7l-3 6a3 3 0 0 0 6 0zM17 7l-3 6a3 3 0 0 0 6 0z"/>')}</i><span><b>Neutral arbiters</b><small>They settle disputes, on the record.</small></span></article>
+        <article class="reveal"><i>${svg('<path d="M4 7h16M4 12h16M4 17h10"/>')}</i><span><b>₦20 per payment</b><small>Holding money in escrow is free.</small></span></article>
+        <article class="reveal"><i>${svg(I.eye)}</i><span><b>Open to check</b><small>Every payment is on the <a href="/explorer.html">explorer</a>.</small></span></article>
       </div>
     </section>
 

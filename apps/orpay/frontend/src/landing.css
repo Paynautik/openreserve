@@ -600,3 +600,12 @@ body:has(.lp) { background: #f7f7fc; }
 .lp-life2 .lp-head h2 { font-size: clamp(1.8rem, 3.4vw, 2.6rem); }
 @media (max-width: 1100px) { .lp-uses { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 @media (max-width: 640px) { .lp-uses { grid-template-columns: 1fr; gap: 8px; } }
+
+/* How trust works v2: compact */
+.lp-trust .lp-head h2 { font-size: clamp(1.8rem, 3.4vw, 2.6rem); }
+.lp-trust-grid { gap: 10px; }
+.lp-trust-grid article { display: flex; align-items: center; gap: 10px; padding: 12px; border-radius: 14px; }
+.lp-trust-grid i { flex: none; width: 34px; height: 34px; border-radius: 10px; margin: 0; }
+.lp-trust-grid article > span { min-width: 0; display: grid; gap: 2px; }
+.lp-trust-grid b { font-size: .86rem; }
+.lp-trust-grid small { color: var(--mute); font-size: .74rem; line-height: 1.35; }
