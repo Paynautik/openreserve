@@ -99,6 +99,12 @@ export function renderLanding(app, { onStart, onSignIn, signInLabel }) {
           <p>Money stays locked until the buyer inspects. Not even we can touch it.</p>
           <a href="#how">How it works →</a>
         </div>
+        <ol class="lp-escrow-flow" aria-label="Escrow progress">
+          <li class="done"><i>${svg(I.check)}</i>Funded</li>
+          <li class="done"><i>${svg(I.check)}</i>Shipped</li>
+          <li class="now"><i></i>Inspect</li>
+          <li><i></i>Release</li>
+        </ol>
         <div class="lp-feat-art" aria-hidden="true"><small>Held in escrow</small><b>₦420,000</b><span class="t-steps"><span class="on"></span><span class="on"></span><span class="now"></span><span></span></span><em>Shipped · awaiting inspection</em></div>
       </article>
     </section>

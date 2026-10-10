@@ -496,3 +496,17 @@ body:has(.lp) { background: #f7f7fc; }
   .lp-escrow { flex-direction: column; align-items: stretch; padding: 22px; }
   .lp-escrow .lp-feat-art { min-width: 0; }
 }
+.lp-escrow { display: grid; grid-template-columns: minmax(0, 1.2fr) auto auto; gap: 36px; }
+.lp-escrow-flow { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; position: relative; }
+.lp-escrow-flow li { display: flex; align-items: center; gap: 10px; padding: 6px 0; font-size: .86rem; color: #a5b4fc; position: relative; }
+.lp-escrow-flow li + li::before { content: ""; position: absolute; left: 10px; top: -8px; height: 14px; width: 2px; background: rgb(255 255 255 / .14); }
+.lp-escrow-flow li.done + li::before { background: #34d399; }
+.lp-escrow-flow i { width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; border: 2px solid rgb(255 255 255 / .2); flex: none; }
+.lp-escrow-flow i svg { width: 12px; height: 12px; fill: none; stroke: #fff; stroke-width: 3; }
+.lp-escrow-flow .done { color: #fff; }
+.lp-escrow-flow .done i { background: #10b981; border-color: #10b981; }
+.lp-escrow-flow .now { color: #fff; font-weight: 600; }
+.lp-escrow-flow .now i { border-color: #67e8f9; box-shadow: 0 0 0 4px rgb(103 232 249 / .18); }
+@media (max-width: 960px) { .lp-escrow { grid-template-columns: 1fr auto; } .lp-escrow-flow { display: none; } }
+@media (max-width: 600px) { .lp-escrow { grid-template-columns: 1fr; gap: 18px; } }
+@media (min-width: 961px) { .lp-escrow { grid-template-columns: minmax(0, 27rem) 1fr auto; } .lp-escrow-flow { justify-self: center; } }
