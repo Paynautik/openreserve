@@ -8,6 +8,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"net/url"
 	"strings"
 	"sync"
 	"time"
@@ -185,6 +186,11 @@ func (c *Client) EscrowsOf(a types.Address) (out []*Escrow, err error) {
 
 // EscrowCreateMemo returns the memo of the tx that created an escrow (it
 // carries "terms:<sha256>" when the buyer accepted written terms).
+// EscrowsByStatus lists escrows in one status (e.g. "disputed").
+func (c *Client) EscrowsByStatus(status string) (out []*Escrow, err error) {
+	return out, c.GetJSON("/v1/escrows?status="+url.QueryEscape(status), &out)
+}
+
 func (c *Client) EscrowCreateMemo(id string) (string, error) {
 	var r struct {
 		History []HistoryEntry `json:"history"`

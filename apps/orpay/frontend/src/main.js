@@ -7,6 +7,7 @@ import { renderSVG } from 'uqr'
 import { duePools, initPools, renderInvite, renderPool, renderPools } from './pools.js'
 import { initCheckout, renderCheckout } from './checkout.js'
 import { initDevelopers, renderDevelopers } from './developers.js'
+import { initAdmin, renderAdmin } from './admin.js'
 import { confirmDeposit, initMoney, renderAddMoney, renderWithdraw } from './money.js'
 import { initEscrow, renderEscrow, renderEscrows, renderFundRequest } from './escrow.js'
 import { renderLanding } from './landing.js'
@@ -189,6 +190,7 @@ function renderProfile() {
     `<button class="menu-item ${cls}" id="${id}"><span class="mi-ico">${icon}</span><span><b>${title}</b><small>${sub}</small></span></button>`
   $('#panel').innerHTML = `<div id="my-trust"></div><div class="menu">
     ${state.username ? '' : item('m-claim', icon('at'), 'Claim a username', 'So people can pay you by name')}
+    ${state.isAdmin ? item('m-admin', icon('key'), 'Admin dashboard', 'Partner requests, disputes, arbiters, volume') : ''}
     ${item('m-receive', icon('down'), 'My address & QR', 'Share to get paid')}
     ${state.username ? item('m-invite', icon('gift'), 'Invite friends', 'Share your link and see who joined') : ''}
     ${item('m-six', icon('key'), 'Six-word sign-in', 'Open this wallet on another device')}
@@ -208,6 +210,7 @@ function renderProfile() {
   on('#m-invite', renderInvites)
   on('#m-six', renderSignInSetup)
   on('#m-limit', renderLimit)
+  on('#m-admin', () => (($('#panel-card').hidden = true), showView('admin', renderAdmin)))
   on('#m-words', async () => {
     if (!(await ask('Make sure nobody can see your screen. Anyone with these words can take your money.', { title: 'Show recovery words?', ok: 'Show words' }))) return
     showPanel('Recovery words')
@@ -521,6 +524,7 @@ async function openWallet(seed, address) {
     })
     .catch(() => {})
   api.lookup(address).then((r) => ((state.username = r.username), renderHeader())).catch(() => {})
+  api.apps(seed).then((r) => (state.isAdmin = !!r.is_admin)).catch(() => {})
   refresh()
   setInterval(refresh, 2000)
   const pending = sessionStorage.getItem(PENDING)
@@ -1372,6 +1376,7 @@ const ctx = {
   // Checkout works without a wallet (card payment). Paying from the wallet
   // asks the customer to unlock or create one, then returns to the checkout.
   requireWallet: () => (hasVault() ? renderUnlock() : renderWelcome()),
+  openEscrow: (id) => showView('escrow', () => renderEscrow(id)),
   // Show a partner's name next to ORPay on its checkout/escrow pages.
   cobrand: (partner) => cobrand(partner),
 }
@@ -1396,6 +1401,7 @@ function cobrand(partner) {
 initPools(ctx)
 initCheckout(ctx)
 initDevelopers(ctx)
+initAdmin(ctx)
 initMoney(ctx)
 initEscrow(ctx)
 

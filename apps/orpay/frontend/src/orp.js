@@ -349,6 +349,7 @@ export const api = {
   postEscrowMessage: (seed, id, text, photos = []) => signedCall(seed, 'POST', `/api/escrows/${id}/messages`, { text, photos }),
   invoice: (id) => call(`/api/invoices/${encodeURIComponent(id)}`),
   apps: (seed) => signedCall(seed, 'GET', '/api/apps'),
+  adminOverview: (seed) => signedCall(seed, 'GET', '/api/admin/overview'),
   requestApp: (seed, body) => signedCall(seed, 'POST', '/api/apps', body),
   reviewApp: (seed, id, decision, note = '') => signedCall(seed, 'POST', `/api/apps/${id}/review`, { decision, note }),
   rotateKey: (seed, id, test = false) => signedCall(seed, 'POST', `/api/apps/${id}/keys${test ? '?mode=test' : ''}`),

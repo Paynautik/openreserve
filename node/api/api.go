@@ -29,6 +29,7 @@ func Handler(c *chain.Chain) http.Handler {
 	mux.HandleFunc("POST /v1/txs", s.submit)
 	mux.HandleFunc("GET /v1/pools/{id}", s.pool)
 	mux.HandleFunc("GET /v1/accounts/{addr}/pools", s.accountPools)
+	mux.HandleFunc("GET /v1/escrows", s.escrowsByStatus)
 	mux.HandleFunc("GET /v1/escrows/{id}", s.escrow)
 	mux.HandleFunc("GET /v1/accounts/{addr}/recovery", s.recovery)
 	mux.HandleFunc("GET /v1/accounts/{addr}/escrows", s.accountEscrows)
@@ -187,6 +188,18 @@ func (s *server) escrow(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	writeJSON(w, http.StatusOK, map[string]any{"escrow": e, "history": s.c.EscrowHistory(id)})
+}
+
+// escrowsByStatus lists escrows in one status: GET /v1/escrows?status=disputed
+func (s *server) escrowsByStatus(w http.ResponseWriter, r *http.Request) {
+	st := r.URL.Query().Get("status")
+	switch st {
+	case "funded", "dispatched", "disputed", "completed", "refunded", "resolved", "pending":
+	default:
+		writeErr(w, http.StatusBadRequest, errors.New("status must be one of funded, dispatched, disputed, completed, refunded, resolved, pending"))
+		return
+	}
+	writeJSON(w, http.StatusOK, s.c.EscrowsByStatus(st, 200))
 }
 
 func (s *server) accountEscrows(w http.ResponseWriter, r *http.Request) {

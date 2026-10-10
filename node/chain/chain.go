@@ -573,6 +573,21 @@ func (c *Chain) EscrowsOf(a types.Address) []*ledger.Escrow {
 	return out
 }
 
+// EscrowsByStatus returns escrows in the given status (e.g. "disputed"),
+// newest first, capped at limit.
+func (c *Chain) EscrowsByStatus(status string, limit int) []*ledger.Escrow {
+	c.mu.RLock()
+	defer c.mu.RUnlock()
+	out := []*ledger.Escrow{}
+	for _, e := range c.state.Escrows {
+		if e.Status == status {
+			out = append(out, e.Clone())
+		}
+	}
+	slices.SortFunc(out, func(x, y *ledger.Escrow) int { return int(y.CreatedAt - x.CreatedAt) })
+	return out[:min(len(out), limit)]
+}
+
 // Counts summarizes pools and escrows for metrics.
 type Counts struct {
 	TxsTotal       int
