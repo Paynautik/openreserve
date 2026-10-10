@@ -771,3 +771,5 @@ body.lp-dark-body { background: #070b1f !important; }
 .lp.dark.y2050 .lp-bento small, .lp.dark.y2050 .lp-uses small { color: #c3c9e6; }
 .lp.dark.y2050 .lp-uses b { color: #fff; }
 .lp.dark.y2050 .b-tag, .lp.dark.y2050 .lp-bento a { color: #a5b4fc; }
+.lp.y2050 .b-ready strong { background: linear-gradient(90deg, #4f46e5, #0891b2); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.lp.y2050 .b-ready small { color: #64748b; }

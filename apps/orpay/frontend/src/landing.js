@@ -385,9 +385,23 @@ function liveLedger(app) {
     }
     requestAnimationFrame(step)
   }
+  // Until there is real activity, say so plainly instead of showing zeros.
+  const READY = { held: 'First escrows open with our partners', saving: 'Start the first ajo on the network', completed: 'Deals appear here as they complete', resolved: 'Every ruling will be on the record' }
   const put = (k, v, fmt = (x) => x.toLocaleString('en-NG')) => {
     const el = app.querySelector(`[data-stat="${k}"]`)
-    if (el) count(el, v, fmt)
+    if (!el) return
+    const tile = el.closest('article')
+    const note = tile.querySelector('small')
+    if (!note.dataset.orig) note.dataset.orig = note.textContent
+    if (!v) {
+      el.textContent = 'Ready'
+      tile.classList.add('b-ready')
+      note.textContent = READY[k] ?? note.dataset.orig
+      return
+    }
+    tile.classList.remove('b-ready')
+    note.textContent = note.dataset.orig
+    count(el, v, fmt)
   }
   const tick = () => {
     fetch(API_BASE + '/v1/stats').then((r) => r.json()).then((st) => {
@@ -397,11 +411,16 @@ function liveLedger(app) {
       put('saving', saving, (x) => naira(BigInt(x) * 1_000_000n))
       put('completed', st.escrows?.completed ?? 0)
       put('resolved', st.escrows?.resolved ?? 0)
-    }).catch(() => {})
+    }).catch(() => ['held', 'saving', 'completed', 'resolved'].forEach((k) => put(k, 0)))
     fetch(API_BASE + '/v1/status').then((r) => r.json()).then((s) => {
       const el = app.querySelector('[data-stat="height"]')
-      if (el) el.textContent = `#${s.height.toLocaleString('en-NG')}`
-    }).catch(() => {})
+      if (el) el.textContent = s.height > 0 ? `#${s.height.toLocaleString('en-NG')}` : 'Live'
+      const live = app.querySelector('.b-hero .b-tag')
+      if (live && /devnet|testnet|demo/.test(s.chain_id)) live.lastChild.textContent = 'LIVE · TEST NETWORK'
+    }).catch(() => {
+      const el = app.querySelector('[data-stat="height"]')
+      if (el) el.textContent = 'Live'
+    })
   }
   tick()
   setInterval(tick, 8000)
