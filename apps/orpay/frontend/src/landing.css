@@ -922,3 +922,20 @@ body.lp-dark-body { background: #070b1f !important; }
 .lp.y2050 .lp-halo { width: 430px; height: 430px; border: 1px solid rgb(99 102 241 / .14); background: radial-gradient(circle, rgb(99 102 241 / .06), transparent 70%); box-shadow: none; }
 .lp.y2050 .lp-orbit { width: 560px; height: 560px; border-color: rgb(99 102 241 / .22); }
 @media (max-width: 600px) { .lp.y2050 .lp-halo { width: 300px; height: 300px; } .lp.y2050 .lp-orbit { width: 380px; height: 380px; } }
+
+/* 2050 feature tiles */
+.lp-feat-k { display: none; }
+.lp.y2050 .lp-feat { grid-template-columns: 1fr; grid-template-rows: auto auto auto 1fr; row-gap: 6px; align-content: start; padding: 18px; min-height: 178px; border-radius: 20px; background: linear-gradient(180deg, color-mix(in srgb, var(--tint, #6366f1) 7%, #fff), #fff 55%); }
+.lp.y2050 .lp-feat:nth-child(1) { --tint: #6366f1; }
+.lp.y2050 .lp-feat:nth-child(2) { --tint: #9333ea; }
+.lp.y2050 .lp-feat:nth-child(3) { --tint: #059669; }
+.lp.y2050 .lp-feat:nth-child(4) { --tint: #0284c7; }
+.lp.y2050 .lp-feat > i { grid-row: auto; width: 42px; height: 42px; border-radius: 50%; margin-bottom: 10px; background: color-mix(in srgb, var(--tint) 14%, #fff); color: var(--tint); box-shadow: 0 0 0 5px color-mix(in srgb, var(--tint) 7%, transparent), 0 0 22px -4px var(--tint); }
+.lp.y2050 .lp-feat h3 { font-size: 1.05rem; }
+.lp.y2050 .lp-feat p { font-size: .84rem; color: #475569; }
+.lp.y2050 .lp-feat-k { display: inline-flex; align-self: end; justify-self: start; margin-top: 10px; padding: 5px 10px; border-radius: 999px; background: #fff; box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--tint) 35%, #e6e8f0); font: 700 .66rem/1 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .08em; text-transform: uppercase; color: color-mix(in srgb, var(--tint) 85%, #0b1030); }
+.lp.y2050 .lp-feat::after { top: 16px; right: 16px; content: "0" counter(feat) " /"; color: color-mix(in srgb, var(--tint) 60%, #fff); font-size: .64rem; }
+.lp.y2050 .lp-feat:hover { box-shadow: 0 20px 40px -24px color-mix(in srgb, var(--tint) 80%, transparent); }
+@media (max-width: 600px) { .lp.y2050 .lp-feat { min-height: 0; } }
+.lp.y2050 .lp-feat-k { white-space: nowrap; }
+@media (max-width: 420px) { .lp.y2050 .lp-feat-k { font-size: .58rem; padding: 4px 8px; letter-spacing: .04em; } }
