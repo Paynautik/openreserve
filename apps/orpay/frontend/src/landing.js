@@ -17,7 +17,7 @@ const I = {
 export function renderLanding(app, { onStart, onSignIn, signInLabel }) {
   document.title = 'ORPay: payments on OpenReserve'
   app.innerHTML = `
-  <div class="lp">
+  <div class="lp${new URLSearchParams(location.search).get('accent') === 'lime' ? ' lime' : ''}">
     <nav class="lp-nav">
       <a class="logo" href="#top" aria-label="ORPay"><span class="logo-or">OR</span><span class="logo-pay">Pay</span></a>
       <div class="lp-links">
