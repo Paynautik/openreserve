@@ -42,11 +42,12 @@ export function renderLanding(app, { onStart, onSignIn, signInLabel }) {
             <button class="lp-btn ink lg" data-start>Get started free</button>
             <a class="lp-btn ghost lg" href="/?demo">Try the demo</a>
           </div>
-          <p class="lp-built"><img src="/favicon.png" alt="">Built on the <b>OpenReserve Protocol</b> · transfers from ₦10</p>
+          <p class="lp-built"><img src="/favicon.png" alt="">Built on the <b>OpenReserve Protocol</b><span class="lp-built-sep"> · </span><span class="lp-built-fee">transfers from ₦10</span></p>
         </div>
 
         <div class="lp-phone-wrap">
           <span class="lp-halo"></span>
+          <span class="lp-orbit lp-only-2050" aria-hidden="true"><i></i><i></i><i></i></span>
           <div class="lp-switch" role="tablist" aria-label="Try ORPay">
             <button role="tab" data-pane="wallet" aria-selected="false">Wallet</button>
             <button role="tab" data-pane="escrow" aria-selected="true">Escrow</button>
@@ -95,6 +96,11 @@ export function renderLanding(app, { onStart, onSignIn, signInLabel }) {
                 </ol>
                 <p class="lp-demo-msg" id="lp-demo-msg" aria-live="polite"></p>
                 <button class="lp-demo-btn" id="lp-demo-btn" type="button"></button>
+                <div class="lp-demo-feed">
+                  <p>Recent</p>
+                  <div><i class="in">${svg(I.down)}</i><span><b>Escrow released</b><small>Sneakers · @kicksng</small></span><em class="pos">+₦38,000</em></div>
+                  <div><i class="out">${svg(I.ajo)}</i><span><b>Ajo contribution</b><small>Market women savings</small></span><em>−₦20,000</em></div>
+                </div>
               </div>
               </div>
               <div class="lp-tabs"><span data-tab-for="wallet">Home</span><span data-tab-for="circles">Circles</span><span class="on" data-tab-for="escrow">Escrow</span><span>Profile</span></div>
@@ -310,7 +316,8 @@ escrow = orpay.create_escrow(
   }
   fetch(API_BASE + '/v1/status').then((r) => r.json()).then((st) => {
     const el = document.getElementById('lp-live')
-    if (el && st.height > 0) el.textContent = `Live on OpenReserve · block ${st.height.toLocaleString()}`
+    if (el && app.querySelector('.lp.y2050')) el.textContent = `${/devnet|testnet/.test(st.chain_id) ? 'TEST NETWORK' : 'MAINNET'} · BLOCK #${st.height.toLocaleString()}`
+    else if (el && st.height > 0) el.textContent = `Live on OpenReserve · block ${st.height.toLocaleString()}`
   }).catch(() => {})
 }
 

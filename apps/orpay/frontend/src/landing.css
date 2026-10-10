@@ -847,3 +847,44 @@ body.lp-dark-body { background: #070b1f !important; }
 .lp.dark.y2050 .lp-escrow p, .lp.dark.y2050 .lp-escrow-flow li { color: #c3c9e6; }
 .lp.dark.y2050 .lp-escrow .lp-feat-art { background: #0b1030; }
 .lp.dark.y2050 .lp-escrow .lp-feat-art b { color: #fff; }
+
+/* Phone: recent feed under the escrow demo (all looks) */
+.lp-demo-feed { margin-top: 6px; display: grid; gap: 6px; }
+.lp-demo-feed p { margin: 4px 0 0; font-size: .64rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: #94a3b8; }
+.lp-demo-feed div { display: flex; align-items: center; gap: 8px; padding: 8px; border-radius: 12px; background: #f8fafc; }
+.lp-demo-feed i { display: grid; place-items: center; width: 26px; height: 26px; border-radius: 9px; flex: none; }
+.lp-demo-feed i.in { background: #ecfdf5; color: #059669; }
+.lp-demo-feed i.out { background: #eef2ff; color: #4f46e5; }
+.lp .lp-demo-feed i svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 2.2; }
+.lp-demo-feed span { flex: 1; min-width: 0; display: grid; }
+.lp-demo-feed b { font-size: .7rem; }
+.lp-demo-feed small { font-size: .6rem; color: #64748b; }
+.lp-demo-feed em { font-style: normal; font-size: .7rem; font-weight: 700; color: #0f172a; }
+.lp-demo-feed em.pos { color: #059669; }
+
+/* ---------- 2050 hero ---------- */
+.lp.y2050 .lp-hero::before { background: radial-gradient(circle, rgb(99 102 241 / .14), transparent 70%); }
+.lp.y2050 .lp-pill { font: 600 .7rem/1 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .1em; color: #3730a3; box-shadow: inset 0 0 0 1px #c7d2fe; }
+.lp.y2050 .lp-pill .dot.on { animation: b-pulse 1.8s infinite; }
+.lp.y2050 .lp-hero h1 .lp-grad { background: linear-gradient(90deg, #4b8df8, #6d45f5, #a855f7, #22d3ee, #4b8df8); background-size: 300% 100%; -webkit-background-clip: text; background-clip: text; animation: lp-shimmer 8s linear infinite; }
+@keyframes lp-shimmer { to { background-position: -300% 0; } }
+.lp.y2050 .lp-hero .lp-btn.ink { position: relative; isolation: isolate; }
+.lp.y2050 .lp-hero .lp-btn.ink::before { content: ""; position: absolute; inset: -2px; z-index: -1; border-radius: inherit; background: conic-gradient(from var(--a, 0deg), #6366f1, #22d3ee, #a855f7, #6366f1); animation: b-spin 6s linear infinite; filter: blur(6px); opacity: .55; }
+.lp.y2050 .lp-built { gap: 8px; flex-wrap: wrap; }
+.lp.y2050 .lp-built-sep { display: none; }
+.lp.y2050 .lp-built-fee { padding: 4px 10px; border-radius: 999px; background: #fff; box-shadow: inset 0 0 0 1px #c7d2fe; font: 600 .7rem/1 ui-monospace, SFMono-Regular, Menlo, monospace; color: #3730a3; }
+.lp.y2050 .lp-halo { border-color: rgb(99 102 241 / .18); box-shadow: 0 0 0 40px rgb(99 102 241 / .035), 0 0 0 84px rgb(99 102 241 / .02); }
+.lp-orbit { position: absolute; left: 50%; top: calc(50% + 26px); width: 520px; height: 520px; translate: -50% -50%; border-radius: 50%; border: 1px dashed rgb(99 102 241 / .25); pointer-events: none; animation: lp-orbit 30s linear infinite; }
+.lp-orbit i { position: absolute; width: 10px; height: 10px; border-radius: 50%; background: #6366f1; box-shadow: 0 0 14px 3px rgb(99 102 241 / .55); }
+.lp-orbit i:nth-child(1) { top: -5px; left: calc(50% - 5px); }
+.lp-orbit i:nth-child(2) { bottom: 18%; left: 2%; background: #22d3ee; box-shadow: 0 0 14px 3px rgb(34 211 238 / .55); }
+.lp-orbit i:nth-child(3) { bottom: 10%; right: 6%; background: #a855f7; box-shadow: 0 0 14px 3px rgb(168 85 247 / .55); }
+@keyframes lp-orbit { to { rotate: 360deg; } }
+.lp.y2050 .lp-switch { box-shadow: inset 0 0 0 1px #c7d2fe, 0 10px 26px -16px rgb(79 70 229 / .6); }
+.lp.y2050 .lp-switch button { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .78rem; }
+@media (max-width: 600px) { .lp-orbit { width: 340px; height: 340px; } }
+@media (prefers-reduced-motion: reduce) { .lp.y2050 .lp-hero h1 .lp-grad, .lp-orbit, .lp.y2050 .lp-hero .lp-btn.ink::before { animation: none; } }
+.lp.dark.y2050 .lp-built-fee { background: #10163a; color: #c7d2fe; }
+.lp.dark .lp-demo-feed div { background: #f1f5f9; }
+.lp.y2050 .lp-hero .lp-btn.ink::before { content: none; }
+.lp.y2050 .lp-hero .lp-btn.ink { background: #0b1030; color: #fff; box-shadow: 0 0 0 1px rgb(99 102 241 / .5), 0 10px 30px -8px rgb(99 102 241 / .7), 0 0 40px -10px rgb(34 211 238 / .6); }
