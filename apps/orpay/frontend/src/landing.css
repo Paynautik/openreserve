@@ -578,13 +578,6 @@ body:has(.lp) { background: #f7f7fc; }
 @media (max-width: 960px) { .lp-trust-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 520px) { .lp-trust-grid { grid-template-columns: 1fr; } }
 
-/* Conspicuous rings behind the phone */
-.lp-halo { width: 440px; height: 440px; top: calc(50% + 26px); border: 1.5px solid rgb(99 102 241 / .55);
-  background: radial-gradient(circle, rgb(99 102 241 / .10) 0 55%, transparent 56%);
-  box-shadow: 0 0 0 46px rgb(99 102 241 / .09), 0 0 0 47.5px rgb(99 102 241 / .35), 0 0 0 96px rgb(99 102 241 / .06), 0 0 0 97.5px rgb(99 102 241 / .25), 0 0 0 150px rgb(99 102 241 / .035), 0 0 0 151.5px rgb(99 102 241 / .16); }
-@media (max-width: 600px) { .lp-halo { width: 300px; height: 300px; box-shadow: 0 0 0 30px rgb(99 102 241 / .09), 0 0 0 31.5px rgb(99 102 241 / .35), 0 0 0 64px rgb(99 102 241 / .06), 0 0 0 65.5px rgb(99 102 241 / .22); } }
-@media (prefers-reduced-motion: no-preference) { .lp-halo { animation: halo-pulse 6s ease-in-out infinite; } }
-@keyframes halo-pulse { 50% { transform: translate(-50%, -50%) scale(1.03); } }
 
 /* Designed for real life v2: compact chips */
 .lp-uses { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; }

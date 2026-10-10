@@ -28,17 +28,24 @@ export function parseAmount(s) {
   return micro
 }
 
-// Currency display: NGN as naira with 2 decimals, ORP as a plain decimal.
+// Fiat currencies the network can issue (2 decimals each). Anything else
+// (ORP, unknown assets) shows as a plain decimal with its symbol.
+export const FIATS = {
+  NGN: { sign: '₦', name: 'Naira', locale: 'en-NG', circle: 'ajo' },
+  GHS: { sign: 'GH₵', name: 'Cedi', locale: 'en-GH', circle: 'susu' },
+  KES: { sign: 'KSh ', name: 'Shilling', locale: 'en-KE', circle: 'chama' },
+}
+
 export function formatMoney(micro, asset = '') {
-  if (asset === 'NGN') {
-    const kobo = BigInt(micro) / 10_000n
-    const naira = Number(kobo) / 100
-    return '₦' + naira.toLocaleString('en-NG', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+  const f = FIATS[asset]
+  if (f) {
+    const cents = BigInt(micro) / 10_000n
+    return f.sign + (Number(cents) / 100).toLocaleString(f.locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 })
   }
   return `${formatAmount(micro)} ${asset || 'ORP'}`
 }
 
-export const assetLabel = (asset) => (asset === 'NGN' ? 'Naira (₦)' : asset || 'ORP')
+export const assetLabel = (asset) => (FIATS[asset] ? `${FIATS[asset].name} (${FIATS[asset].sign.trim()})` : asset || 'ORP')
 
 export function formatAmount(micro) {
   const v = BigInt(micro)

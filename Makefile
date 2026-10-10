@@ -22,7 +22,9 @@ devnet-init: build
 	$(BIN)/orctl genesis -chain-id openreserve-devnet-1 \
 		-proposer $$($(BIN)/orctl address -key devnet/proposer.json) \
 		-alloc $$($(BIN)/orctl address -key devnet/alice.json)=1000000 \
-		-asset "NGN:$$($(BIN)/orctl address -key devnet/issuer.json):20:2:Nigerian naira" > devnet/genesis.json
+		-asset "NGN:$$($(BIN)/orctl address -key devnet/issuer.json):20:2:Nigerian naira" \
+		-asset "GHS:$$($(BIN)/orctl address -key devnet/issuer.json):0.2:2:Ghanaian cedi" \
+		-asset "KES:$$($(BIN)/orctl address -key devnet/issuer.json):2:2:Kenyan shilling" > devnet/genesis.json
 	@# Seeds for the Docker devnet, passed as env vars instead of readable key files.
 	umask 077 && printf 'ORP_PROPOSER_SEED=%s\nORPAY_FAUCET_SEED=%s\n' \
 		$$($(BIN)/orctl export-seed -key devnet/proposer.json) \
