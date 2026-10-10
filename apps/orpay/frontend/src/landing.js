@@ -140,14 +140,15 @@ export function renderLanding(app, { onStart, onSignIn, signInLabel }) {
     <section class="lp-wrap lp-sec lp-life2" id="uses">
       <div class="lp-head">
         <p class="lp-kicker">Designed for real life</p>
-        <h2>Built for how Nigerians<br>actually pay and save.</h2>
+        <h2>Built for how Africa<br>pays and saves.</h2>
+        <p class="lp-sub-note"><span class="dot on"></span>Starting in Nigeria · more countries next</p>
       </div>
       <div class="lp-uses">
-        <article class="reveal"><b>Online sellers</b><p>Buyers pay into escrow, so they trust you before the goods arrive.</p></article>
-        <article class="reveal"><b>Freelancers</b><p>Get paid per milestone. The client's money is locked before you start.</p></article>
-        <article class="reveal"><b>Families & friends</b><p>Run a saving circle where everyone sees who paid and who collects next.</p></article>
-        <article class="reveal"><b>Landlords & tenants</b><p>Hold rent or caution fees until keys are handed over.</p></article>
-        <article class="reveal"><b>Small businesses</b><p>Accept payments and escrow in your own app with our API.</p></article>
+        <article class="reveal"><i class="c1">${svg('<path d="M3 7h18l-2 12H5z"/><path d="M8 7a4 4 0 0 1 8 0"/>')}</i><span><b>Online sellers</b><small>Buyers trust you before delivery.</small></span></article>
+        <article class="reveal"><i class="c2">${svg('<rect x="3" y="5" width="18" height="12" rx="2"/><path d="M8 21h8M12 17v4"/>')}</i><span><b>Freelancers</b><small>Paid per milestone, funds locked first.</small></span></article>
+        <article class="reveal"><i class="c4">${svg(I.ajo)}</i><span><b>Saving circles</b><small>Ajo, susu, chama, done in the open.</small></span></article>
+        <article class="reveal"><i class="c3">${svg('<path d="M3 11 12 4l9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-5h4v5"/>')}</i><span><b>Rent & deposits</b><small>Held until the keys change hands.</small></span></article>
+        <article class="reveal"><i class="c5">${svg('<path d="m8 8-4 4 4 4M16 8l4 4-4 4"/>')}</i><span><b>Businesses</b><small>Escrow and checkout via our API.</small></span></article>
       </div>
     </section>
 

@@ -585,3 +585,18 @@ body:has(.lp) { background: #f7f7fc; }
 @media (max-width: 600px) { .lp-halo { width: 300px; height: 300px; box-shadow: 0 0 0 30px rgb(99 102 241 / .09), 0 0 0 31.5px rgb(99 102 241 / .35), 0 0 0 64px rgb(99 102 241 / .06), 0 0 0 65.5px rgb(99 102 241 / .22); } }
 @media (prefers-reduced-motion: no-preference) { .lp-halo { animation: halo-pulse 6s ease-in-out infinite; } }
 @keyframes halo-pulse { 50% { transform: translate(-50%, -50%) scale(1.03); } }
+
+/* Designed for real life v2: compact chips */
+.lp-uses { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; }
+.lp-uses article { display: flex; align-items: center; gap: 10px; padding: 12px; border-radius: 14px; }
+.lp-uses article > i { flex: none; display: grid; place-items: center; width: 34px; height: 34px; border-radius: 10px; }
+.lp-uses article > i svg { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.lp-uses article > span { min-width: 0; display: grid; gap: 2px; }
+.lp-uses b { margin: 0; font-size: .86rem; }
+.lp-uses small { color: var(--mute); font-size: .74rem; line-height: 1.35; }
+.lp-uses .c3 { background: #e0f2fe; color: #0284c7; }
+.lp-uses .c5 { background: #fef3c7; color: #b45309; }
+.lp-sub-note { display: inline-flex; align-items: center; gap: 8px; margin: 14px 0 0; padding: 5px 12px; border-radius: 999px; background: #fff; border: 1px solid var(--line); font-size: .78rem; color: var(--mute); }
+.lp-life2 .lp-head h2 { font-size: clamp(1.8rem, 3.4vw, 2.6rem); }
+@media (max-width: 1100px) { .lp-uses { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 640px) { .lp-uses { grid-template-columns: 1fr; gap: 8px; } }
