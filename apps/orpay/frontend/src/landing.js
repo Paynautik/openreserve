@@ -87,20 +87,20 @@ export function renderLanding(app, { onStart, onSignIn, signInLabel }) {
         <h2>Everything your money<br>needs to move safely.</h2>
       </div>
       <div class="lp-feats">
-        <article class="lp-feat reveal"><i class="c1">${svg(I.up)}</i><h3>Send in seconds</h3><p>Pay anyone by @username or QR. ₦20 flat, no surprises.</p></article>
-        <article class="lp-feat reveal"><i class="c2">${svg(I.down)}</i><h3>Get paid instantly</h3><p>Share your code and watch the money land in real time.</p></article>
-        <article class="lp-feat reveal"><i class="c4">${svg(I.ajo)}</i><h3>Ajo, done right</h3><p>Savings circles where everyone sees who paid and who's next.</p></article>
-        <article class="lp-feat wide reveal" id="escrow">
-          <div>
-            <i>${svg(I.escrow)}</i>
-            <h3>Escrow that protects both sides.</h3>
-            <p>The buyer's money is locked until they inspect the goods. Nobody can touch it, not even us.</p>
-            <a href="#how">See how it works →</a>
-          </div>
-          <div class="lp-feat-art" aria-hidden="true"><small>Held in escrow</small><b>₦420,000</b><span class="t-steps"><span class="on"></span><span class="on"></span><span class="now"></span><span></span></span></div>
-        </article>
-        <article class="lp-feat reveal"><i class="c3">${svg(I.eye)}</i><h3>Open by design</h3><p>Every pool and payment is on the public explorer. Your keys never leave your phone.</p></article>
+        <article class="lp-feat reveal"><i class="c1">${svg(I.up)}</i><h3>Send</h3><p>By @username or QR. ₦20 flat.</p></article>
+        <article class="lp-feat reveal"><i class="c2">${svg(I.down)}</i><h3>Receive</h3><p>Money lands in real time.</p></article>
+        <article class="lp-feat reveal"><i class="c4">${svg(I.ajo)}</i><h3>Ajo</h3><p>See who paid and who's next.</p></article>
+        <article class="lp-feat reveal"><i class="c3">${svg(I.eye)}</i><h3>Open</h3><p>Every payment on-chain.</p></article>
       </div>
+      <article class="lp-escrow reveal" id="escrow">
+        <div>
+          <span class="lp-escrow-tag">${svg(I.escrow)} Escrow</span>
+          <h3>Pay only when it arrives.</h3>
+          <p>Money stays locked until the buyer inspects. Not even we can touch it.</p>
+          <a href="#how">How it works →</a>
+        </div>
+        <div class="lp-feat-art" aria-hidden="true"><small>Held in escrow</small><b>₦420,000</b><span class="t-steps"><span class="on"></span><span class="on"></span><span class="now"></span><span></span></span><em>Shipped · awaiting inspection</em></div>
+      </article>
     </section>
 
     <section class="lp-how" id="how">
