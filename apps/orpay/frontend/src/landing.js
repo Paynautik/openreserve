@@ -172,6 +172,7 @@ export function renderLanding(app, { onStart, onSignIn, signInLabel }) {
       <span class="logo" aria-label="ORPay"><span class="logo-or">OR</span><span class="logo-pay">Pay</span></span>
       <span class="lp-proto"><img src="/favicon.png" alt="">Built on the <b>OpenReserve Protocol</b></span>
       <a href="/explorer.html">Explorer →</a>
+      <p class="lp-copy">© ${new Date().getFullYear()} Paynautik. ORPay is a Paynautik product.</p>
     </footer>
   </div>`
 
