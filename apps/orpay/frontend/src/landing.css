@@ -808,3 +808,42 @@ body.lp-dark-body { background: #070b1f !important; }
 @media (max-width: 960px) { .lp.y2050 .lp-cta-panel { flex-direction: column; } }
 .lp.dark.y2050 .lp-dark { background: #0b1030; }
 .lp.dark.y2050 .lp-biz li, .lp.dark.y2050 .lp-cta-panel, .lp.dark.y2050 .lp-netpill { background: #10163a; color: #c7d2fe; }
+
+/* 2050: strip, feature cards, escrow band (light, readable) */
+.lp.y2050 .lp-strip { background: transparent; border: 0; }
+.lp.y2050 .lp-strip .lp-wrap { gap: 10px; }
+.lp.y2050 .lp-strip span { padding: 7px 14px; border-radius: 999px; background: #fff; box-shadow: inset 0 0 0 1px #c7d2fe, 0 8px 20px -16px rgb(79 70 229 / .6); font: 600 .74rem/1 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .06em; text-transform: uppercase; color: #3730a3; }
+.lp.y2050 .lp-strip svg { color: #4f46e5; }
+
+.lp.y2050 .lp-feat { position: relative; isolation: isolate; border: 0; background: #fff; box-shadow: inset 0 0 0 1px var(--line), 0 12px 28px -24px rgb(79 70 229 / .5); counter-increment: feat; }
+.lp.y2050 .lp-feats { counter-reset: feat; }
+.lp.y2050 .lp-feat::after { content: "0" counter(feat); position: absolute; top: 10px; right: 12px; font: 600 .62rem/1 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .1em; color: #a5b4fc; }
+.lp.y2050 .lp-feat::before { content: ""; position: absolute; inset: 0; z-index: -1; border-radius: inherit; padding: 1px; background: conic-gradient(from var(--a, 0deg), #6366f1, #22d3ee, #a855f7, #6366f1); -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude; opacity: 0; transition: opacity .3s; animation: b-spin 8s linear infinite; }
+.lp.y2050 .lp-feat:hover::before { opacity: 1; }
+.lp.y2050 .lp-feat:hover { transform: translateY(-3px); box-shadow: 0 18px 36px -24px rgb(79 70 229 / .65); }
+
+.lp.y2050 .lp-escrow { position: relative; isolation: isolate; color: var(--ink); background: radial-gradient(60% 120% at 100% 0%, rgb(34 211 238 / .12), transparent 60%), radial-gradient(50% 120% at 0% 100%, rgb(139 92 246 / .12), transparent 60%), #fff; box-shadow: 0 24px 50px -34px rgb(79 70 229 / .6); }
+.lp.y2050 .lp-escrow::after { background-image: linear-gradient(rgb(79 70 229 / .05) 1px, transparent 1px), linear-gradient(90deg, rgb(79 70 229 / .05) 1px, transparent 1px); }
+.lp.y2050 .lp-escrow::before { content: ""; position: absolute; inset: 0; border-radius: inherit; padding: 1.5px; background: conic-gradient(from var(--a, 0deg), #6366f1, #22d3ee, #a855f7, #6366f1); -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude; animation: b-spin 8s linear infinite; pointer-events: none; z-index: 2; }
+.lp.y2050 .lp-escrow h3 { color: var(--ink); }
+.lp.y2050 .lp-escrow p { color: #475569; }
+.lp.y2050 .lp-escrow a { color: #4f46e5; }
+.lp.y2050 .lp-escrow-tag { background: #eef2ff; color: #4338ca; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .06em; text-transform: uppercase; font-size: .66rem; }
+.lp.y2050 .lp-escrow-flow li { color: #64748b; }
+.lp.y2050 .lp-escrow-flow .done, .lp.y2050 .lp-escrow-flow .now { color: var(--ink); }
+.lp.y2050 .lp-escrow-flow i { border-color: #cbd5e1; }
+.lp.y2050 .lp-escrow-flow li + li::before { background: #e2e8f0; }
+.lp.y2050 .lp-escrow-flow li.done + li::before { background: #10b981; }
+.lp.y2050 .lp-escrow-flow .now i { border-color: #06b6d4; box-shadow: 0 0 0 4px rgb(6 182 212 / .15); }
+.lp.y2050 .lp-escrow .lp-feat-art { background: #f5f7ff; box-shadow: inset 0 0 0 1px #e0e7ff; }
+.lp.y2050 .lp-escrow .lp-feat-art small, .lp.y2050 .lp-escrow .lp-feat-art em { color: #64748b; }
+.lp.y2050 .lp-escrow .lp-feat-art b { color: var(--ink); }
+.lp.y2050 .lp-escrow .t-steps span { background: #e2e8f0; }
+.lp.y2050 .lp-escrow .t-steps .on { background: #10b981; }
+
+/* dark theme versions stay dark */
+.lp.dark.y2050 .lp-strip span, .lp.dark.y2050 .lp-feat, .lp.dark.y2050 .lp-escrow { background: #10163a; color: #eef0ff; }
+.lp.dark.y2050 .lp-escrow h3 { color: #fff; }
+.lp.dark.y2050 .lp-escrow p, .lp.dark.y2050 .lp-escrow-flow li { color: #c3c9e6; }
+.lp.dark.y2050 .lp-escrow .lp-feat-art { background: #0b1030; }
+.lp.dark.y2050 .lp-escrow .lp-feat-art b { color: #fff; }
