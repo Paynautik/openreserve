@@ -205,7 +205,13 @@ export function renderLanding(app, { onStart, onSignIn, signInLabel }) {
           </ul>
           <button class="lp-btn white" data-start>Request API access</button>
         </div>
-        <pre class="lp-code"><code><span class="k">import</span> { ORPay } <span class="k">from</span> <span class="s">'@openreservepolicy/orpay'</span>
+        <div class="lp-term">
+          <div class="lp-term-bar"><i></i><i></i><i></i>
+            <div class="lp-term-tabs" role="tablist" aria-label="Code language">
+              <button role="tab" data-code="js" aria-selected="true">JavaScript</button><button role="tab" data-code="py" aria-selected="false">Python</button><button role="tab" data-code="curl" aria-selected="false">cURL</button>
+            </div>
+          </div>
+        <pre class="lp-code" data-code-body="js"><code><span class="k">import</span> { ORPay } <span class="k">from</span> <span class="s">'@openreservepolicy/orpay'</span>
 
 <span class="k">const</span> orpay = <span class="k">new</span> ORPay({ apiKey: process.env.ORPAY_KEY })
 
@@ -215,16 +221,38 @@ export function renderLanding(app, { onStart, onSignIn, signInLabel }) {
   milestones: [{ label: <span class="s">'Item'</span>, amount: <span class="s">'420000'</span> }],
 })
 <span class="c">// the buyer funds escrow.url</span></code></pre>
+          <pre class="lp-code" data-code-body="py" hidden><code><span class="k">from</span> orpay <span class="k">import</span> ORPay
+
+orpay = ORPay(api_key=os.environ[<span class="s">"ORPAY_KEY"</span>])
+
+escrow = orpay.create_escrow(
+    seller=<span class="s">"@gadgethub"</span>, currency=<span class="s">"NGN"</span>,
+    description=<span class="s">"iPhone 14"</span>,
+    milestones=[{<span class="s">"label"</span>: <span class="s">"Item"</span>, <span class="s">"amount"</span>: <span class="s">"420000"</span>}],
+)
+<span class="c"># the buyer funds escrow["funding_url"]</span></code></pre>
+          <pre class="lp-code" data-code-body="curl" hidden><code>curl -X POST $ORPAY_URL/api/v1/escrows \
+  -H <span class="s">"Authorization: Bearer $ORPAY_KEY"</span> \
+  -d <span class="s">'{"seller":"@gadgethub","currency":"NGN",
+       "description":"iPhone 14",
+       "milestones":[{"label":"Item","amount":"420000"}]}'</span>
+<span class="c"># → { "funding_url": "…" }</span></code></pre>
+          <div class="lp-term-foot"><span class="b-live"></span>sandbox keys · signed webhooks · test without money</div>
+        </div>
       </div>
     </section>
 
     <section class="lp-wrap lp-cta-sec">
       <div class="lp-cta-panel">
         <div>
+          <span class="lp-tagline lp-only-2050">READY WHEN YOU ARE</span>
           <h2>Make your next payment a safe one.</h2>
           <p>Open a free wallet in under a minute.</p>
         </div>
-        <button class="lp-btn ink lg" data-start>Create a free wallet</button>
+        <div class="lp-cta-btns">
+          <button class="lp-btn ink lg" data-start>Create a free wallet</button>
+          <a class="lp-btn ghost lg lp-only-2050" href="/?demo">Try the demo</a>
+        </div>
       </div>
     </section>
 
@@ -232,6 +260,7 @@ export function renderLanding(app, { onStart, onSignIn, signInLabel }) {
       <span class="logo" aria-label="ORPay"><span class="logo-or">OR</span><span class="logo-pay">Pay</span></span>
       <span class="lp-proto"><img src="/favicon.png" alt="">Built on the <b>OpenReserve Protocol</b></span>
       <a href="/explorer.html">Explorer →</a>
+      <span class="lp-netpill lp-only-2050"><i class="b-live"></i><span id="lp-net">Network live</span></span>
       <p class="lp-copy">© ${new Date().getFullYear()} Paynautik. ORPay is a Paynautik product.</p>
     </footer>
   </div>`
@@ -239,6 +268,7 @@ export function renderLanding(app, { onStart, onSignIn, signInLabel }) {
   app.querySelectorAll('[data-start]').forEach((b) => (b.onclick = onStart))
   escrowDemo(app)
   themeToggle(app)
+  codeTabs(app)
   circlesDemo(app)
   phoneSwitcher(app)
   const menu = app.querySelector('#lp-menu'), links = app.querySelector('.lp-links')
@@ -424,4 +454,16 @@ function liveLedger(app) {
   }
   tick()
   setInterval(tick, 8000)
+}
+
+// JavaScript / Python / cURL tabs on the developer code sample.
+function codeTabs(app) {
+  const tabs = [...app.querySelectorAll('[data-code]')]
+  tabs.forEach((t) => (t.onclick = () => {
+    tabs.forEach((x) => x.setAttribute('aria-selected', String(x === t)))
+    app.querySelectorAll('[data-code-body]').forEach((b) => (b.hidden = b.dataset.codeBody !== t.dataset.code))
+  }))
+  const net = app.querySelector('#lp-net')
+  if (net)
+    fetch(API_BASE + '/v1/status').then((r) => r.json()).then((s) => (net.textContent = `${/devnet|testnet/.test(s.chain_id) ? 'Test network' : 'Network'} · block ${s.height.toLocaleString('en-NG')}`)).catch(() => (net.textContent = 'Network launching'))
 }
