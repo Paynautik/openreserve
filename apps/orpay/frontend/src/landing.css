@@ -741,3 +741,33 @@ body.lp-dark-body { background: #070b1f !important; }
 .lp.y2050 .lp-uses article:last-child { grid-column: auto; }
 @media (prefers-reduced-motion: reduce) { .lp.y2050 .lp-uses { animation: none; } .lp.y2050 .lp-ribbon { overflow-x: auto; } }
 .lp.y2050 .lp-bento article { padding-top: 44px; }
+
+/* 2050 v2: light, readable, one row */
+.lp.y2050 .lp-bento { grid-template-columns: repeat(6, minmax(0, 1fr)); grid-auto-rows: auto; gap: 10px; }
+.lp.y2050 .b-hero, .lp.y2050 .b-fee { grid-column: auto; grid-row: auto; }
+.lp.y2050 .lp-bento article { justify-content: flex-start; gap: 6px; min-height: 150px; padding: 40px 16px 16px; border-radius: 18px; background: #fff; color: var(--ink); box-shadow: 0 1px 2px rgb(15 23 42 / .04), 0 14px 30px -24px rgb(79 70 229 / .45); }
+.lp.y2050 .lp-bento article::before { opacity: .9; }
+.lp.y2050 .lp-bento article::after { inset: auto -40% -70% auto; background: radial-gradient(circle, rgb(99 102 241 / .10), transparent 65%); }
+.lp.y2050 .b-tag { top: 14px; left: 16px; color: #4f46e5; font-size: .62rem; }
+.lp.y2050 .lp-bento strong, .lp.y2050 .b-hero strong { font-size: clamp(1.3rem, 2vw, 1.7rem); background: linear-gradient(90deg, #0b1030, #4338ca); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.lp.y2050 .lp-bento small { color: #475569; font-size: .76rem; line-height: 1.35; }
+.lp.y2050 .b-hero small { order: 2; }
+.lp.y2050 .lp-bento em { display: none; }
+.lp.y2050 .lp-bento a { color: #4f46e5; font-weight: 600; }
+.lp.y2050 .b-hero { background: linear-gradient(180deg, #f5f7ff, #fff); }
+@media (max-width: 1100px) { .lp.y2050 .lp-bento { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 560px) { .lp.y2050 .lp-bento { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+/* ribbon cards: light glass */
+.lp.y2050 .lp-uses article { background: #fff; color: var(--ink); box-shadow: inset 0 0 0 1px var(--line), 0 14px 30px -24px color-mix(in srgb, var(--tint) 70%, transparent); }
+.lp.y2050 .lp-uses article > i { background: color-mix(in srgb, var(--tint) 12%, #fff); color: var(--tint); box-shadow: none; }
+.lp.y2050 .lp-uses b { color: var(--ink); }
+.lp.y2050 .lp-uses small { color: #475569; }
+.lp.y2050 .lp-sub-note { background: #fff; color: #4f46e5; border-color: #c7d2fe; }
+
+/* dark theme keeps dark tiles, with readable contrast */
+.lp.dark.y2050 .lp-bento article, .lp.dark.y2050 .lp-uses article { background: #10163a; color: #eef0ff; }
+.lp.dark.y2050 .lp-bento strong { background: linear-gradient(90deg, #fff, #c7d2fe); -webkit-background-clip: text; background-clip: text; }
+.lp.dark.y2050 .lp-bento small, .lp.dark.y2050 .lp-uses small { color: #c3c9e6; }
+.lp.dark.y2050 .lp-uses b { color: #fff; }
+.lp.dark.y2050 .b-tag, .lp.dark.y2050 .lp-bento a { color: #a5b4fc; }

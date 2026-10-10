@@ -163,7 +163,7 @@ export function renderLanding(app, { onStart, onSignIn, signInLabel }) {
         <h2>Always know where<br>your money is.</h2>
       </div>
       <div class="lp-bento" aria-label="Live from the OpenReserve ledger">
-        <article class="b-hero"><span class="b-tag"><i class="b-live"></i>LIVE · ON-CHAIN</span><small>Held safely in escrow right now</small><strong data-stat="held">—</strong><em>Not in anyone's account. Not even ours.</em></article>
+        <article class="b-hero"><span class="b-tag"><i class="b-live"></i>LIVE</span><strong data-stat="held">—</strong><small>held in escrow now, in no one's account</small><em>Not in anyone's account. Not even ours.</em></article>
         <article><span class="b-tag">AJO</span><strong data-stat="saving">—</strong><small>saving in circles</small></article>
         <article><span class="b-tag">DEALS</span><strong data-stat="completed">—</strong><small>escrows completed</small></article>
         <article><span class="b-tag">ARBITERS</span><strong data-stat="resolved">—</strong><small>disputes settled on the record</small></article>
