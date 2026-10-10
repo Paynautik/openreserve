@@ -21,32 +21,30 @@ export function renderLanding(app, { onStart, onSignIn, signInLabel }) {
     <nav class="lp-nav">
       <a class="logo" href="#top" aria-label="ORPay"><span class="logo-or">OR</span><span class="logo-pay">Pay</span></a>
       <div class="lp-links">
-        <a href="#product">Product</a><a href="#escrow">Escrow</a><a href="#developers">Developers</a><a href="/explorer.html">Explorer</a>
+        <a href="#product">Product</a><a href="#escrow">Escrow</a><a href="#developers">Developers</a><a href="/explorer.html">Explorer</a><a href="#" class="lp-menu-only" data-signin>${signInLabel}</a>
       </div>
       <div class="lp-nav-cta">
         <button class="lp-btn ghost" data-signin>${signInLabel}</button>
         <button class="lp-btn ink" data-start>Get started</button>
+        <button class="lp-menu" id="lp-menu" aria-label="Open menu" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
       </div>
     </nav>
 
     <section class="lp-hero" id="top">
-      <div class="lp-glow"></div>
-      <div class="lp-wrap lp-hero-grid">
-        <div>
+            <div class="lp-wrap lp-hero-grid">
+        <div class="lp-hero-copy">
           <span class="lp-pill"><span class="dot on"></span><span id="lp-live">Live on the OpenReserve network</span></span>
-          <h1>Payments without<br><span class="lp-grad">the uncertainty.</span></h1>
-          <ul class="lp-triad">
-            <li><span>01</span>Send money.</li>
-            <li><span>02</span>Protect transactions.</li>
-            <li><span>03</span>Release when it's done.</li>
-          </ul>
+          <h1>Money moves.<br><span class="lp-grad">Trust stays.</span></h1>
+          <p class="lp-lead">Send naira, save with your ajo and buy safely with escrow. Every payment is visible on-chain.</p>
           <div class="lp-cta">
-            <button class="lp-btn ink lg" data-start>Get started</button>
-            <a class="lp-btn ghost lg" href="#escrow">Explore escrow</a>
+            <button class="lp-btn ink lg" data-start>Get started free</button>
+            <a class="lp-btn ghost lg" href="#how">How escrow works</a>
           </div>
+          <p class="lp-built"><img src="/favicon.png" alt="">Built on the <b>OpenReserve Protocol</b> · ₦20 flat fee</p>
         </div>
 
         <div class="lp-phone-wrap" aria-hidden="true">
+          <span class="lp-halo"></span>
           <div class="lp-phone">
             <i class="side a"></i><i class="side b"></i><i class="side c"></i><i class="side d"></i>
             <div class="lp-screen">
@@ -83,51 +81,39 @@ export function renderLanding(app, { onStart, onSignIn, signInLabel }) {
       </div>
     </section>
 
-    <section class="lp-wrap lp-sec center" id="product">
-      <h2>One payment.<br><span class="lp-grad">Every step visible.</span></h2>
-      <div class="lp-trio">
-        <article class="reveal t-send">
-          <div class="t-visual">
-            <div class="t-chip"><span class="t-av" style="--h:262">AO</span><span><b>@adaeze</b><small>Friend</small></span></div>
-            <div class="t-amount">₦25,000</div>
-            <div class="t-pay">Send ${svg(I.up)}</div>
+    <section class="lp-wrap lp-sec" id="product">
+      <div class="lp-head">
+        <p class="lp-kicker">Less doubt. More doing.</p>
+        <h2>Everything your money<br>needs to move safely.</h2>
+      </div>
+      <div class="lp-feats">
+        <article class="lp-feat reveal"><i class="c1">${svg(I.up)}</i><h3>Send in seconds</h3><p>Pay anyone by @username or QR. ₦20 flat, no surprises.</p></article>
+        <article class="lp-feat reveal"><i class="c2">${svg(I.down)}</i><h3>Get paid instantly</h3><p>Share your code and watch the money land in real time.</p></article>
+        <article class="lp-feat reveal"><i class="c4">${svg(I.ajo)}</i><h3>Ajo, done right</h3><p>Savings circles where everyone sees who paid and who's next.</p></article>
+        <article class="lp-feat wide reveal" id="escrow">
+          <div>
+            <i>${svg(I.escrow)}</i>
+            <h3>Escrow that protects both sides.</h3>
+            <p>The buyer's money is locked until they inspect the goods. Nobody can touch it, not even us.</p>
+            <a href="#how">See how it works →</a>
           </div>
-          <div class="t-head"><i class="c1">${svg(I.up)}</i><h3>Send</h3></div><p>Pay anyone by @username or QR in seconds.</p>
+          <div class="lp-feat-art" aria-hidden="true"><small>Held in escrow</small><b>₦420,000</b><span class="t-steps"><span class="on"></span><span class="on"></span><span class="now"></span><span></span></span></div>
         </article>
-        <article class="reveal t-escrow feature">
-          <div class="t-visual">
-            <div class="t-lock">${svg('<rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>')}</div>
-            <div class="t-held"><small>Held in escrow</small><b>₦420,000</b></div>
-            <div class="t-steps"><span class="on"></span><span class="on"></span><span class="now"></span><span></span></div>
-          </div>
-          <div class="t-head"><i class="c3">${svg(I.escrow)}</i><h3>Escrow</h3></div><p>Money waits until the goods arrive.</p>
-        </article>
-        <article class="reveal t-recv">
-          <div class="t-visual">
-            <div class="t-note"><span class="t-ok">${svg(I.down)}</span><span><b>Payment received</b><small>from @tunde · just now</small></span><em>+₦45,000</em></div>
-            <div class="t-note ghost"><span class="t-ok">${svg(I.down)}</span><span><b>Ajo payout</b><small>Market women ajo</small></span><em>+₦60,000</em></div>
-          </div>
-          <div class="t-head"><i class="c2">${svg(I.down)}</i><h3>Receive</h3></div><p>Get paid and see it land instantly.</p>
-        </article>
+        <article class="lp-feat reveal"><i class="c3">${svg(I.eye)}</i><h3>Open by design</h3><p>Every pool and payment is on the public explorer. Your keys never leave your phone.</p></article>
       </div>
     </section>
 
-    <section class="lp-life" id="escrow">
-      <div class="lp-wrap lp-sec center">
-        <p class="lp-eyebrow light">Escrow lifecycle</p>
-        <h2>From pending to released.</h2>
-        <div class="lp-flow reveal">
-          <div class="lp-flow-card">
-            <div class="lp-flow-top"><span><small>Escrow payment</small><b>iPhone 14 Pro</b></span><strong>₦420,000</strong></div>
-            <ol class="lp-flow-steps">
-              <li class="done"><i>${svg(I.check)}</i><b>Pending</b><small>Terms accepted</small></li>
-              <li class="done"><i>${svg(I.check)}</i><b>Funded</b><small>Money locked</small></li>
-              <li class="now"><i></i><b>Shipped</b><small>On its way</small></li>
-              <li><i></i><b>Released</b><small>Seller paid</small></li>
-            </ol>
-          </div>
+    <section class="lp-steps" id="how">
+      <div class="lp-wrap lp-sec">
+        <div class="lp-head">
+          <p class="lp-kicker">Escrow in three steps</p>
+          <h2>From deal to done.</h2>
         </div>
-        <p class="lp-sub light">Nobody can move locked money. Not the seller, not the buyer, not us. Disputes go to a neutral arbiter.</p>
+        <div class="lp-step-grid">
+          <article><span>01 / AGREE</span><h3>Set the terms</h3><p>The seller shares a link with the price and milestones. The buyer reviews and accepts.</p></article>
+          <article><span>02 / LOCK</span><h3>Money is held</h3><p>Funds lock on-chain. The seller ships knowing the money is real.</p></article>
+          <article><span>03 / RELEASE</span><h3>Inspect, then pay</h3><p>The buyer checks the goods and releases. Problems go to a neutral arbiter.</p></article>
+        </div>
       </div>
     </section>
 
@@ -156,20 +142,13 @@ export function renderLanding(app, { onStart, onSignIn, signInLabel }) {
       </div>
     </section>
 
-    <section class="lp-wrap">
-      <div class="lp-final v2">
-        <span class="lp-pill dark"><span class="dot on"></span>Live on the OpenReserve network</span>
-        <h2>Money you can <span class="lp-grad light">see and trust.</span></h2>
-        <p>Start saving with your circle or selling with escrow in under a minute.</p>
-        <div class="f-cta">
-          <button class="lp-btn white lg" data-start>Create a free wallet</button>
-          <a class="lp-btn glass lg" href="#developers">For businesses →</a>
+    <section class="lp-wrap lp-cta-sec">
+      <div class="lp-cta-panel">
+        <div>
+          <h2>Make your next payment a safe one.</h2>
+          <p>Open a free wallet in under a minute.</p>
         </div>
-        <ul class="f-stats">
-          <li><b>₦20</b><span>flat fee</span></li>
-          <li><b>0</b><span>keys we hold</span></li>
-          <li><b>100%</b><span>on-chain proof</span></li>
-        </ul>
+        <button class="lp-btn ink lg" data-start>Create a free wallet</button>
       </div>
     </section>
 
@@ -181,7 +160,10 @@ export function renderLanding(app, { onStart, onSignIn, signInLabel }) {
   </div>`
 
   app.querySelectorAll('[data-start]').forEach((b) => (b.onclick = onStart))
-  app.querySelectorAll('[data-signin]').forEach((b) => (b.onclick = onSignIn))
+  const menu = app.querySelector('#lp-menu'), links = app.querySelector('.lp-links')
+  menu.onclick = () => menu.setAttribute('aria-expanded', String(links.classList.toggle('open')))
+  links.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => (links.classList.remove('open'), menu.setAttribute('aria-expanded', 'false'))))
+  app.querySelectorAll('[data-signin]').forEach((b) => (b.onclick = (e) => (e.preventDefault(), onSignIn())))
 
   const io = 'IntersectionObserver' in window && new IntersectionObserver((es) => es.forEach((e) => e.isIntersecting && (e.target.classList.add('in'), io.unobserve(e.target))), { threshold: 0.15 })
   app.querySelectorAll('.reveal').forEach((el, i) => (io ? ((el.style.transitionDelay = `${(i % 4) * 70}ms`), io.observe(el)) : el.classList.add('in')))
