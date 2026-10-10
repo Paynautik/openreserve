@@ -978,3 +978,24 @@ body.lp-dark-body { background: #070b1f !important; }
 /* Rings back to the original look (orbit removed); still centred on the phone */
 .lp.y2050 .lp-halo, .lp .lp-halo { width: 400px; height: 400px; border: 1px solid rgb(99 102 241 / .22); background: none; box-shadow: 0 0 0 40px rgb(99 102 241 / .05), 0 0 0 84px rgb(99 102 241 / .03); animation: none; }
 @media (max-width: 600px) { .lp.y2050 .lp-halo, .lp .lp-halo { width: 300px; height: 300px; } }
+
+/* 2050 phone screen */
+.lp.y2050 .lp-screen { background: linear-gradient(180deg, #f8f9ff, #fff 40%); }
+.lp.y2050 .lp-demo-tag { display: inline-flex; align-items: center; gap: 6px; background: #fff; box-shadow: inset 0 0 0 1px #c7d2fe; font: 700 .56rem/1 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .08em; color: #4338ca; }
+.lp.y2050 .lp-demo-tag::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: #34d399; animation: b-pulse 1.8s infinite; }
+.lp.y2050 .lp-demo-prod { background: #fff; box-shadow: inset 0 0 0 1px #e0e7ff, 0 0 18px -6px rgb(99 102 241 / .6); }
+.lp.y2050 .lp-held { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .58rem; letter-spacing: .06em; text-transform: uppercase; padding: 2px 6px; border-radius: 999px; background: #ecfdf5; }
+.lp.y2050 .lp-demo-amt { position: relative; isolation: isolate; overflow: hidden; background: linear-gradient(135deg, #1e1b4b, #4338ca 65%, #0e7490); }
+.lp.y2050 .lp-demo-amt::before { content: ""; position: absolute; inset: 0; z-index: -1; background-image: linear-gradient(rgb(255 255 255 / .06) 1px, transparent 1px), linear-gradient(90deg, rgb(255 255 255 / .06) 1px, transparent 1px); background-size: 18px 18px; }
+.lp.y2050 .lp-demo-amt::after { content: ""; position: absolute; inset: 0; border-radius: inherit; padding: 1.5px; background: conic-gradient(from var(--a, 0deg), #a5b4fc, #22d3ee, #c084fc, #a5b4fc); -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude; animation: b-spin 8s linear infinite; pointer-events: none; }
+.lp.y2050 .lp-demo-amt small { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .08em; text-transform: uppercase; font-size: .56rem; }
+.lp.y2050 .lp-demo-steps li { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .52rem; letter-spacing: .06em; text-transform: uppercase; }
+.lp.y2050 .lp-demo-steps li.done::before { box-shadow: 0 0 8px rgb(16 185 129 / .6); }
+.lp.y2050 .lp-demo-steps li.now::before { background: #22d3ee; box-shadow: 0 0 8px rgb(34 211 238 / .7); animation: lp-step 1.6s ease-in-out infinite; }
+@keyframes lp-step { 50% { opacity: .45; } }
+.lp.y2050 .lp-demo-btn { background: #0b1030; box-shadow: 0 0 0 1px rgb(99 102 241 / .45), 0 8px 20px -8px rgb(99 102 241 / .7), 0 0 26px -10px rgb(34 211 238 / .7); }
+.lp.y2050 .lp-demo-feed p { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .56rem; letter-spacing: .12em; color: #6366f1; }
+.lp.y2050 .lp-demo-feed div { background: #fff; box-shadow: inset 0 0 0 1px #eef0f7; }
+.lp.y2050 .lp-demo-feed em { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .64rem; }
+.lp.y2050 .lp-demo-feed i { border-radius: 50%; }
+@media (prefers-reduced-motion: reduce) { .lp.y2050 .lp-demo-amt::after, .lp.y2050 .lp-demo-steps li.now::before, .lp.y2050 .lp-demo-tag::before { animation: none; } }
