@@ -43,28 +43,24 @@ export function renderLanding(app, { onStart, onSignIn, signInLabel }) {
           <p class="lp-built"><img src="/favicon.png" alt="">Built on the <b>OpenReserve Protocol</b> · ₦20 flat fee</p>
         </div>
 
-        <div class="lp-phone-wrap" aria-hidden="true">
+        <div class="lp-phone-wrap">
           <span class="lp-halo"></span>
           <div class="lp-phone">
             <i class="side a"></i><i class="side b"></i><i class="side c"></i><i class="side d"></i>
             <div class="lp-screen">
               <div class="lp-status"><b>9:41</b><span class="island"></span><span class="lp-sig"><i></i><i></i><i></i><i></i><span class="batt"><span></span></span></span></div>
               <div class="lp-apphead"><span class="logo"><span class="logo-or">OR</span><span class="logo-pay">Pay</span></span><span class="me">RG</span></div>
-              <div class="lp-bal">
-                <small>Available balance</small>
-                <strong>₦248,500</strong>
-                <span>+₦45,000 today</span>
+              <div class="lp-demo" id="lp-demo">
+                <div class="lp-demo-tag">Interactive demo · no real money</div>
+                <div class="lp-demo-item"><span class="lp-demo-thumb">${svg(I.escrow)}</span><span><b>iPhone 14 Pro</b><small>Seller: @gadgethub</small></span></div>
+                <div class="lp-demo-amt"><small id="lp-demo-label">Price</small><strong>₦420,000</strong></div>
+                <ol class="lp-demo-steps" id="lp-demo-steps">
+                  <li>Agreed</li><li>Funded</li><li>Shipped</li><li>Released</li>
+                </ol>
+                <p class="lp-demo-msg" id="lp-demo-msg" aria-live="polite"></p>
+                <button class="lp-demo-btn" id="lp-demo-btn" type="button"></button>
               </div>
-              <div class="lp-actions">
-                <span><i class="c1">${svg(I.up)}</i>Send</span>
-                <span><i class="c2">${svg(I.down)}</i>Receive</span>
-                <span><i class="c3">${svg(I.escrow)}</i>Escrow</span>
-                <span><i class="c4">${svg(I.ajo)}</i>Circles</span>
-              </div>
-              <div class="lp-recent-head"><b>Recent activity</b><span>See all</span></div>
-              <div class="lp-tx"><i class="in">${svg(I.down)}</i><span><b>Circle payout</b><small>Today · 9:42 AM</small></span><em class="pos">+₦45,000</em></div>
-              <div class="lp-tx"><i class="out">${svg(I.escrow)}</i><span><b>Escrow · iPhone 14</b><small>Yesterday · 4:20 PM</small></span><em>−₦42,000</em></div>
-              <div class="lp-tabs"><span class="on">Home</span><span>Circles</span><span>Escrow</span><span>Profile</span></div>
+              <div class="lp-tabs"><span>Home</span><span>Circles</span><span class="on">Escrow</span><span>Profile</span></div>
               <span class="home-ind"></span>
             </div>
           </div>
@@ -107,6 +103,20 @@ export function renderLanding(app, { onStart, onSignIn, signInLabel }) {
         </ol>
         <div class="lp-feat-art" aria-hidden="true"><small>Held in escrow</small><b>₦420,000</b><span class="t-steps"><span class="on"></span><span class="on"></span><span class="now"></span><span></span></span><em>Shipped · awaiting inspection</em></div>
       </article>
+    </section>
+
+    <section class="lp-wrap lp-sec lp-life2" id="uses">
+      <div class="lp-head">
+        <p class="lp-kicker">Designed for real life</p>
+        <h2>Built for how Nigerians<br>actually pay and save.</h2>
+      </div>
+      <div class="lp-uses">
+        <article class="reveal"><b>Online sellers</b><p>Buyers pay into escrow, so they trust you before the goods arrive.</p></article>
+        <article class="reveal"><b>Freelancers</b><p>Get paid per milestone. The client's money is locked before you start.</p></article>
+        <article class="reveal"><b>Families & friends</b><p>Run a saving circle where everyone sees who paid and who collects next.</p></article>
+        <article class="reveal"><b>Landlords & tenants</b><p>Hold rent or caution fees until keys are handed over.</p></article>
+        <article class="reveal"><b>Small businesses</b><p>Accept payments and escrow in your own app with our API.</p></article>
+      </div>
     </section>
 
     <section class="lp-how" id="how">
@@ -166,6 +176,7 @@ export function renderLanding(app, { onStart, onSignIn, signInLabel }) {
   </div>`
 
   app.querySelectorAll('[data-start]').forEach((b) => (b.onclick = onStart))
+  escrowDemo(app)
   const menu = app.querySelector('#lp-menu'), links = app.querySelector('.lp-links')
   menu.onclick = () => menu.setAttribute('aria-expanded', String(links.classList.toggle('open')))
   links.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => (links.classList.remove('open'), menu.setAttribute('aria-expanded', 'false'))))
@@ -178,4 +189,31 @@ export function renderLanding(app, { onStart, onSignIn, signInLabel }) {
     const el = document.getElementById('lp-live')
     if (el && st.height > 0) el.textContent = `Live on OpenReserve · block ${st.height.toLocaleString()}`
   }).catch(() => {})
+}
+
+// Hero phone: click through a simulated escrow deal. Nothing is sent.
+function escrowDemo(app) {
+  const steps = [
+    { label: 'Price', msg: 'You and @gadgethub agreed the price and terms.', btn: 'Pay into escrow' },
+    { label: 'Held in escrow', msg: 'Your ₦420,000 is locked. The seller can see it but cannot touch it.', btn: 'Seller ships it →' },
+    { label: 'Held in escrow', msg: 'Shipped with GIG Logistics. Inspect it when it arrives.', btn: 'Inspect and release' },
+    { label: 'Paid to seller', msg: 'You approved the phone, so the seller got paid. Problem? You could have opened a dispute instead.', btn: 'Replay demo' },
+  ]
+  const lis = [...app.querySelectorAll('#lp-demo-steps li')]
+  const btn = app.querySelector('#lp-demo-btn')
+  if (!btn) return
+  let at = 0
+  const show = () => {
+    lis.forEach((li, i) => li.classList.toggle('done', i <= at))
+    lis.forEach((li, i) => li.classList.toggle('now', i === at + 1 && at < 3))
+    app.querySelector('#lp-demo-label').textContent = steps[at].label
+    app.querySelector('#lp-demo-msg').textContent = steps[at].msg
+    btn.textContent = steps[at].btn
+    app.querySelector('#lp-demo').classList.toggle('released', at === 3)
+  }
+  btn.onclick = () => {
+    at = at === 3 ? 0 : at + 1
+    show()
+  }
+  show()
 }

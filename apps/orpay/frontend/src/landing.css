@@ -513,3 +513,37 @@ body:has(.lp) { background: #f7f7fc; }
 .lp-hero-grid > * { min-width: 0; }
 @media (max-width: 960px) { .lp-hero-grid { grid-template-columns: minmax(0, 1fr); } }
 @media (max-width: 400px) { .lp-hero h1 { font-size: 2.6rem; } .lp-built { flex-wrap: wrap; justify-content: center; } }
+
+/* Hero escrow demo (inside the phone) */
+.lp-demo { margin: 6px 4px 0; display: grid; gap: 10px; }
+.lp-demo-tag { justify-self: start; font-size: .62rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: #6366f1; background: #eef2ff; border-radius: 999px; padding: 4px 8px; }
+.lp-demo-item { display: flex; align-items: center; gap: 10px; }
+.lp-demo-thumb { width: 38px; height: 38px; border-radius: 12px; display: grid; place-items: center; background: #eef2ff; color: #4f46e5; }
+.lp-demo-thumb svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; }
+.lp-demo-item b { display: block; font-size: .85rem; }
+.lp-demo-item small { color: #64748b; font-size: .7rem; }
+.lp-demo-amt { border-radius: 16px; padding: 12px 14px; color: #fff; background: radial-gradient(120% 140% at 100% 0%, rgb(34 211 238 / .3), transparent 50%), linear-gradient(135deg, #1e1b4b, #4338ca); transition: background .4s; }
+.lp-demo.released .lp-demo-amt { background: linear-gradient(135deg, #065f46, #10b981); }
+.lp-demo-amt small { display: block; font-size: .68rem; opacity: .8; }
+.lp-demo-amt strong { font-size: 1.45rem; letter-spacing: -.03em; font-variant-numeric: tabular-nums; }
+.lp-demo-steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; counter-reset: s; }
+.lp-demo-steps li { position: relative; padding-top: 10px; font-size: .6rem; font-weight: 600; color: #94a3b8; text-align: center; }
+.lp-demo-steps li::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 4px; border-radius: 4px; background: #e2e8f0; transition: background .3s; }
+.lp-demo-steps li.done { color: #0f172a; }
+.lp-demo-steps li.done::before { background: #10b981; }
+.lp-demo-steps li.now::before { background: linear-gradient(90deg, #67e8f9, #e2e8f0); }
+.lp-demo-msg { margin: 0; min-height: 3.2em; font-size: .72rem; line-height: 1.45; color: #475569; }
+.lp-demo-btn { border: 0; border-radius: 12px; padding: 11px; font: inherit; font-size: .8rem; font-weight: 700; color: #fff; background: #0b1030; cursor: pointer; transition: transform .15s; }
+.lp-demo-btn:hover { transform: translateY(-1px); }
+.lp-demo-btn:focus-visible { outline: 3px solid #a5b4fc; outline-offset: 2px; }
+.lp-phone-wrap:hover .lp-phone, .lp-phone-wrap:focus-within .lp-phone { animation-play-state: paused; }
+
+/* Designed for real life */
+.lp-uses { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px; }
+.lp-uses article { padding: 16px; border: 1px solid var(--line); border-radius: 16px; background: #fff; transition: transform .2s, border-color .2s; }
+.lp-uses article:hover { transform: translateY(-3px); border-color: #c7d2fe; }
+.lp-uses b { display: block; margin-bottom: 6px; font-size: .95rem; letter-spacing: -.01em; }
+.lp-uses p { margin: 0; color: var(--mute); font-size: .84rem; line-height: 1.5; }
+.lp-life2 { padding-top: 24px; }
+@media (max-width: 960px) { .lp-uses { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 520px) { .lp-uses { grid-template-columns: 1fr; } }
