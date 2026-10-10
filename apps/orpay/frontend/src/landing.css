@@ -602,3 +602,70 @@ body:has(.lp) { background: #f7f7fc; }
 .lp-trust-grid article > span { min-width: 0; display: grid; gap: 2px; }
 .lp-trust-grid b { font-size: .86rem; }
 .lp-trust-grid small { color: var(--mute); font-size: .74rem; line-height: 1.35; }
+
+/* Escrow demo: product art */
+.lp-demo-prod { flex: none; width: 46px; height: 46px; border-radius: 13px; display: grid; place-items: center; background: linear-gradient(135deg, #eef2ff, #e0f2fe); }
+.lp-demo-prod svg { width: 26px; height: 34px; }
+.lp-held { color: #059669; font-weight: 700; }
+
+/* Circles demo: progress ring */
+.lp-circ-top { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 16px; background: linear-gradient(135deg, #064e3b, #059669); color: #fff; }
+.lp-circ-top > span { display: grid; gap: 1px; }
+.lp-circ-top small { font-size: .62rem; opacity: .85; }
+.lp-circ-top strong { font-size: 1.25rem; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+.lp-ring { width: 62px; height: 62px; flex: none; transform: rotate(-90deg); }
+.lp-ring circle { fill: none; stroke-width: 6; }
+.lp-ring .track { stroke: rgb(255 255 255 / .22); }
+.lp-ring .fill { stroke: #a7f3d0; stroke-linecap: round; transition: stroke-dashoffset .6s cubic-bezier(.2,.8,.2,1); }
+.lp-ring text { transform: rotate(90deg); transform-origin: 32px 32px; text-anchor: middle; fill: #fff; font-size: 14px; font-weight: 800; }
+.lp-ring text.sub { font-size: 7px; font-weight: 600; opacity: .8; }
+
+/* How escrow works: numbered steps */
+.lp-howlist { list-style: none; margin: 0 auto; padding: 0; max-width: 980px; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; position: relative; }
+.lp-howlist::before { content: ""; position: absolute; top: 17px; left: 12%; right: 12%; height: 2px; background: linear-gradient(90deg, #c7d2fe, #a5f3fc); }
+.lp-howlist li { position: relative; display: grid; justify-items: center; text-align: center; gap: 4px; }
+.lp-howlist i { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 50%; background: var(--ink); color: #fff; font-style: normal; font-weight: 800; font-size: .9rem; margin-bottom: 8px; box-shadow: 0 0 0 6px #fff; }
+.lp-howlist b { font-size: .95rem; }
+.lp-howlist small { color: var(--mute); font-size: .8rem; line-height: 1.4; max-width: 22ch; }
+@media (max-width: 640px) {
+  .lp-howlist { grid-template-columns: 1fr; gap: 14px; }
+  .lp-howlist::before { top: 18px; bottom: 18px; left: 17px; right: auto; width: 2px; height: auto; }
+  .lp-howlist li { grid-template-columns: 36px 1fr; justify-items: start; text-align: left; column-gap: 12px; }
+  .lp-howlist i { grid-row: span 2; margin: 0; }
+}
+
+/* Theme toggle */
+.lp-theme { display: grid; place-items: center; width: 38px; height: 38px; border-radius: 12px; border: 1px solid var(--line); background: transparent; color: var(--ink); cursor: pointer; padding: 0; }
+.lp-theme svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+/* ---------- Dark landing ---------- */
+body.lp-dark-body { background: #070b1f !important; }
+.lp.dark { --ink: #eef0ff; --line: #232a4d; --mute: #9aa3c7; --soft: #1c2147; color: var(--ink); background: #070b1f; }
+.lp.dark .lp-nav { background: rgb(12 16 40 / .82); box-shadow: 0 0 0 1px rgb(255 255 255 / .06), 0 8px 30px -16px rgb(0 0 0 / .6); }
+.lp.dark .lp-nav .logo-or, .lp.dark .lp-foot .logo-or { color: #fff; }
+.lp.dark .lp-hero::before { background: radial-gradient(circle, rgb(99 102 241 / .28), transparent 70%); }
+.lp.dark .lp-halo { border-color: rgb(129 140 248 / .35); box-shadow: 0 0 0 40px rgb(99 102 241 / .07), 0 0 0 84px rgb(99 102 241 / .04); }
+.lp.dark :is(.lp-btn.ghost, .lp-btn.white, .lp-pill, .lp-proto, .lp-menu, .lp-switch, .lp-sub-note, .lp-feat, .lp-uses article, .lp-trust-grid article, .lp-links.open) { background: #10163a; color: var(--ink); border-color: var(--line); box-shadow: inset 0 0 0 1px var(--line); }
+.lp.dark .lp-btn.ink { background: #fff; color: #0b1030; }
+.lp.dark .lp-switch button[aria-selected="true"] { background: #fff; color: #0b1030; }
+.lp.dark .lp-pill { color: #c7d2fe; }
+.lp.dark :is(.lp-how, .lp-strip, .lp-dark) { background: #0b1030; border-color: var(--line); color: var(--ink); }
+.lp.dark .lp-dark h2, .lp.dark .lp-head h2, .lp.dark .lp-hero h1 { color: #fff; }
+.lp.dark .lp-howlist i { background: #6366f1; box-shadow: 0 0 0 6px #0b1030; }
+.lp.dark .lp-howlist::before { background: linear-gradient(90deg, #3730a3, #0e7490); }
+.lp.dark .lp-kicker { color: #a5b4fc; }
+.lp.dark .lp-cta-panel { background: linear-gradient(120deg, #151b46, #1b1550 55%, #0b2a3a); border-color: var(--line); }
+.lp.dark .lp-cta-panel h2 { color: #fff; }
+.lp.dark .lp-code { box-shadow: 0 0 0 1px var(--line); }
+.lp.dark .lp-uses .c3, .lp.dark .lp-feat .c3 { background: rgb(14 165 233 / .15); }
+.lp.dark .lp-uses .c5 { background: rgb(245 158 11 / .15); }
+.lp.dark :is(.c1, .c2, .c4) { filter: saturate(1.1); }
+.lp.dark .lp-trust-grid i { background: rgb(99 102 241 / .18); color: #a5b4fc; }
+.lp.dark .lp-theme { color: #fde68a; }
+.lp.dark .lp-links a, .lp.dark .lp-foot a { color: var(--mute); }
+.lp.dark .lp-links a:hover, .lp.dark .lp-foot a:hover { color: #fff; }
+.lp.dark .lp-built b, .lp.dark .lp-lead { color: var(--ink); }
+.lp.dark .lp-lead { color: var(--mute); }
+.lp .lp-circ-top svg.lp-ring { width: 62px; height: 62px; stroke: none; }
+.lp .lp-demo-prod svg { stroke: none; }
+.lp .lp-demo-prod svg { width: 26px; height: 34px; }

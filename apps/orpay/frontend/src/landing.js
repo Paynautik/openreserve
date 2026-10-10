@@ -25,6 +25,7 @@ export function renderLanding(app, { onStart, onSignIn, signInLabel }) {
         <a href="#product">Product</a><a href="#escrow">Escrow</a><a href="#developers">Developers</a><a href="/explorer.html">Explorer</a><a href="#" class="lp-menu-only" data-signin>${signInLabel}</a>
       </div>
       <div class="lp-nav-cta">
+        <button class="lp-theme" id="lp-theme" type="button" aria-label="Switch to dark mode" aria-pressed="false">${svg('<path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/>')}</button>
         <button class="lp-btn ghost" data-signin>${signInLabel}</button>
         <button class="lp-btn ink" data-start>Get started</button>
         <button class="lp-menu" id="lp-menu" aria-label="Open menu" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
@@ -76,7 +77,10 @@ export function renderLanding(app, { onStart, onSignIn, signInLabel }) {
                 <div class="lp-demo">
                   <div class="lp-demo-tag">Interactive demo · no real money</div>
                   <div class="lp-demo-item"><span class="lp-demo-thumb">${svg(I.ajo)}</span><span><b>Market women savings</b><small>₦20,000 each, every week</small></span></div>
-                  <div class="lp-demo-amt circ"><small>Round 3 pot · goes to @ngozi</small><strong id="lp-circ-pot">₦60,000</strong><span class="lp-circ-bar"><span id="lp-circ-fill"></span></span></div>
+                  <div class="lp-circ-top">
+                    <svg class="lp-ring" viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="27" class="track"/><circle cx="32" cy="32" r="27" class="fill" id="lp-circ-ring" pathLength="100" stroke-dasharray="100" stroke-dashoffset="100"/><text x="32" y="31" id="lp-circ-count">3/5</text><text x="32" y="43" class="sub">paid</text></svg>
+                    <span><small>Round 3 pot · to @ngozi</small><strong id="lp-circ-pot">₦60,000</strong><small>Next payout Friday</small></span>
+                  </div>
                   <ul class="lp-circ-members" id="lp-circ-members"></ul>
                   <button class="lp-demo-btn" id="lp-circ-btn" type="button">Pay my ₦20,000 share</button>
                 </div>
@@ -84,7 +88,7 @@ export function renderLanding(app, { onStart, onSignIn, signInLabel }) {
               <div class="lp-pane" data-pane-body="escrow">
               <div class="lp-demo" id="lp-demo">
                 <div class="lp-demo-tag">Interactive demo · no real money</div>
-                <div class="lp-demo-item"><span class="lp-demo-thumb">${svg(I.escrow)}</span><span><b>iPhone 14 Pro</b><small>Seller: @gadgethub</small></span></div>
+                <div class="lp-demo-item"><span class="lp-demo-prod" aria-hidden="true"><svg viewBox="0 0 40 52"><defs><linearGradient id="lpPhoneScr" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6366f1"/><stop offset=".6" stop-color="#8b5cf6"/><stop offset="1" stop-color="#22d3ee"/></linearGradient></defs><rect x="6" y="2" width="28" height="48" rx="6" fill="#0b1030"/><rect x="8" y="4" width="24" height="44" rx="4.5" fill="url(#lpPhoneScr)"/><rect x="16" y="6" width="8" height="2.4" rx="1.2" fill="#0b1030"/><circle cx="14" cy="14" r="3" fill="#0b1030" opacity=".55"/></svg></span><span><b>iPhone 14 Pro</b><small>Seller: @gadgethub · <span class="lp-held">in escrow</span></small></span></div>
                 <div class="lp-demo-amt"><small id="lp-demo-label">Price</small><strong>₦420,000</strong></div>
                 <ol class="lp-demo-steps" id="lp-demo-steps">
                   <li>Agreed</li><li>Funded</li><li>Shipped</li><li>Released</li>
@@ -169,14 +173,15 @@ export function renderLanding(app, { onStart, onSignIn, signInLabel }) {
     <section class="lp-how" id="how">
       <div class="lp-wrap lp-sec">
         <div class="lp-head">
-          <p class="lp-kicker">Escrow in three steps</p>
+          <p class="lp-kicker">How escrow works</p>
           <h2>From deal to done.</h2>
         </div>
-        <div class="lp-step-grid">
-          <article><span>01 / AGREE</span><h3>Set the terms</h3><p>The seller shares a link with the price and milestones. The buyer reviews and accepts.</p></article>
-          <article><span>02 / LOCK</span><h3>Money is held</h3><p>Funds lock on-chain. The seller ships knowing the money is real.</p></article>
-          <article><span>03 / RELEASE</span><h3>Inspect, then pay</h3><p>The buyer checks the goods and releases. Problems go to a neutral arbiter.</p></article>
-        </div>
+        <ol class="lp-howlist">
+          <li><i>1</i><b>Agreement</b><small>Both sides accept the price and terms.</small></li>
+          <li><i>2</i><b>Funding</b><small>The buyer's money locks on-chain.</small></li>
+          <li><i>3</i><b>Delivery</b><small>The seller ships; the buyer inspects.</small></li>
+          <li><i>4</i><b>Release</b><small>The seller is paid. Disputes go to an arbiter.</small></li>
+        </ol>
       </div>
     </section>
 
@@ -225,6 +230,7 @@ export function renderLanding(app, { onStart, onSignIn, signInLabel }) {
 
   app.querySelectorAll('[data-start]').forEach((b) => (b.onclick = onStart))
   escrowDemo(app)
+  themeToggle(app)
   circlesDemo(app)
   phoneSwitcher(app)
   const menu = app.querySelector('#lp-menu'), links = app.querySelector('.lp-links')
@@ -290,7 +296,8 @@ function circlesDemo(app) {
     const paid = members.filter((m) => m[1]).length
     ul.innerHTML = members.map(([n, ok, note]) => `<li class="${ok ? 'ok' : ''}"><span>${n}${note ? ` <small>${note}</small>` : ''}</span><em>${ok ? 'Paid' : 'Due'}</em></li>`).join('')
     app.querySelector('#lp-circ-pot').textContent = `₦${(paid * 20000).toLocaleString('en-NG')}`
-    app.querySelector('#lp-circ-fill').style.width = `${(paid / members.length) * 100}%`
+    app.querySelector('#lp-circ-ring').style.strokeDashoffset = String(100 - (paid / members.length) * 100)
+    app.querySelector('#lp-circ-count').textContent = `${paid}/${members.length}`
   }
   const reset = () => {
     members = base.map((m) => [...m])
@@ -312,4 +319,32 @@ function circlesDemo(app) {
     draw()
   }
   reset()
+}
+
+// Light / dark landing page. Remembers the choice; defaults to the system.
+function themeToggle(app) {
+  const lp = app.querySelector('.lp')
+  const btn = app.querySelector('#lp-theme')
+  if (!lp || !btn) return
+  const moon = '<path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/>'
+  const sun = '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>'
+  const set = (dark) => {
+    lp.classList.toggle('dark', dark)
+    document.body.classList.toggle('lp-dark-body', dark)
+    btn.innerHTML = svg(dark ? sun : moon)
+    btn.setAttribute('aria-pressed', String(dark))
+    btn.setAttribute('aria-label', dark ? 'Switch to light mode' : 'Switch to dark mode')
+  }
+  let saved = null
+  try {
+    saved = localStorage.getItem('orpay.lpTheme')
+  } catch {}
+  set(saved ? saved === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches)
+  btn.onclick = () => {
+    const dark = !lp.classList.contains('dark')
+    set(dark)
+    try {
+      localStorage.setItem('orpay.lpTheme', dark ? 'dark' : 'light')
+    } catch {}
+  }
 }
