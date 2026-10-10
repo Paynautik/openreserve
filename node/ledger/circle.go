@@ -110,6 +110,12 @@ func (p *Pool) payout(s *State, i int) {
 			}
 		}
 	}
+	if p.Asset != "" {
+		if f := s.AssetDefs[p.Asset].PotFee(pot); f > 0 {
+			s.credit(s.AssetDefs[p.Asset].Issuer, p.Asset, f)
+			pot -= f
+		}
+	}
 	s.credit(p.Members[i], p.Asset, pot)
 	if p.PaidOut != nil {
 		p.PaidOut[i] = pot

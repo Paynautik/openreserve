@@ -291,16 +291,34 @@ export async function poolOp({ seed, op, id, name, members, contribution, roundS
 }
 
 // Build, sign and submit a transfer. Returns the tx id.
-export function feeFor(status, asset = '') {
+// Network/transfer fee. Pass the amount for plain transfers so the asset's
+// transfer tiers apply (mirrors ledger.MinFeeForTx).
+export function feeFor(status, asset = '', amount = null) {
   if (!asset) return BigInt(status.min_fee)
   const a = (status.assets ?? []).find((x) => x.symbol === asset)
-  return BigInt(a?.min_fee ?? 0)
+  const base = BigInt(a?.min_fee ?? 0)
+  if (amount == null || !a?.transfer_tiers?.length) return base
+  for (const t of a.transfer_tiers) {
+    if (!t.up_to || BigInt(amount) <= BigInt(t.up_to)) return BigInt(t.fee) > base ? BigInt(t.fee) : base
+  }
+  return base
+}
+
+// ORPay's escrow fee for a deal of this total (mirrors ledger AssetDef.EscrowFee).
+export function escrowFeeFor(status, asset, total) {
+  const a = (status?.assets ?? []).find((x) => x.symbol === asset)
+  if (!a?.escrow_fee_bps) return 0n
+  total = BigInt(total)
+  let f = (total * BigInt(a.escrow_fee_bps)) / 10_000n
+  if (f < BigInt(a.escrow_fee_min ?? 0)) f = BigInt(a.escrow_fee_min ?? 0)
+  if (a.escrow_fee_max && f > BigInt(a.escrow_fee_max)) f = BigInt(a.escrow_fee_max)
+  return f > total ? total : f
 }
 
 export async function send({ seed, to, amount, memo = '', asset = '', kind = '' }) {
   const from = await addressOf(seed)
   const [st, acc] = await Promise.all([node.status(), node.account(from)])
-  const tx = { chain_id: st.chain_id, from, to, amount, fee: feeFor(st, asset), nonce: acc.next_nonce, memo }
+  const tx = { chain_id: st.chain_id, from, to, amount, fee: feeFor(st, asset, kind ? null : amount), nonce: acc.next_nonce, memo }
   if (asset) tx.asset = asset
   if (kind) tx.kind = kind
   const signed = await signTx(tx, seed)

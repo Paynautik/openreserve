@@ -41,7 +41,7 @@ export function renderLanding(app, { onStart, onSignIn, signInLabel }) {
             <button class="lp-btn ink lg" data-start>Get started free</button>
             <a class="lp-btn ghost lg" href="/?demo">Try the demo</a>
           </div>
-          <p class="lp-built"><img src="/favicon.png" alt="">Built on the <b>OpenReserve Protocol</b> · ₦20 flat fee</p>
+          <p class="lp-built"><img src="/favicon.png" alt="">Built on the <b>OpenReserve Protocol</b> · transfers from ₦10</p>
         </div>
 
         <div class="lp-phone-wrap">
@@ -70,7 +70,7 @@ export function renderLanding(app, { onStart, onSignIn, signInLabel }) {
                 </div>
                 <div class="lp-recent-head"><b>Recent activity</b><span>Sample</span></div>
                 <div class="lp-tx"><i class="in">${svg(I.down)}</i><span><b>Circle payout</b><small>Today · 9:42 AM</small></span><em class="pos">+₦45,000</em></div>
-                <div class="lp-tx"><i class="out">${svg(I.up)}</i><span><b>@adaeze</b><small>Yesterday · fee ₦20</small></span><em>−₦12,000</em></div>
+                <div class="lp-tx"><i class="out">${svg(I.up)}</i><span><b>@adaeze</b><small>Yesterday · fee ₦25</small></span><em>−₦12,000</em></div>
               </div>
               <div class="lp-pane" data-pane-body="circles" hidden>
                 <div class="lp-demo">
@@ -116,7 +116,7 @@ export function renderLanding(app, { onStart, onSignIn, signInLabel }) {
         <h2>Everything your money<br>needs to move safely.</h2>
       </div>
       <div class="lp-feats">
-        <article class="lp-feat reveal"><i class="c1">${svg(I.up)}</i><h3>Send</h3><p>By @username or QR. ₦20 flat.</p></article>
+        <article class="lp-feat reveal"><i class="c1">${svg(I.up)}</i><h3>Send</h3><p>By @username or QR. From ₦10.</p></article>
         <article class="lp-feat reveal"><i class="c2">${svg(I.down)}</i><h3>Receive</h3><p>Money lands in real time.</p></article>
         <article class="lp-feat reveal"><i class="c4">${svg(I.ajo)}</i><h3>Saving circle</h3><p>See who paid and who's next.</p></article>
         <article class="lp-feat reveal"><i class="c3">${svg(I.eye)}</i><h3>Open</h3><p>Every payment on-chain.</p></article>
@@ -161,7 +161,7 @@ export function renderLanding(app, { onStart, onSignIn, signInLabel }) {
       <div class="lp-trust-grid">
         <article class="reveal"><i>${svg('<rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>')}</i><span><b>Locked on-chain</b><small>Not in anyone's account. Not even ours.</small></span></article>
         <article class="reveal"><i>${svg('<path d="M12 3v18M5 7h14M7 7l-3 6a3 3 0 0 0 6 0zM17 7l-3 6a3 3 0 0 0 6 0z"/>')}</i><span><b>Neutral arbiters</b><small>They settle disputes, on the record.</small></span></article>
-        <article class="reveal"><i>${svg('<path d="M4 7h16M4 12h16M4 17h10"/>')}</i><span><b>₦20 per payment</b><small>Holding money in escrow is free.</small></span></article>
+        <article class="reveal"><i>${svg('<path d="M4 7h16M4 12h16M4 17h10"/>')}</i><span><b>Bank-level fees</b><small>From ₦10 a transfer. Escrow 1.5%, only when it completes.</small></span></article>
         <article class="reveal"><i>${svg(I.eye)}</i><span><b>Open to check</b><small>Every payment is on the <a href="/explorer.html">explorer</a>.</small></span></article>
       </div>
     </section>

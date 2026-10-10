@@ -16,7 +16,11 @@ let me = ''
 function status() {
   return {
     chain_id: 'openreserve-demo', height: 18432, tip_time: now, min_fee: 1000, supply: 0, burned: 0, accounts: 1280, mempool_size: 0,
-    assets: [{ symbol: 'NGN', name: 'Nigerian naira', issuer: hex('9'), min_fee: 20000000, decimals: 2, supply: 0 }],
+    assets: [{
+      symbol: 'NGN', name: 'Nigerian naira', issuer: hex('9'), min_fee: N(10), decimals: 2, supply: 0,
+      transfer_tiers: [{ up_to: N(5000), fee: N(10) }, { up_to: N(50000), fee: N(25) }, { fee: N(50) }],
+      escrow_fee_bps: 150, escrow_fee_min: N(200), escrow_fee_max: N(10000),
+    }],
   }
 }
 
@@ -46,7 +50,7 @@ function escrow() {
   return {
     id: ESCROW, ref: 'Order 1042', asset: 'NGN', buyer: me, seller: hex('c'), arbiter: hex('a'), milestones: [N(420000)], released: 0,
     balance: N(420000), status: 'dispatched', created_at: now - 2 * 24 * H, ship_by: now + 2 * 24 * H, review_secs: 3 * 24 * 3600,
-    dispatched_at: now - 20 * H, tracking: 'GIG Logistics · GL48210', paid_seller: '0', paid_buyer: '0', arbiter_bps: 200,
+    dispatched_at: now - 20 * H, tracking: 'GIG Logistics · GL48210', paid_seller: '0', paid_buyer: '0', arbiter_bps: 200, platform_fee: N(6300),
   }
 }
 

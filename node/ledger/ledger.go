@@ -39,6 +39,67 @@ type AssetDef struct {
 	Issuer   types.Address `json:"issuer"`
 	MinFee   types.Amount  `json:"min_fee"`
 	Decimals int           `json:"decimals"` // display precision, e.g. 2 for naira
+
+	// Optional platform fees, all paid to the issuer (the operator). Set in
+	// genesis; zero values mean "off", so older genesis files behave as before.
+	//
+	// TransferTiers raises the minimum fee for plain transfers by amount, e.g.
+	// [{up_to: 5000, fee: 10}, {up_to: 50000, fee: 25}, {fee: 50}].
+	TransferTiers []FeeTier `json:"transfer_tiers,omitempty"`
+	// Escrow fee: a percentage of the escrow total, clamped to [min, max],
+	// fixed when the escrow is created and taken only from what the seller
+	// receives. Refunds to the buyer carry no fee.
+	EscrowFeeBps uint32       `json:"escrow_fee_bps,omitempty"`
+	EscrowFeeMin types.Amount `json:"escrow_fee_min,omitempty"`
+	EscrowFeeMax types.Amount `json:"escrow_fee_max,omitempty"`
+	// Saving circles: a percentage of each pot at payout, capped.
+	PotFeeBps uint32       `json:"pot_fee_bps,omitempty"`
+	PotFeeMax types.Amount `json:"pot_fee_max,omitempty"`
+}
+
+// FeeTier: transfers up to UpTo (0 = no limit) pay at least Fee.
+type FeeTier struct {
+	UpTo types.Amount `json:"up_to,omitempty"`
+	Fee  types.Amount `json:"fee"`
+}
+
+// Total is the sum of the escrow's milestones.
+func (e *Escrow) Total() types.Amount {
+	var t types.Amount
+	for _, m := range e.Milestones {
+		t += m
+	}
+	return t
+}
+
+// bps returns v * bps / 10000 without overflowing.
+func bps(v types.Amount, b uint32) types.Amount {
+	return types.Amount(uint64(v)/10_000*uint64(b)) + types.Amount(uint64(v)%10_000*uint64(b)/10_000)
+}
+
+// EscrowFee is the platform fee for an escrow of this total in this asset.
+func (d AssetDef) EscrowFee(total types.Amount) types.Amount {
+	if d.EscrowFeeBps == 0 {
+		return 0
+	}
+	f := bps(total, d.EscrowFeeBps)
+	f = max(f, d.EscrowFeeMin)
+	if d.EscrowFeeMax > 0 {
+		f = min(f, d.EscrowFeeMax)
+	}
+	return min(f, total)
+}
+
+// PotFee is the platform fee on a saving-circle payout.
+func (d AssetDef) PotFee(pot types.Amount) types.Amount {
+	if d.PotFeeBps == 0 {
+		return 0
+	}
+	f := bps(pot, d.PotFeeBps)
+	if d.PotFeeMax > 0 {
+		f = min(f, d.PotFeeMax)
+	}
+	return f
 }
 
 // Pool status values.
@@ -181,8 +242,10 @@ type Escrow struct {
 	Tracking     string         `json:"tracking,omitempty"`
 	PaidSeller   types.Amount   `json:"paid_seller"`
 	PaidBuyer    types.Amount   `json:"paid_buyer"`
-	ArbiterBps   uint32         `json:"arbiter_bps,omitempty"` // dispute fee agreed at creation
-	ArbiterFee   types.Amount   `json:"arbiter_fee,omitempty"` // what the arbiter was paid
+	ArbiterBps   uint32         `json:"arbiter_bps,omitempty"`       // dispute fee agreed at creation
+	ArbiterFee   types.Amount   `json:"arbiter_fee,omitempty"`       // what the arbiter was paid
+	PlatformFee  types.Amount   `json:"platform_fee,omitempty"`      // fixed at creation, taken from the seller's payouts
+	FeePaid      types.Amount   `json:"platform_fee_paid,omitempty"` // collected so far
 }
 
 // Open reports whether funds are still locked.
@@ -315,6 +378,21 @@ func (s *State) MinFeeFor(asset string) types.Amount {
 	return s.AssetDefs[asset].MinFee
 }
 
+// MinFeeForTx is MinFeeFor, raised by the asset's transfer tiers for plain
+// transfers.
+func (s *State) MinFeeForTx(tx *types.Tx) types.Amount {
+	base := s.MinFeeFor(tx.Asset)
+	if tx.Asset == "" || tx.Kind != "" || tx.Pool != nil || tx.Escrow != nil || tx.Guard != nil {
+		return base
+	}
+	for _, t := range s.AssetDefs[tx.Asset].TransferTiers {
+		if t.UpTo == 0 || tx.Amount <= t.UpTo {
+			return max(base, t.Fee)
+		}
+	}
+	return base
+}
+
 // Get returns an account; unknown addresses have zero balance and nonce.
 func (s *State) Get(a types.Address) Account { return s.Accounts[a] }
 
@@ -386,8 +464,8 @@ func (s *State) apply(tx *types.Tx, commit bool) error {
 	// still record dispatch and an arbiter can still resolve.
 	feeFree := tx.Kind == types.KindMint || (tx.Escrow != nil && tx.Escrow.Op != types.EscrowCreate) ||
 		(tx.Guard != nil && tx.Guard.Op != types.GuardSet) // guardians need no balance to help
-	if !feeFree && tx.Fee < s.MinFeeFor(tx.Asset) {
-		return fmt.Errorf("%w: need %s %s", ErrFeeTooLow, types.FormatAmount(s.MinFeeFor(tx.Asset)), types.AssetName(tx.Asset))
+	if need := s.MinFeeForTx(tx); !feeFree && tx.Fee < need {
+		return fmt.Errorf("%w: need %s %s", ErrFeeTooLow, types.FormatAmount(need), types.AssetName(tx.Asset))
 	}
 	from := s.Accounts[tx.From]
 	switch {
@@ -733,6 +811,7 @@ func (s *State) escrowOp(tx *types.Tx) (func(), error) {
 				ID: id, Ref: op.Ref, Asset: tx.Asset, Buyer: tx.From, Seller: op.Seller, Arbiter: op.Arbiter,
 				Milestones: slices.Clone(op.Milestones), Balance: op.Total(), Status: EscrowFunded,
 				CreatedAt: s.Now, ShipBy: op.ShipBy, ReviewSecs: op.ReviewSecs, ArbiterBps: op.ArbiterBps,
+				PlatformFee: s.AssetDefs[tx.Asset].EscrowFee(op.Total()),
 			}
 		}, nil
 	}
@@ -753,11 +832,25 @@ func (s *State) escrowOp(tx *types.Tx) (func(), error) {
 		if amt == 0 {
 			return
 		}
-		s.credit(to, e.Asset, amt)
 		e.Balance -= amt
 		if to == e.Seller {
+			// The platform fee comes out of the seller's money, in proportion
+			// to what they receive; their final payout settles any remainder.
+			cut := types.Amount(0)
+			if left := e.PlatformFee - e.FeePaid; left > 0 {
+				if e.PaidSeller+amt == e.Total() {
+					cut = left
+				} else {
+					cut = min(left, types.Amount((uint64(amt)*uint64(e.PlatformFee))/max(uint64(e.Total()), 1)))
+				}
+				cut = min(cut, amt)
+				s.credit(s.AssetDefs[e.Asset].Issuer, e.Asset, cut)
+				e.FeePaid += cut
+			}
+			s.credit(to, e.Asset, amt-cut)
 			e.PaidSeller += amt
 		} else {
+			s.credit(to, e.Asset, amt)
 			e.PaidBuyer += amt
 		}
 	}
@@ -999,6 +1092,11 @@ func (s *State) Root() types.Hash {
 			h.Write([]byte("arbiter-fee"))
 			u64(uint64(e.ArbiterBps))
 			u64(e.ArbiterFee)
+		}
+		if e.PlatformFee != 0 { // likewise
+			h.Write([]byte("platform-fee"))
+			u64(e.PlatformFee)
+			u64(e.FeePaid)
 		}
 	}
 

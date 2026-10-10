@@ -1053,3 +1053,4 @@ ul li.empty:has(.empty-ico) button { width: auto; margin: 8px auto 0; align-self
 .swipeable.dragging .swipe-act, .swipeable.swiped .swipe-act { opacity: 1; }
 :root[data-theme="dark"] .reminders { border-color: rgb(251 146 60 / .35); background: rgb(251 146 60 / .08); }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .reminders { border-color: rgb(251 146 60 / .35); background: rgb(251 146 60 / .08); } }
+.fee-note { margin: 10px 0 0; color: rgb(255 255 255 / .75); }

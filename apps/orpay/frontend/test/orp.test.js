@@ -84,3 +84,20 @@ test('pay links round-trip', () => {
   assert.deepEqual(orp.readPayLink(new URL(url).search), { to: 'ada', amount: '5000', memo: 'Rent' })
   assert.equal(orp.readPayLink('?amount=5'), null)
 })
+
+test('fees: transfer tiers and escrow fee match the ledger', () => {
+  const N = (n) => BigInt(Math.round(n * 100)) * 10_000n
+  const st = {
+    min_fee: 1000,
+    assets: [{ symbol: 'NGN', min_fee: String(N(10)), transfer_tiers: [{ up_to: String(N(5000)), fee: String(N(10)) }, { up_to: String(N(50000)), fee: String(N(25)) }, { fee: String(N(50)) }], escrow_fee_bps: 150, escrow_fee_min: String(N(200)), escrow_fee_max: String(N(10000)) }],
+  }
+  assert.equal(orp.feeFor(st, 'NGN', N(5000)), N(10))
+  assert.equal(orp.feeFor(st, 'NGN', N(5001)), N(25))
+  assert.equal(orp.feeFor(st, 'NGN', N(50001)), N(50))
+  assert.equal(orp.feeFor(st, 'NGN'), N(10)) // escrow/pool ops: base fee
+  assert.equal(orp.escrowFeeFor(st, 'NGN', N(420000)), N(6300))
+  assert.equal(orp.escrowFeeFor(st, 'NGN', N(1000)), N(200))
+  assert.equal(orp.escrowFeeFor(st, 'NGN', N(100)), N(100))
+  assert.equal(orp.escrowFeeFor(st, 'NGN', N(10_000_000)), N(10000))
+  assert.equal(orp.escrowFeeFor(st, '', N(1000)), 0n)
+})

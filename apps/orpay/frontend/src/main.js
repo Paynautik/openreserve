@@ -952,7 +952,15 @@ function renderSend(prefill = {}) {
   app.querySelectorAll('[data-tab]').forEach((b) => b.setAttribute('aria-selected', b.dataset.tab === 'send'))
   const curs = currencies()
   let asset = prefill.asset ?? curs[0]
-  const feeText = () => (state.status ? formatMoney(feeFor(state.status, asset), asset) : '…')
+  const feeText = () => {
+    if (!state.status) return '…'
+    let amt = null
+    try {
+      amt = parseAmount(($('#amount')?.value ?? '').replace(/,/g, '')) || null
+    } catch {}
+    const tiered = (state.status.assets ?? []).find((a) => a.symbol === asset)?.transfer_tiers?.length
+    return amt == null && tiered ? `from ${formatMoney(feeFor(state.status, asset), asset)}` : formatMoney(feeFor(state.status, asset, amt), asset)
+  }
   $('#panel').innerHTML = `
     <form id="send" class="stack" autocomplete="off">
       ${prefill.to && !prefill.again ? '<p class="banner">Payment request. Check the details before you send.</p>' : ''}
@@ -981,7 +989,9 @@ function renderSend(prefill = {}) {
   setAsset(asset)
   let resolved = null
   const toInput = $('#to')
-  if (matchMedia('(pointer: coarse)').matches) $('#pad-slot').append(numpad($('#amount')))
+  const updateFee = () => ($('#fee').textContent = feeText())
+  $('#amount').addEventListener('input', updateFee)
+  if (matchMedia('(pointer: coarse)').matches) $('#pad-slot').append(numpad($('#amount'), updateFee))
   $('#scan-to').onclick = scanToPay
   app.querySelectorAll('.contact').forEach((b) => (b.onclick = () => {
     const n = state.names.get(b.dataset.addr)
@@ -1024,7 +1034,7 @@ function renderSend(prefill = {}) {
       const amount = parseAmount($('#amount').value.replace(/,/g, ''))
       if (amount === 0n) throw new Error('Amount must be more than 0.')
       if (asset === 'NGN' && amount % 10_000n !== 0n) throw new Error('Naira amounts can have at most 2 decimals.')
-      const total = amount + feeFor(state.status, asset)
+      const total = amount + feeFor(state.status, asset, amount)
       if (state.account && total > balanceOf(asset)) throw new Error(`Not enough ${asset === 'NGN' ? 'naira' : 'ORP'} for amount plus fee.`)
       renderReview({ to, label: toInput.value.trim(), amount, memo: $('#memo').value, asset })
     } catch (e2) {
@@ -1093,7 +1103,7 @@ function renderReview({ to, label, amount, memo, asset }) {
       <p class="amount">${moneyHTML(esc(formatMoney(amount, asset)))}</p>
       <dl>
         <dt>To</dt><dd>${esc(label.startsWith('@') ? label : short(to))}</dd>
-        <dt>Fee</dt><dd>${esc(formatMoney(feeFor(state.status, asset), asset))}</dd>
+        <dt>Fee</dt><dd>${esc(formatMoney(feeFor(state.status, asset, amount), asset))}</dd>
         ${memo ? `<dt>Note</dt><dd>${esc(memo)}</dd>` : ''}
       </dl>
       <p class="error" id="err"></p>
@@ -1116,7 +1126,7 @@ function renderReview({ to, label, amount, memo, asset }) {
       success({
         title: `Sent to ${esc(who)}`,
         amount: moneyHTML(esc(formatMoney(amount, asset))),
-        lines: [['Fee', esc(formatMoney(feeFor(state.status, asset), asset))], ...(memo ? [['Note', esc(memo)]] : []), ['Block', String(t.location.height)], ['Time', new Date().toLocaleString()], ['Reference', `<span class="mono">${id.slice(0, 10)}…</span>`]],
+        lines: [['Fee', esc(formatMoney(feeFor(state.status, asset, amount), asset))], ...(memo ? [['Note', esc(memo)]] : []), ['Block', String(t.location.height)], ['Time', new Date().toLocaleString()], ['Reference', `<span class="mono">${id.slice(0, 10)}…</span>`]],
         shareText: `ORPay receipt: ${formatMoney(amount, asset)} sent to ${who} on ${new Date().toLocaleString()}. Ref ${id}. Check it: ${location.origin}/explorer.html#/tx/${id}`,
       })
     } catch (err) {

@@ -19,7 +19,7 @@ devnet-init: build
 	$(BIN)/orctl keygen -key devnet/proposer.json > /dev/null
 	$(BIN)/orctl keygen -key devnet/alice.json > /dev/null
 	$(BIN)/orctl keygen -key devnet/issuer.json > /dev/null
-	$(BIN)/orctl genesis -chain-id openreserve-devnet-1 \
+	$(BIN)/orctl genesis -chain-id openreserve-devnet-1 -platform-fees \
 		-proposer $$($(BIN)/orctl address -key devnet/proposer.json) \
 		-alloc $$($(BIN)/orctl address -key devnet/alice.json)=1000000 \
 		-asset "NGN:$$($(BIN)/orctl address -key devnet/issuer.json):20:2:Nigerian naira" \

@@ -56,7 +56,7 @@ export async function renderCheckout(id, cardRef) {
       <p class="amount">${money(inv.amount)}</p>
       ${inv.description ? `<p class="muted">${ctx.esc(inv.description)}</p>` : ''}
       <dl class="summary">
-        <dt>Network fee</dt><dd>${ctx.state.status ? money(feeFor(ctx.state.status, asset)) : '…'}</dd>
+        <dt>Network fee</dt><dd>${ctx.state.status ? money(feeFor(ctx.state.status, asset, inv.amount)) : '…'}</dd>
         <dt>${expired ? 'Expired' : 'Expires'}</dt><dd id="expires">${expires.toLocaleString()}</dd>
       </dl>
       ${!verified ? '<p class="banner warn">This merchant is not approved on ORPay. Only pay if you trust them.</p>' : ''}
@@ -79,7 +79,7 @@ export async function renderCheckout(id, cardRef) {
     const err = ctx.$('#err')
     err.textContent = ''
     if (!ctx.state.seed) return ctx.requireWallet() // the checkout link is kept; we return here after unlock
-    const need = BigInt(inv.amount) + feeFor(ctx.state.status, asset)
+    const need = BigInt(inv.amount) + feeFor(ctx.state.status, asset, inv.amount)
     const have = BigInt(asset ? ctx.state.account?.assets?.[asset] ?? 0 : ctx.state.account?.balance ?? 0)
     if (ctx.state.account && need > have) {
       err.textContent = `Not enough in your wallet for this payment plus the fee.${inv.card_payments ? ' You can pay with card instead.' : ''}`

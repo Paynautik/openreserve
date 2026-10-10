@@ -1,7 +1,7 @@
 // Smart escrow: funds locked on-chain between a buyer and a seller, released
 // in milestones by the buyer, with an independent arbiter for disputes and
 // timeouts so money is never stuck. Everything shown is read from the chain.
-import { api, assetLabel, escrowOp, formatMoney, node, parseAmount, partnerMark, waitForCommit } from './orp.js'
+import { api, assetLabel, escrowFeeFor, escrowOp, formatMoney, node, parseAmount, partnerMark, waitForCommit } from './orp.js'
 import { fillTrust, showTrustCard, trustOf } from './trust.js'
 import { asksToPayOutside, radarBanner, riskOf } from './radar.js'
 import { renderSVG } from 'uqr'
@@ -318,6 +318,7 @@ export async function renderEscrow(id, preloaded, focus) {
         <div><span>Seller</span><strong>${label(e.seller)}</strong><span data-trust="${e.seller}"></span></div>
         <div><span>Arbiter</span><strong>${label(e.arbiter)}</strong></div>
       </div>
+      ${BigInt(e.platform_fee ?? 0) > 0n ? `<p class="small-text fee-note">ORPay fee ${money(e.platform_fee)} (from the seller's payout${BigInt(e.platform_fee_paid ?? 0) > 0n ? `, ${money(e.platform_fee_paid)} paid` : ''}). Nothing if refunded.</p>` : ''}
     </section>
     <section class="card"><h2>Status</h2><ol class="steps">${steps}</ol></section>
     <section class="card"><div class="stack" id="actions">${acts.join('')}</div><p class="error" id="err"></p></section>
@@ -514,6 +515,7 @@ export async function renderFundRequest(id) {
       ${r.checklist?.length ? `<div class="terms-box"><p class="label">You'll confirm these before the seller is paid</p><ul class="check-preview">${r.checklist.map((c) => `<li>${ctx.esc(c)}</li>`).join('')}</ul></div>` : ''}
       <dl class="summary">
         <dt>Paid to</dt><dd>${label(r.seller)} <span data-trust="${r.seller}"></span></dd>
+        ${escrowFeeFor(ctx.state.status, r.asset ?? '', r.total) > 0n ? `<dt>ORPay escrow fee</dt><dd>${money(escrowFeeFor(ctx.state.status, r.asset ?? '', r.total))}, paid by the seller when released. Free if refunded.</dd>` : ''}
         <dt>Disputes settled by</dt><dd>${label(r.arbiter)}${r.arbiter_bps ? ` · fee ${r.arbiter_bps / 100}% only if there's a dispute` : ''}</dd>
         <dt>Delivery deadline</dt><dd>${r.ship_by_days} day${r.ship_by_days === 1 ? '' : 's'} after funding</dd>
         <dt>Your review period</dt><dd>${r.review_days} day${r.review_days === 1 ? '' : 's'} after delivery</dd>

@@ -226,7 +226,11 @@ func genesis(args []string) error {
 	fs.Var(&allocs, "alloc", "initial balance ADDR=ORP (repeatable)")
 	var assets assetFlag
 	fs.Var(&assets, "asset", "issued asset SYMBOL:ISSUER_ADDR:MIN_FEE[:DECIMALS[:NAME]] (repeatable)")
+	platformFees := fs.Bool("platform-fees", false, "apply the ORPay fee schedule to NGN, GHS and KES (tiered transfers, 1.5% escrow)")
 	fs.Parse(args)
+	if *platformFees {
+		applyPlatformFees(assets)
+	}
 	fee, err := types.ParseAmount(*minFee)
 	if err != nil {
 		return err
@@ -244,6 +248,27 @@ func genesis(args []string) error {
 	enc := json.NewEncoder(os.Stdout)
 	enc.SetIndent("", "  ")
 	return enc.Encode(g)
+}
+
+// applyPlatformFees sets the recommended fee schedule. Transfers: bank-like
+// tiers. Escrow: 1.5% with a floor and cap. Saving circles stay free.
+// Amounts are in each currency's own units (about ₦10 / ₦25 / ₦50).
+func applyPlatformFees(assets []ledger.AssetDef) {
+	u := func(v float64) types.Amount { return types.Amount(v * float64(types.Unit)) }
+	sched := map[string]struct{ t1, f1, t2, f2, f3, min, max float64 }{
+		"NGN": {5000, 10, 50000, 25, 50, 200, 10000},
+		"GHS": {50, 0.10, 500, 0.25, 0.50, 2, 100},
+		"KES": {500, 1, 5000, 2.5, 5, 20, 1000},
+	}
+	for i := range assets {
+		x, ok := sched[assets[i].Symbol]
+		if !ok {
+			continue
+		}
+		assets[i].TransferTiers = []ledger.FeeTier{{UpTo: u(x.t1), Fee: u(x.f1)}, {UpTo: u(x.t2), Fee: u(x.f2)}, {Fee: u(x.f3)}}
+		assets[i].MinFee = u(x.f1)
+		assets[i].EscrowFeeBps, assets[i].EscrowFeeMin, assets[i].EscrowFeeMax = 150, u(x.min), u(x.max)
+	}
 }
 
 func status(args []string) error {
