@@ -3,6 +3,7 @@
 // flow, transparency, developers, call to action.
 import './landing.css'
 import { API_BASE } from './orp.js'
+import { circleTerm } from './region.js'
 
 const svg = (d) => `<svg viewBox="0 0 24 24" aria-hidden="true">${d}</svg>`
 const I = {
@@ -35,7 +36,7 @@ export function renderLanding(app, { onStart, onSignIn, signInLabel }) {
         <div class="lp-hero-copy">
           <span class="lp-pill"><span class="dot on"></span><span id="lp-live">Live on the OpenReserve network</span></span>
           <h1>Money moves.<br><span class="lp-grad">Trust stays.</span></h1>
-          <p class="lp-lead">Send naira, save in a circle and buy safely with escrow. Every payment is visible on-chain.</p>
+          <p class="lp-lead">Send naira, save in ${circleTerm() ? `${/^[aeiou]/.test(circleTerm()) ? 'an' : 'a'} ${circleTerm()}` : 'a circle'} and buy safely with escrow. Every payment is visible on-chain.</p>
           <div class="lp-cta">
             <button class="lp-btn ink lg" data-start>Get started free</button>
             <a class="lp-btn ghost lg" href="#how">How escrow works</a>

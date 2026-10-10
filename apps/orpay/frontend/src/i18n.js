@@ -7,6 +7,8 @@
 // French are listed as coming soon: they need review by native speakers
 // before real users see them.
 
+import { regionPhrases } from './region.js'
+
 const KEY = 'orpay.lang'
 
 export const LANGS = [
@@ -107,8 +109,9 @@ function translate(root, dict) {
 export function startI18n() {
   const lang = getLang()
   document.documentElement.lang = lang === 'pcm' ? 'pcm' : 'en'
-  const dict = DICTS[lang]
-  if (!dict) return
+  // Local names (ajo / susu / chama) first, then the chosen language.
+  const dict = { ...regionPhrases(), ...(DICTS[lang] ?? {}) }
+  if (!Object.keys(dict).length) return
   translate(document.body, dict)
   new MutationObserver((muts) => {
     for (const m of muts) m.addedNodes.forEach((n) => n.nodeType === 1 ? translate(n, dict) : n.nodeType === 3 && n.parentNode && translate(n.parentNode, dict))
