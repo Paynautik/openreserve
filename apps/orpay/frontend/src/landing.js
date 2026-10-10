@@ -89,7 +89,7 @@ export function renderLanding(app, { onStart, onSignIn, signInLabel }) {
       <div class="lp-feats">
         <article class="lp-feat reveal"><i class="c1">${svg(I.up)}</i><h3>Send</h3><p>By @username or QR. ₦20 flat.</p></article>
         <article class="lp-feat reveal"><i class="c2">${svg(I.down)}</i><h3>Receive</h3><p>Money lands in real time.</p></article>
-        <article class="lp-feat reveal"><i class="c4">${svg(I.ajo)}</i><h3>Ajo</h3><p>See who paid and who's next.</p></article>
+        <article class="lp-feat reveal"><i class="c4">${svg(I.ajo)}</i><h3>Saving circle</h3><p>See who paid and who's next.</p></article>
         <article class="lp-feat reveal"><i class="c3">${svg(I.eye)}</i><h3>Open</h3><p>Every payment on-chain.</p></article>
       </div>
       <article class="lp-escrow reveal" id="escrow">
