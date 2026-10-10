@@ -113,10 +113,6 @@ body:has(.lp) { background: #f7f7fc; }
 .lp-cards p, .lp-steps p { color: var(--mute); font-size: .9rem; line-height: 1.6; margin: 0; }
 
 .lp-band { background: #fff; border-block: 1px solid var(--line); }
-.lp-steps { list-style: none; padding: 0; margin: 56px 0 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; text-align: left; }
-.lp-steps li { padding: 28px; border-radius: 24px; box-shadow: inset 0 0 0 1px var(--line); }
-.lp-steps span { width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; background: var(--ink); color: #fff; font-weight: 700; }
-.lp-steps h3 { font-size: 1.25rem; margin: 24px 0 6px; }
 
 .lp-split { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: center; }
 .lp-track { background: #fff; border-radius: 24px; padding: 24px; box-shadow: 0 0 0 1px var(--line), 0 20px 60px -20px rgb(17 24 68 / .15); }
@@ -161,7 +157,6 @@ body:has(.lp) { background: #f7f7fc; }
   .lp-hero-grid, .lp-split { grid-template-columns: 1fr; gap: 48px; }
   .lp-phone-wrap { justify-content: center; }
   .lp-cards { grid-template-columns: 1fr 1fr; }
-  .lp-steps { grid-template-columns: 1fr; }
   .lp-sec { padding-block: 80px; }
 }
 @media (max-width: 520px) {
@@ -431,8 +426,8 @@ body:has(.lp) { background: #f7f7fc; }
 .lp-feat-art .t-steps { margin-top: 10px; }
 
 /* Three steps */
-.lp-steps { background: #fff; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
-.lp-steps .lp-sec { padding-block: 88px; }
+.lp-how { background: #fff; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.lp-how .lp-sec { padding-block: 88px; }
 .lp-step-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; }
 .lp-step-grid article { padding: 4px 28px; border-left: 1px solid var(--line); }
 .lp-step-grid article:first-child { border-left: 0; padding-left: 0; }
@@ -472,3 +467,5 @@ body:has(.lp) { background: #f7f7fc; }
 .lp-menu-only { display: none; }
 @media (max-width: 600px) { .lp-links.open .lp-menu-only { display: block; color: #4f46e5; font-weight: 700; } }
 .lp-step-grid > article > span { display: block; width: auto; height: auto; padding: 0; margin: 0; background: none; border-radius: 0; box-shadow: none; line-height: 1.4; }
+.lp-nav-cta .lp-btn { white-space: nowrap; }
+@media (max-width: 400px) { .lp-nav-cta [data-start] { padding: 8px 12px; font-size: .82rem; } .lp-nav .logo { font-size: 1.1rem; } }

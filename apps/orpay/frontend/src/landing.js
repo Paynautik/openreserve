@@ -103,7 +103,7 @@ export function renderLanding(app, { onStart, onSignIn, signInLabel }) {
       </div>
     </section>
 
-    <section class="lp-steps" id="how">
+    <section class="lp-how" id="how">
       <div class="lp-wrap lp-sec">
         <div class="lp-head">
           <p class="lp-kicker">Escrow in three steps</p>
