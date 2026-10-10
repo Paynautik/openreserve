@@ -5,7 +5,7 @@ import { api, assetLabel, escrowOp, formatMoney, node, parseAmount, partnerMark,
 import { fillTrust, showTrustCard, trustOf } from './trust.js'
 import { asksToPayOutside, radarBanner, riskOf } from './radar.js'
 import { renderSVG } from 'uqr'
-import { icon, moneyHTML, skeletonCard, skeletonRows, success } from './ui.js'
+import { ask, icon, moneyHTML, skeletonCard, skeletonRows, success } from './ui.js'
 
 let ctx
 
@@ -429,13 +429,13 @@ export async function renderEscrow(id, preloaded, focus) {
   root.querySelectorAll('[data-op]').forEach((b) => {
     b.onclick = async () => {
       const op = b.dataset.op
-      const confirmText = {
-        release: `Release ${money(e.milestones[e.released])} to the seller? This cannot be undone.`,
-        refund: 'Return the remaining funds to the buyer?',
-        dispute: 'Freeze this escrow and ask the arbiter to decide?',
-        resolve: 'Resolve this dispute with the split you entered?',
+      const sure = {
+        release: [`Release ${money(e.milestones[e.released])}?`, 'The seller gets paid now. This cannot be undone.', 'Release', false],
+        refund: ['Refund the buyer?', `${money(e.balance)} goes back to the buyer.`, 'Refund', true],
+        dispute: ['Open a dispute?', 'The escrow freezes and the arbiter decides how the money is split.', 'Open dispute', true],
+        resolve: ['Resolve this dispute?', 'The money is split as you entered. This cannot be undone.', 'Resolve', false],
       }[op]
-      if (confirmText && !confirm(confirmText)) return
+      if (sure && !(await ask(sure[1], { title: sure[0], ok: sure[2], danger: sure[3] }))) return
       const text = b.textContent
       b.disabled = true
       b.textContent = 'Confirming…'

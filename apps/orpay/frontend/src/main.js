@@ -13,7 +13,7 @@ import { renderLanding } from './landing.js'
 import { fillTrust, showTrustCard, trustChip, trustOf } from './trust.js'
 import { radarBanner, riskOf } from './radar.js'
 import { COMING, LANGS, getLang, setLang, startI18n } from './i18n.js'
-import { haptic, icon, moneyHTML, numpad, skeletonRows, slider, success } from './ui.js'
+import { ask, haptic, icon, moneyHTML, numpad, skeletonRows, slider, success } from './ui.js'
 import { bioEnabled, bioSupported, disableBio, enableBio, unlockBio } from './bio.js'
 import { newSignInWords, parseSignInWords, sealSignIn, signInToken, unsealSignIn } from './signin.js'
 import { clearVault, hasVault, saveVault, unlockVault, vaultAddress } from './vault.js'
@@ -172,15 +172,15 @@ function renderProfile() {
   on('#m-invite', renderInvites)
   on('#m-six', renderSignInSetup)
   on('#m-limit', renderLimit)
-  on('#m-words', () => {
-    if (!confirm('Show your 24 recovery words? Make sure nobody can see your screen.')) return
+  on('#m-words', async () => {
+    if (!(await ask('Make sure nobody can see your screen. Anyone with these words can take your money.', { title: 'Show recovery words?', ok: 'Show words' }))) return
     showPanel('Recovery words')
     $('#panel').innerHTML = `<p class="muted">Anyone with these words can take your money. Keep them offline.</p>${wordGrid(state.seed)}`
   })
   on('#m-notify', () => enablePush().then(() => toast('Notifications are on')).catch((err) => toast(err.message, 'err')))
   on('#m-bio', async () => {
     if (bioEnabled()) {
-      if (confirm('Turn off Face ID / fingerprint unlock on this device?')) disableBio(), toast('Turned off'), renderProfile()
+      if (await ask('You will type your password to unlock instead.', { title: 'Turn off Face ID / fingerprint?', ok: 'Turn off', danger: true })) disableBio(), toast('Turned off'), renderProfile()
       return
     }
     try {
@@ -208,8 +208,8 @@ function renderProfile() {
     renderProfile()
   })
   on('#m-lock', lock)
-  on('#m-forget', () => {
-    if (!confirm('Remove this wallet from this device? You will need your six sign-in words or 24 recovery words to use it here again.')) return
+  on('#m-forget', async () => {
+    if (!(await ask('You will need your six sign-in words or 24 recovery words to use it here again.', { title: 'Remove wallet from this device?', ok: 'Remove', danger: true }))) return
     clearVault()
     disableBio()
     try {
@@ -259,7 +259,7 @@ async function renderSignInSetup() {
       <div class="row"><button class="ghost" id="renew">Get new words</button><button class="danger" id="off">Turn off</button></div><p class="error" id="err"></p>`
     $('#renew').onclick = () => showSignInWords()
     $('#off').onclick = async () => {
-      if (!confirm('Turn off six-word sign-in? You will need your 24 recovery words on new devices.')) return
+      if (!(await ask('You will need your 24 recovery words on new devices.', { title: 'Turn off six-word sign-in?', ok: 'Turn off', danger: true }))) return
       await api.deleteSignIn(state.seed).catch((err) => ($('#err').textContent = err.message))
       renderSignInSetup()
     }
@@ -1116,8 +1116,8 @@ function renderReceive() {
   $('#copy-addr').onclick = () => navigator.clipboard.writeText(state.address).then(() => toast('Address copied'))
   if ($('#claim')) $('#claim').onclick = renderClaim
   $('#sixwords').onclick = renderSignInSetup
-  $('#reveal').onclick = (e) => {
-    if (confirm('Show your recovery words? Make sure nobody can see your screen.')) e.target.outerHTML = wordGrid(state.seed)
+  $('#reveal').onclick = async (e) => {
+    if (await ask('Make sure nobody can see your screen.', { title: 'Show recovery words?', ok: 'Show words' })) e.target.outerHTML = wordGrid(state.seed)
   }
   $('#lock').onclick = lock
   const nb = $('#notify')

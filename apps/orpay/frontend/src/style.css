@@ -967,3 +967,21 @@ button .ic { vertical-align: -4px; }
 .forget-confirm #forget-yes:hover { filter: brightness(1.08); }
 .brand-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 .brand-row .back { margin: 0; order: 2; }
+
+/* In-page confirmation sheet (replaces confirm/prompt) */
+.ask { position: fixed; inset: 0; z-index: 200; display: grid; place-items: center; padding: 16px; background: rgb(15 23 42 / 0); transition: background .18s; }
+.ask.in { background: rgb(15 23 42 / .45); }
+.ask-card { width: min(400px, 100%); background: var(--surface, #fff); color: var(--text, #0f172a); border: 1px solid var(--border, #e6eaf2); border-radius: 20px; padding: 20px; box-shadow: 0 24px 60px -20px rgb(15 23 42 / .45); transform: translateY(12px) scale(.98); opacity: 0; transition: transform .18s, opacity .18s; }
+.ask.in .ask-card { transform: none; opacity: 1; }
+.ask-card h3 { margin: 0 0 6px; font-size: 1.05rem; }
+.ask-card p { margin: 0 0 16px; color: var(--muted, #64748b); line-height: 1.5; }
+.ask-input { width: 100%; margin-bottom: 16px; }
+.ask-actions { display: flex; gap: 8px; justify-content: flex-end; }
+.ask-actions button { width: auto; }
+button.danger.solid { background: var(--danger, #e11d48); color: #fff; }
+@media (max-width: 600px) {
+  .ask { place-items: end stretch; padding: 0; }
+  .ask-card { width: 100%; border-radius: 22px 22px 0 0; padding: 22px 18px calc(18px + env(safe-area-inset-bottom)); transform: translateY(40px); }
+  .ask-actions button { flex: 1; }
+}
+@media (prefers-reduced-motion: reduce) { .ask, .ask-card { transition: none; } }

@@ -2,6 +2,7 @@
 // use OpenReserve payments, admins review requests, and approved apps manage
 // API keys, webhooks and their settlement address.
 import { api, formatMoney, isAddress, partnerMark } from './orp.js'
+import { ask } from './ui.js'
 
 let ctx
 
@@ -48,7 +49,11 @@ export async function renderDevelopers() {
   root.querySelectorAll('[data-review]').forEach((b) => {
     b.onclick = async () => {
       const [id, decision] = b.dataset.review.split(':')
-      const note = decision === 'approve' ? '' : prompt(`Reason to ${decision} (shown to the company):`) ?? ''
+      let note = ''
+      if (decision !== 'approve') {
+        note = await ask('Shown to the company.', { title: `Reason to ${decision}`, ok: decision[0].toUpperCase() + decision.slice(1), danger: true, input: 'e.g. Website does not match the company' })
+        if (note === null) return
+      }
       b.disabled = true
       try {
         await api.reviewApp(ctx.state.seed, id, decision, note)
@@ -230,7 +235,7 @@ function bindAppCards(apps) {
     const keyBtn = card.querySelector('[data-act="key"]')
     if (keyBtn)
       keyBtn.onclick = async () => {
-        if (a.key_prefix && !confirm('Rolling the key stops the old key working immediately. Continue?')) return
+        if (a.key_prefix && !(await ask('The old key stops working immediately.', { title: 'Roll API key?', ok: 'Roll key', danger: true }))) return
         keyBtn.disabled = true
         try {
           const r = await api.rotateKey(ctx.state.seed, a.id)

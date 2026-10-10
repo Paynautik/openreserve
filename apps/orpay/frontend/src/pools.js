@@ -3,7 +3,7 @@
 // who is next, and a timeline of every join, contribution and claim.
 import { api, assetLabel, formatAmount, formatMoney, node, parseAmount, poolOp, waitForCommit } from './orp.js'
 import { renderSVG } from 'uqr'
-import { icon, moneyHTML, skeletonCard, skeletonRows, success } from './ui.js'
+import { ask, icon, moneyHTML, skeletonCard, skeletonRows, success } from './ui.js'
 import { fillTrust } from './trust.js'
 import { shareInviteCard } from './invitecard.js'
 
@@ -342,7 +342,7 @@ function renderGoal(p, history, money) {
       }
     }
   if (ctx.$('#cancel-circle'))
-    ctx.$('#cancel-circle').onclick = (e) => confirm('Delete this circle? This cannot be undone.') && run(e.target, { op: 'cancel' }, 'Circle deleted')
+    ctx.$('#cancel-circle').onclick = async (e) => (await ask('This cannot be undone.', { title: 'Delete circle?', ok: 'Delete', danger: true })) && run(e.target, { op: 'cancel' }, 'Circle deleted')
   if (ctx.$('#withdraw-go')) ctx.$('#withdraw-go').onclick = (e) => run(e.target, { op: 'withdraw' }, `${money(mine)} is back in your wallet`)
 }
 
@@ -588,8 +588,8 @@ export async function renderPool(id, preloaded) {
     return v
   }
   if (ctx.$('#cancel-circle'))
-    ctx.$('#cancel-circle').onclick = (e) =>
-      confirm('Delete this circle? Anyone who joined gets their deposit back. This cannot be undone.') && run(e.target, { op: 'cancel' }, 'Circle deleted')
+    ctx.$('#cancel-circle').onclick = async (e) =>
+      (await ask('Anyone who joined gets their deposit back. This cannot be undone.', { title: 'Delete circle?', ok: 'Delete', danger: true })) && run(e.target, { op: 'cancel' }, 'Circle deleted')
   if (ctx.$('#nudge'))
     ctx.$('#nudge').onclick = async (e) => {
       e.target.disabled = true
@@ -616,17 +616,18 @@ export async function renderPool(id, preloaded) {
         ctx.$('#err').textContent = err.message
       }
     }
-  root.querySelectorAll('[data-swap]').forEach((b) => (b.onclick = () => {
+  root.querySelectorAll('[data-swap]').forEach((b) => (b.onclick = async () => {
     const accepting = p.swap_with?.[p.members.indexOf(b.dataset.swap)] === ctx.state.address
-    if (!confirm(accepting ? `Trade payout turns with ${label(b.dataset.swap)}?` : `Ask ${label(b.dataset.swap)} to trade payout turns? It happens when they accept.`)) return
+    const who = ctx.esc(ctx.nameOf(b.dataset.swap) ? '@' + ctx.nameOf(b.dataset.swap) : ctx.short(b.dataset.swap))
+    if (!(await ask(accepting ? `You take their payout turn and they take yours.` : `The swap happens when ${who} accepts.`, { title: accepting ? `Trade turns with ${who}?` : `Ask ${who} to trade turns?`, ok: accepting ? 'Trade turns' : 'Send request' }))) return
     run(b, { op: 'swap', other: b.dataset.swap }, accepting ? 'Turns swapped' : 'Swap requested')
   }))
   if (ctx.$('#ap-on'))
     ctx.$('#ap-on').onclick = (e) =>
       apRun(e.target, { op: 'autopay', contribution: each * BigInt(ctx.$('#ap-rounds').value) }, 'Autopay is on')
   if (ctx.$('#ap-off'))
-    ctx.$('#ap-off').onclick = (e) =>
-      confirm(`Stop autopay and return ${money(prepaid)} to your wallet?`) && apRun(e.target, { op: 'stop_autopay' }, 'Autopay stopped')
+    ctx.$('#ap-off').onclick = async (e) =>
+      (await ask(`${money(prepaid)} goes back to your wallet.`, { title: 'Stop autopay?', ok: 'Stop autopay' })) && apRun(e.target, { op: 'stop_autopay' }, 'Autopay stopped')
   root.querySelectorAll('[data-op]').forEach(
     (b) =>
       (b.onclick = async () => {
@@ -745,11 +746,11 @@ export async function renderInvite(id) {
   const leave = ctx.$('#leave')
   if (leave) leave.onclick = () => act(leave, () => api.inviteAction(ctx.state.seed, id, 'leave'))
   if (ctx.$('#delete-invite'))
-    ctx.$('#delete-invite').onclick = (e) =>
-      confirm('Delete this circle? Everyone who joined the invite will see it was deleted.') &&
+    ctx.$('#delete-invite').onclick = async (e) =>
+      (await ask('Everyone who joined the invite will see it was deleted.', { title: 'Delete circle?', ok: 'Delete', danger: true })) &&
       act(e.target, () => api.inviteAction(ctx.state.seed, id, 'delete'))
-  ctx.root().querySelectorAll('[data-remove]').forEach((b) => (b.onclick = () =>
-    confirm(`Remove ${label(b.dataset.remove)} from this circle?`) && act(b, () => api.inviteAction(ctx.state.seed, id, 'remove', { member: b.dataset.remove }))))
+  ctx.root().querySelectorAll('[data-remove]').forEach((b) => (b.onclick = async () =>
+    (await ask('They can join again with the invite link.', { title: `Remove ${ctx.nameOf(b.dataset.remove) ? '@' + ctx.nameOf(b.dataset.remove) : 'this member'}?`, ok: 'Remove', danger: true })) && act(b, () => api.inviteAction(ctx.state.seed, id, 'remove', { member: b.dataset.remove }))))
   const move = (i, j) => {
     const order = d.members.slice()
     ;[order[i], order[j]] = [order[j], order[i]]

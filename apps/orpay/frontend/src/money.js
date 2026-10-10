@@ -4,6 +4,7 @@
 // on-chain and the provider pays the bank.
 import { formatMoney, gateway, parseAmount, providerLabel, send, waitForCommit } from './orp.js'
 import { openCheckout } from './native.js'
+import { ask } from './ui.js'
 
 let ctx
 
@@ -198,7 +199,7 @@ export async function renderWithdraw() {
       const amount = nairaAmount(ctx.$('#amount').value)
       const txFee = BigInt((ctx.state.status.assets ?? []).find((a) => a.symbol === 'NGN')?.min_fee ?? 0)
       if (amount + txFee > bal) throw new Error('Not enough naira for this withdrawal.')
-      if (!confirm(`Send ${formatMoney(amount - fee, 'NGN')} to ${resolved}? This cannot be undone.`)) return
+      if (!(await ask(`${formatMoney(amount - fee, 'NGN')} goes to ${resolved}. This cannot be undone.`, { title: 'Withdraw to your bank?', ok: 'Withdraw' }))) return
       btn.disabled = true
       btn.textContent = 'Preparing…'
       const q = await gateway.withdraw(ctx.state.seed, {

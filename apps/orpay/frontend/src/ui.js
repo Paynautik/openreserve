@@ -146,3 +146,48 @@ export function success({ title, amount, lines = [], shareText }) {
 export const skeletonRows = (n = 3) =>
   Array.from({ length: n }, () => '<li class="sk-row"><span class="sk sk-ico"></span><span class="sk-lines"><span class="sk sk-l1"></span><span class="sk sk-l2"></span></span><span class="sk sk-amt"></span></li>').join('')
 export const skeletonCard = () => '<section class="card"><span class="sk sk-title"></span>' + `<ul class="sk-list">${skeletonRows(3)}</ul></section>`
+
+// In-page confirmation sheet. Browser confirm()/prompt() are silently blocked
+// in some in-app webviews (partner apps, Instagram, WhatsApp), so never use
+// them. Resolves true/false, or the entered text (null if cancelled) when
+// `input` is set.
+export function ask(message, { title = 'Are you sure?', ok = 'Continue', cancel = 'Cancel', danger = false, input = null } = {}) {
+  return new Promise((done) => {
+    const el = document.createElement('div')
+    el.className = 'ask'
+    el.innerHTML = `
+      <div class="ask-card" role="alertdialog" aria-modal="true" aria-labelledby="ask-t" aria-describedby="ask-m">
+        <h3 id="ask-t"></h3>
+        <p id="ask-m"></p>
+        ${input ? '<input class="ask-input" autocomplete="off">' : ''}
+        <div class="ask-actions"><button type="button" class="ghost" data-no></button><button type="button" class="${danger ? 'danger solid' : 'primary'}" data-yes></button></div>
+      </div>`
+    el.querySelector('#ask-t').textContent = title
+    el.querySelector('#ask-m').textContent = message
+    el.querySelector('[data-no]').textContent = cancel
+    el.querySelector('[data-yes]').textContent = ok
+    const field = el.querySelector('.ask-input')
+    if (field) field.placeholder = input
+    const prev = document.activeElement
+    const close = (v) => {
+      el.classList.remove('in')
+      document.removeEventListener('keydown', onKey, true)
+      setTimeout(() => el.remove(), 180)
+      prev?.focus?.()
+      done(v)
+    }
+    const yes = () => close(field ? field.value.trim() : true)
+    const no = () => close(field ? null : false)
+    const onKey = (e) => {
+      if (e.key === 'Escape') e.preventDefault(), no()
+      else if (e.key === 'Enter' && field && document.activeElement === field) e.preventDefault(), yes()
+    }
+    el.querySelector('[data-yes]').onclick = yes
+    el.querySelector('[data-no]').onclick = no
+    el.onclick = (e) => e.target === el && no()
+    document.addEventListener('keydown', onKey, true)
+    document.body.append(el)
+    requestAnimationFrame(() => el.classList.add('in'))
+    ;(field ?? el.querySelector(danger ? '[data-no]' : '[data-yes]')).focus()
+  })
+}
