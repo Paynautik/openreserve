@@ -288,11 +288,24 @@ escrow = orpay.create_escrow(
       ribbon.className = 'lp-ribbon'
       uses.before(ribbon)
       ribbon.append(uses)
-      ;[...uses.children].forEach((c) => {
-        const d = c.cloneNode(true)
-        d.setAttribute('aria-hidden', 'true')
-        uses.append(d)
-      })
+      // Repeat the cards until one set is wider than the screen, then double
+      // it; the track scrolls by exactly one set, so the loop never shows a gap.
+      const originals = [...uses.children]
+      const fill = () => {
+        uses.replaceChildren(...originals)
+        const one = uses.scrollWidth || 1460
+        const sets = Math.max(1, Math.ceil(window.innerWidth / one)) * 2
+        for (let i = 1; i < sets; i++)
+          originals.forEach((c) => {
+            const d = c.cloneNode(true)
+            d.setAttribute('aria-hidden', 'true')
+            uses.append(d)
+          })
+        uses.style.setProperty('--glide-dur', `${Math.round((uses.scrollWidth / 2) / 45)}s`)
+      }
+      fill()
+      let t
+      window.addEventListener('resize', () => (clearTimeout(t), (t = setTimeout(fill, 200))))
     }
   }
   fetch(API_BASE + '/v1/status').then((r) => r.json()).then((st) => {
