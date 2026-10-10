@@ -35,7 +35,9 @@ export function regionPhrases() {
   if (!t) return {}
   const T = cap(t)
   return {
-    Circles: T, 'Saving circles': T, 'Saving circle': T, 'saving circle': t,
+    // Short labels (tabs, buttons) use the local word; headings pair it with
+    // the English so newcomers know what it is: "Ajo / Saving circles".
+    Circles: T, 'Saving circles': `${T} / Saving circles`, 'Saving circle': `${T} / Saving circle`, 'saving circle': t,
     'New saving circle': `New ${t}`, 'New circle': `New ${t}`,
     'Start your first saving circle': `Start your first ${t}`, 'Start a circle': `Start ${an(t)} ${t}`,
     'Create circle': `Create ${t}`, 'Join circle': `Join ${t}`, 'Join this circle': `Join this ${t}`,

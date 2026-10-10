@@ -848,7 +848,7 @@ function renderHeader() {
   const h = $('#header')
   if (!h) return
   const net = state.status
-    ? `<span class="dot ${state.online ? 'on' : 'off'}"></span>${state.online ? `${esc(state.status.chain_id)} · block ${state.status.height}` : 'Node offline'}`
+    ? `<span class="dot ${state.online ? 'on' : 'off'}"></span>${state.online ? `${esc(state.status.chain_id)} · block ${state.status.height}` : 'Offline'}`
     : 'Connecting…'
   const who = state.username ?? ''
   if (h.dataset.who !== who || !h.firstChild) {
@@ -891,7 +891,7 @@ function renderBalance() {
   if (el.dataset.built !== key) {
     el.dataset.built = key
     el.innerHTML = `
-      <p class="label">Total balance</p>
+      <p class="label">Total balance <button class="eye" id="hide-bal" type="button" aria-label="Hide balance" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12S6 5 12 5s9.5 7 9.5 7-3.5 7-9.5 7-9.5-7-9.5-7z"/><circle cx="12" cy="12" r="3"/></svg></button></p>
       <p class="amount" id="bal"></p>
       ${primary ? '<p class="sub-balance" title="ORP pays network fees. It has no cash value.">Network credits: <span id="bal-orp"></span> ORP</p>' : ''}
       <div class="balance-actions">
@@ -910,11 +910,27 @@ function renderBalance() {
         }
         f.disabled = false
       }
+    const eye = $('#hide-bal')
+    const applyHide = (on) => {
+      el.classList.toggle('hidden-bal', on)
+      eye.setAttribute('aria-pressed', String(on))
+      eye.setAttribute('aria-label', on ? 'Show balance' : 'Hide balance')
+    }
+    try {
+      applyHide(localStorage.getItem('orpay.hideBalance') === '1')
+    } catch {}
+    eye.onclick = () => {
+      const on = !el.classList.contains('hidden-bal')
+      applyHide(on)
+      try {
+        localStorage.setItem('orpay.hideBalance', on ? '1' : '0')
+      } catch {}
+    }
     if ($('#add')) $('#add').onclick = () => showView('money', renderAddMoney)
     if ($('#withdraw')) $('#withdraw').onclick = () => showView('money', renderWithdraw)
   }
   if (!state.account) {
-    $('#bal').textContent = '—'
+    $('#bal').innerHTML = `<span class="bal-wait" aria-label="Loading balance"></span>${state.online === false ? '<small class="bal-off">Can\'t reach the network. Retrying…</small>' : ''}`
     return
   }
   $('#bal').innerHTML = primary
