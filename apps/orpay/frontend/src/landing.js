@@ -18,7 +18,7 @@ const I = {
 export function renderLanding(app, { onStart, onSignIn, signInLabel }) {
   document.title = 'ORPay: payments on OpenReserve'
   app.innerHTML = `
-  <div class="lp">
+  <div class="lp${new URLSearchParams(location.search).get('look') === '2050' ? ' y2050' : ''}">
     <nav class="lp-nav">
       <a class="logo" href="#top" aria-label="ORPay"><span class="logo-or">OR</span><span class="logo-pay">Pay</span></a>
       <div class="lp-links">
@@ -162,6 +162,14 @@ export function renderLanding(app, { onStart, onSignIn, signInLabel }) {
         <p class="lp-kicker">How trust works</p>
         <h2>Always know where<br>your money is.</h2>
       </div>
+      <div class="lp-bento" aria-label="Live from the OpenReserve ledger">
+        <article class="b-hero"><span class="b-tag"><i class="b-live"></i>LIVE · ON-CHAIN</span><small>Held safely in escrow right now</small><strong data-stat="held">—</strong><em>Not in anyone's account. Not even ours.</em></article>
+        <article><span class="b-tag">AJO</span><strong data-stat="saving">—</strong><small>saving in circles</small></article>
+        <article><span class="b-tag">DEALS</span><strong data-stat="completed">—</strong><small>escrows completed</small></article>
+        <article><span class="b-tag">ARBITERS</span><strong data-stat="resolved">—</strong><small>disputes settled on the record</small></article>
+        <article class="b-fee"><span class="b-tag">FEES</span><strong>₦10<sup>+</sup></strong><small>per transfer · escrow 1.5% on completion</small></article>
+        <article class="b-block"><span class="b-tag">BLOCK</span><strong data-stat="height">—</strong><small><a href="/explorer.html">verify on the explorer →</a></small></article>
+      </div>
       <div class="lp-trust-grid">
         <article class="reveal"><i>${svg('<rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>')}</i><span><b>Locked on-chain</b><small>Not in anyone's account. Not even ours.</small></span></article>
         <article class="reveal"><i>${svg('<path d="M12 3v18M5 7h14M7 7l-3 6a3 3 0 0 0 6 0zM17 7l-3 6a3 3 0 0 0 6 0z"/>')}</i><span><b>Neutral arbiters</b><small>They settle disputes, on the record.</small></span></article>
@@ -241,6 +249,7 @@ export function renderLanding(app, { onStart, onSignIn, signInLabel }) {
   const io = 'IntersectionObserver' in window && new IntersectionObserver((es) => es.forEach((e) => e.isIntersecting && (e.target.classList.add('in'), io.unobserve(e.target))), { threshold: 0.15 })
   app.querySelectorAll('.reveal').forEach((el, i) => (io ? ((el.style.transitionDelay = `${(i % 4) * 70}ms`), io.observe(el)) : el.classList.add('in')))
 
+  if (app.querySelector('.lp.y2050')) liveLedger(app)
   fetch(API_BASE + '/v1/status').then((r) => r.json()).then((st) => {
     const el = document.getElementById('lp-live')
     if (el && st.height > 0) el.textContent = `Live on OpenReserve · block ${st.height.toLocaleString()}`
@@ -347,4 +356,38 @@ function themeToggle(app) {
       localStorage.setItem('orpay.lpTheme', dark ? 'dark' : 'light')
     } catch {}
   }
+}
+
+// 2050 look: live numbers from the chain, counting up when they arrive.
+function liveLedger(app) {
+  const naira = (micro) => '₦' + Math.round(Number(BigInt(micro ?? 0) / 10_000n) / 100).toLocaleString('en-NG')
+  const count = (el, to, fmt) => {
+    const t0 = performance.now()
+    const step = (t) => {
+      const k = Math.min(1, (t - t0) / 900)
+      el.textContent = fmt(Math.round(to * (1 - Math.pow(1 - k, 3))))
+      if (k < 1) requestAnimationFrame(step)
+    }
+    requestAnimationFrame(step)
+  }
+  const put = (k, v, fmt = (x) => x.toLocaleString('en-NG')) => {
+    const el = app.querySelector(`[data-stat="${k}"]`)
+    if (el) count(el, v, fmt)
+  }
+  const tick = () => {
+    fetch(API_BASE + '/v1/stats').then((r) => r.json()).then((st) => {
+      const held = Number(BigInt(st.escrows?.held?.NGN ?? 0) / 10_000n) / 100
+      const saving = Number(BigInt(st.circles?.saving_now?.NGN ?? 0) / 10_000n) / 100
+      put('held', held, (x) => naira(BigInt(x) * 1_000_000n))
+      put('saving', saving, (x) => naira(BigInt(x) * 1_000_000n))
+      put('completed', st.escrows?.completed ?? 0)
+      put('resolved', st.escrows?.resolved ?? 0)
+    }).catch(() => {})
+    fetch(API_BASE + '/v1/status').then((r) => r.json()).then((s) => {
+      const el = app.querySelector('[data-stat="height"]')
+      if (el) el.textContent = `#${s.height.toLocaleString('en-NG')}`
+    }).catch(() => {})
+  }
+  tick()
+  setInterval(tick, 8000)
 }
