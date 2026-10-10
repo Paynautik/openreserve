@@ -1043,3 +1043,13 @@ ul li.empty:has(.empty-ico) { display: flex !important; flex-direction: column; 
 ul li.empty:has(.empty-ico) strong { font-size: 1rem; }
 ul li.empty:has(.empty-ico) small { display: block; max-width: 30ch; color: var(--muted); line-height: 1.45; }
 ul li.empty:has(.empty-ico) button { width: auto; margin: 8px auto 0; align-self: center; }
+
+/* Demo mode bar */
+.demo-bar { position: sticky; top: 0; z-index: 60; display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: #fef3c7; color: #78350f; font-size: .8rem; border-bottom: 1px solid #fde68a; }
+.demo-bar span { flex: 1; min-width: 0; }
+.demo-bar button { width: auto; padding: 6px 10px; font-size: .78rem; border-radius: 10px; background: transparent; color: inherit; border: 1px solid #f59e0b; box-shadow: none; }
+.demo-bar button.primary { background: #0b1030; color: #fff; border-color: #0b1030; }
+.swipe-act { opacity: 0; transition: opacity .15s; }
+.swipeable.dragging .swipe-act, .swipeable.swiped .swipe-act { opacity: 1; }
+:root[data-theme="dark"] .reminders { border-color: rgb(251 146 60 / .35); background: rgb(251 146 60 / .08); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .reminders { border-color: rgb(251 146 60 / .35); background: rgb(251 146 60 / .08); } }

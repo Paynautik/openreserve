@@ -19,6 +19,7 @@ import { bioEnabled, bioSupported, disableBio, enableBio, unlockBio } from './bi
 import { newSignInWords, parseSignInWords, sealSignIn, signInToken, unsealSignIn } from './signin.js'
 import { clearVault, hasVault, saveVault, unlockVault, vaultAddress } from './vault.js'
 import { getLimit, overLimit, setLimit, spentToday } from './limits.js'
+import { exitDemo, installDemo, isDemo } from './demo.js'
 
 const app = document.getElementById('app')
 
@@ -510,7 +511,7 @@ function watchIdle() {
 async function openWallet(seed, address) {
   state.seed = seed
   state.address = address
-  saveSession(seed, address)
+  if (!state.demo) saveSession(seed, address)
   watchIdle()
   renderWallet()
   if (!pullToRefresh.on) (pullToRefresh(), (pullToRefresh.on = true))
@@ -600,11 +601,13 @@ function bindSwipes(ul) {
     li.addEventListener('touchmove', (e) => {
       if (x0 === null) return
       dx = Math.min(0, Math.max(-96, e.touches[0].clientX - x0))
+      li.classList.toggle('dragging', dx < 0)
       li.querySelector('.row-body').style.transform = `translateX(${dx}px)`
     }, { passive: true })
     li.addEventListener('touchend', () => {
       li.querySelector('.row-body').style.transform = dx < -60 ? 'translateX(-96px)' : ''
       li.classList.toggle('swiped', dx < -60)
+      li.classList.remove('dragging')
       x0 = null
     })
     li.querySelector('.swipe-act').onclick = () => {
@@ -1441,7 +1444,8 @@ async function renderGuestCheckout(invoice) {
     pending = JSON.parse(sessionStorage.getItem(PENDING))
   } catch {}
   const wantsLanding = new URLSearchParams(location.search).has('home')
-  if (pending?.invoice) renderGuestCheckout(pending)
+  if (isDemo()) startDemo()
+  else if (pending?.invoice) renderGuestCheckout(pending)
   // Partner links (escrow, circle invite) go straight to the express wallet.
   else if (!hasVault() && (pending?.escrow_request || pending?.escrow || pending?.ajo_invite)) renderWelcome()
   else if (hasVault() && !wantsLanding) {
@@ -1449,6 +1453,25 @@ async function renderGuestCheckout(invoice) {
     s ? openWallet(fromHex(s.seed), s.address) : renderUnlock()
   }
   else showLanding()
+}
+
+// Demo mode: a throwaway in-memory wallet on sample data (see demo.js).
+async function startDemo() {
+  const seed = new Uint8Array(32).fill(7)
+  const address = await addressOf(seed)
+  installDemo(address)
+  state.demo = true
+  history.replaceState(null, '', location.pathname)
+  await openWallet(seed, address)
+  const bar = document.createElement('div')
+  bar.className = 'demo-bar'
+  bar.innerHTML = '<span><b>Demo</b> · sample data, nothing is sent</span><button type="button" id="demo-exit">Exit</button><button type="button" class="primary" id="demo-real">Create real wallet</button>'
+  document.body.prepend(bar)
+  bar.querySelector('#demo-exit').onclick = exitDemo
+  bar.querySelector('#demo-real').onclick = () => {
+    sessionStorage.removeItem('orpay.demo')
+    location.href = '/'
+  }
 }
 
 function openSaved() {

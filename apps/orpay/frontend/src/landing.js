@@ -39,7 +39,7 @@ export function renderLanding(app, { onStart, onSignIn, signInLabel }) {
           <p class="lp-lead">Send naira, save in ${circleTerm() ? `${/^[aeiou]/.test(circleTerm()) ? 'an' : 'a'} ${circleTerm()}` : 'a circle'} and buy safely with escrow. Every payment is visible on-chain.</p>
           <div class="lp-cta">
             <button class="lp-btn ink lg" data-start>Get started free</button>
-            <a class="lp-btn ghost lg" href="#how">How escrow works</a>
+            <a class="lp-btn ghost lg" href="/?demo">Try the demo</a>
           </div>
           <p class="lp-built"><img src="/favicon.png" alt="">Built on the <b>OpenReserve Protocol</b> · ₦20 flat fee</p>
         </div>
