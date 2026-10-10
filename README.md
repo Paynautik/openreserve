@@ -433,3 +433,13 @@ MIT License
 We believe value should move across the world as freely as information moves across the Internet.
 
 OpenReserve is building the open financial infrastructure that makes that possible.
+
+## Licence
+
+The OpenReserve node and protocol, the SDKs (`sdk/`) and the explorer are open
+source under the [Apache License 2.0](LICENSE).
+
+The ORPay backend (partner platform, payment rails, risk scoring) is
+proprietary and lives in a private repository. If you have access, clone it
+into `apps/orpay/backend` for local development; everything else builds
+without it.

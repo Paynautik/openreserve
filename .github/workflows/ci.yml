@@ -21,7 +21,7 @@ jobs:
       - uses: actions/setup-go@v5
         with:
           go-version-file: node/go.mod
-      - run: cd apps/orpay/backend && go vet ./... && go test -race ./...
+      # The ORPay backend lives in a private repo with its own CI.
       - uses: actions/setup-node@v4
         with:
           node-version: 22

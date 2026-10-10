@@ -13,6 +13,7 @@ deploy/genesis.json
 !.env.example
 deploy/.monitor-state
 testnet/
-apps/orpay/backend/backend
+# ORPay backend is private (github.com/Paynautik/orpay-backend); clone it here for local dev.
+apps/orpay/backend/
 # ORPay server state (usernames, partner apps); survives devnet resets
 orpay-data/

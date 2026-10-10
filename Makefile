@@ -40,6 +40,7 @@ run: build
 orpay-backend:
 	@mkdir -p orpay-data && chmod 700 orpay-data
 	@chmod 600 devnet/alice.json
+	@[ -d apps/orpay/backend ] || { echo 'ORPay backend is private: git clone https://github.com/Paynautik/orpay-backend apps/orpay/backend'; exit 1; }
 	cd apps/orpay/backend && { [ ! -f ../../../.env ] || { set -a; . ../../../.env; set +a; }; } && go run . -db ../../../orpay-data/orpay-users.json -faucet-key ../../../devnet/alice.json \
 		$$(grep -q '"assets"' ../../../devnet/genesis.json && echo -default-currency NGN -card-payments) \
 		$${ORPAY_ADMINS:+-admins $$ORPAY_ADMINS} -allow-private-webhooks

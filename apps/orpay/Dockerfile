@@ -1,4 +1,7 @@
-# Build from the repository root:
+# Build from the repository root. The backend target needs the private
+# ORPay backend cloned into apps/orpay/backend
+# (git clone https://github.com/Paynautik/orpay-backend apps/orpay/backend).
+#
 #   docker build -f apps/orpay/Dockerfile --target backend .
 #   docker build -f apps/orpay/Dockerfile --target web .
 
