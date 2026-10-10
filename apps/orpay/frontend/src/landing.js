@@ -249,7 +249,22 @@ export function renderLanding(app, { onStart, onSignIn, signInLabel }) {
   const io = 'IntersectionObserver' in window && new IntersectionObserver((es) => es.forEach((e) => e.isIntersecting && (e.target.classList.add('in'), io.unobserve(e.target))), { threshold: 0.15 })
   app.querySelectorAll('.reveal').forEach((el, i) => (io ? ((el.style.transitionDelay = `${(i % 4) * 70}ms`), io.observe(el)) : el.classList.add('in')))
 
-  if (app.querySelector('.lp.y2050')) liveLedger(app)
+  if (app.querySelector('.lp.y2050')) {
+    liveLedger(app)
+    // Seamless ribbon: wrap the cards and repeat them once (hidden from screen readers).
+    const uses = app.querySelector('.lp-uses')
+    if (uses) {
+      const ribbon = document.createElement('div')
+      ribbon.className = 'lp-ribbon'
+      uses.before(ribbon)
+      ribbon.append(uses)
+      ;[...uses.children].forEach((c) => {
+        const d = c.cloneNode(true)
+        d.setAttribute('aria-hidden', 'true')
+        uses.append(d)
+      })
+    }
+  }
   fetch(API_BASE + '/v1/status').then((r) => r.json()).then((st) => {
     const el = document.getElementById('lp-live')
     if (el && st.height > 0) el.textContent = `Live on OpenReserve · block ${st.height.toLocaleString()}`
