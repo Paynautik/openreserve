@@ -110,7 +110,7 @@ function renderWelcome() {
 function renderSignIn() {
   app.innerHTML = `
     <main class="narrow">
-      <button class="link back" id="back">← Back</button>
+      <div class="brand brand-row"><button class="link back" id="back">← Back</button><span class="logo" aria-label="ORPay"><span class="logo-or">OR</span><span class="logo-pay">Pay</span></span></div>
       <h1>Sign in</h1>
       <p class="muted">Use your @username and your six sign-in words.</p>
       <form id="f" class="stack" autocomplete="off">
@@ -298,9 +298,9 @@ function wordGrid(seed) {
 function showBackup(seed) {
   app.innerHTML = `
     <main class="narrow">
-      <button class="link back" id="back">← Back</button>
+      <div class="brand brand-row"><button class="link back" id="back">← Back</button><span class="logo" aria-label="ORPay"><span class="logo-or">OR</span><span class="logo-pay">Pay</span></span></div>
       <h1>Write down your recovery words</h1>
-      <p class="muted">These 24 words are the only way to restore your wallet. Anyone who has them can spend your ORP. Write them on paper, in order, and keep them offline.</p>
+      <p class="muted">These 24 words are the only way to restore your wallet. Anyone who has them can spend your money. Write them on paper, in order, and keep them offline.</p>
       ${wordGrid(seed)}
       <label class="check"><input type="checkbox" id="saved"> I wrote down all 24 words</label>
       <button class="primary" id="next" disabled>Continue</button>
@@ -313,7 +313,7 @@ function showBackup(seed) {
 function renderImport() {
   app.innerHTML = `
     <main class="narrow">
-      <button class="link back" id="back">← Back</button>
+      <div class="brand brand-row"><button class="link back" id="back">← Back</button><span class="logo" aria-label="ORPay"><span class="logo-or">OR</span><span class="logo-pay">Pay</span></span></div>
       <h1>Recover with 24 words</h1>
       <form id="f" class="stack">
         <label>Recovery words<textarea id="key" rows="4" spellcheck="false" autocomplete="off" autocapitalize="none" placeholder="24 words separated by spaces"></textarea></label>
@@ -337,6 +337,7 @@ function renderImport() {
 function renderSetPassword(seed) {
   app.innerHTML = `
     <main class="narrow">
+      <div class="brand"><span class="logo" aria-label="ORPay"><span class="logo-or">OR</span><span class="logo-pay">Pay</span></span></div>
       <h1>Set a password</h1>
       <p class="muted">Encrypts your key on this device. You'll enter it each time you open ORPay.</p>
       <form id="f" class="stack">

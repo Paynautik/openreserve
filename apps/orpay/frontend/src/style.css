@@ -965,3 +965,5 @@ button .ic { vertical-align: -4px; }
 .forget-confirm .row { display: flex; gap: 8px; justify-content: flex-end; }
 .forget-confirm #forget-yes { background: var(--danger); color: #fff; font-weight: 600; }
 .forget-confirm #forget-yes:hover { filter: brightness(1.08); }
+.brand-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.brand-row .back { margin: 0; order: 2; }
