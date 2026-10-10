@@ -915,3 +915,10 @@ body.lp-dark-body { background: #070b1f !important; }
 .lp.y2050 .lp-uses article:nth-child(5n+4) { --tint: #0284c7; }
 .lp.y2050 .lp-uses article:nth-child(5n+5) { --tint: #d97706; }
 @media (max-width: 600px) { .lp.y2050 .lp-uses small { display: none; } }
+
+/* Centre rings on the phone itself (the switcher sits above it) */
+.lp-phone-wrap { --phone-shift: 17px; }
+.lp-halo, .lp-orbit { top: calc(50% + var(--phone-shift)); }
+.lp.y2050 .lp-halo { width: 430px; height: 430px; border: 1px solid rgb(99 102 241 / .14); background: radial-gradient(circle, rgb(99 102 241 / .06), transparent 70%); box-shadow: none; }
+.lp.y2050 .lp-orbit { width: 560px; height: 560px; border-color: rgb(99 102 241 / .22); }
+@media (max-width: 600px) { .lp.y2050 .lp-halo { width: 300px; height: 300px; } .lp.y2050 .lp-orbit { width: 380px; height: 380px; } }
