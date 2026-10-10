@@ -19,8 +19,10 @@ export class ORPay {
    *   baseUrl: the ORPay deployment, e.g. https://pay.openreserve.app
    */
   constructor({ apiKey, baseUrl = 'http://localhost:4000' } = {}) {
-    if (!apiKey?.startsWith('orp_sk_')) throw new Error('ORPay: apiKey must start with orp_sk_')
+    if (!apiKey?.startsWith('orp_sk_') && !apiKey?.startsWith('orp_test_')) throw new Error('ORPay: apiKey must start with orp_sk_ or orp_test_')
     this.apiKey = apiKey
+    /** True when using a sandbox key (orp_test_...). */
+    this.testMode = apiKey.startsWith('orp_test_')
     this.baseUrl = baseUrl.replace(/\/$/, '')
   }
 
@@ -50,6 +52,15 @@ export class ORPay {
   /** Fetch a checkout's current status. */
   getCheckout(id) {
     return this.#call('GET', `/api/v1/checkout/${encodeURIComponent(id)}`)
+  }
+
+  /**
+   * Sandbox only (orp_test_ key): mark a test checkout as paid. Your webhook
+   * receives a signed invoice.paid event with data.test === true.
+   */
+  sandboxPayCheckout(id) {
+    if (!this.testMode) throw new Error('ORPay: sandboxPayCheckout needs a test key (orp_test_...)')
+    return this.#call('POST', `/api/v1/sandbox/checkout/${encodeURIComponent(id)}/pay`)
   }
 
   /**

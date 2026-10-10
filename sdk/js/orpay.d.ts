@@ -5,6 +5,8 @@ export class ORPayError extends Error {
 }
 
 export interface Checkout {
+  /** Present on checkouts made with a sandbox key. */
+  test?: boolean
   id: string
   app_id: string
   merchant: string
@@ -69,6 +71,9 @@ export class ORPay {
     expiresInMinutes?: number
   }): Promise<Checkout>
   getCheckout(id: string): Promise<Checkout>
+  /** Sandbox only (orp_test_ key): mark a test checkout paid. */
+  sandboxPayCheckout(id: string): Promise<Checkout>
+  readonly testMode: boolean
   listCheckouts(p?: { status?: Checkout['status'] }): Promise<Checkout[]>
   createEscrow(p: {
     seller: string

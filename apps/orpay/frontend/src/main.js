@@ -91,12 +91,48 @@ function toast(msg, kind = 'ok') {
 
 // ---------- onboarding ----------
 
+// Wallets created through the express path (from a partner checkout or
+// escrow link) skip the 24-word screen; Home nags until they back up.
+const BACKUP = (a) => `orpay.needsBackup.${a}`
+const needsBackup = () => {
+  try {
+    return localStorage.getItem(BACKUP(state.address)) === '1'
+  } catch {
+    return false
+  }
+}
+
+function pendingRequest() {
+  try {
+    return JSON.parse(sessionStorage.getItem(PENDING) ?? 'null')
+  } catch {
+    return null
+  }
+}
+
 function renderWelcome() {
+  const pending = pendingRequest()
+  if (pending && (pending.invoice || pending.escrow_request || pending.escrow || pending.ajo_invite)) {
+    app.innerHTML = `
+    <main class="narrow">
+      <div class="brand"><span class="logo" aria-label="ORPay"><span class="logo-or">OR</span><span class="logo-pay">Pay</span></span></div>
+      <h1>Create your wallet in seconds</h1>
+      <p class="muted">${pending.escrow_request || pending.escrow ? 'Your money is held safely until you approve the delivery.' : pending.ajo_invite ? 'Join the circle and see every payment on-chain.' : 'Pay securely and keep a receipt.'} Just choose a password; you can back up your wallet later.</p>
+      <div class="stack">
+        <button class="primary" id="express">Continue</button>
+        <button class="ghost" id="import">I already have ORPay</button>
+      </div>
+      <p class="trust"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>Your keys are encrypted and never leave this device.</p>
+    </main>`
+    $('#express').onclick = async () => renderSetPassword(await newSeed(), { express: true })
+    $('#import').onclick = renderSignIn
+    return
+  }
   app.innerHTML = `
     <main class="narrow">
       <div class="brand"><span class="logo" aria-label="ORPay"><span class="logo-or">OR</span><span class="logo-pay">Pay</span></span></div>
       <h1>Money that moves like messages.</h1>
-      <p class="muted">Send ORP to anyone by @username. Your keys stay on this device.</p>
+      <p class="muted">Send naira to anyone by @username, save in circles and buy safely with escrow. Your keys stay on this device.</p>
       <div class="stack">
         <button class="primary" id="create">Create a wallet</button>
         <button class="ghost" id="import">Sign in</button>
@@ -337,17 +373,17 @@ function renderImport() {
   }
 }
 
-function renderSetPassword(seed) {
+function renderSetPassword(seed, { express = false } = {}) {
   app.innerHTML = `
     <main class="narrow">
       <div class="brand"><span class="logo" aria-label="ORPay"><span class="logo-or">OR</span><span class="logo-pay">Pay</span></span></div>
-      <h1>Set a password</h1>
-      <p class="muted">Encrypts your key on this device. You'll enter it each time you open ORPay.</p>
+      <h1>${express ? 'Choose a password' : 'Set a password'}</h1>
+      <p class="muted">${express ? 'At least 8 characters. It unlocks your wallet on this device.' : "Encrypts your key on this device. You'll enter it each time you open ORPay."}</p>
       <form id="f" class="stack">
         <label>Password<input type="password" id="p1" autocomplete="new-password" minlength="8" required></label>
         <label>Confirm password<input type="password" id="p2" autocomplete="new-password" required></label>
         <p class="error" id="err"></p>
-        <button class="primary" id="go">Open wallet</button>
+        <button class="primary" id="go">${express ? 'Create wallet and continue' : 'Open wallet'}</button>
       </form>
     </main>`
   $('#f').onsubmit = async (e) => {
@@ -356,6 +392,9 @@ function renderSetPassword(seed) {
     $('#go').disabled = true
     const address = await addressOf(seed)
     await saveVault(seed, address, $('#p1').value)
+    try {
+      if (express) localStorage.setItem(BACKUP(address), '1')
+    } catch {}
     openWallet(seed, address)
   }
 }
@@ -640,6 +679,7 @@ function homeHTML() {
         <button data-qa="escrow"><i>${qaIcon.escrow}</i>Escrow</button>
         <button data-qa="ajo"><i>${qaIcon.ajo}</i>Circles</button>
       </nav>
+      ${needsBackup() ? `<div class="banner warn backup-nag"><span><b>Back up your wallet.</b> Write down your 24 recovery words so you never lose access.</span><button class="small primary" id="do-backup">Back up</button></div>` : ''}
       <section id="reminders"></section>
       <section class="card" id="panel-card" hidden>
         <div class="section-head"><h2 id="panel-title">Send</h2><button class="link" id="panel-close" aria-label="Close">Close</button></div>
@@ -701,6 +741,20 @@ function renderReminders() {
 }
 
 function bindHome() {
+  if ($('#do-backup'))
+    $('#do-backup').onclick = async () => {
+      if (!(await ask('Make sure nobody can see your screen. Anyone with these words can take your money.', { title: 'Back up your wallet', ok: 'Show words' }))) return
+      showPanel('Recovery words')
+      $('#panel').innerHTML = `<p class="muted">Write these 24 words on paper, in order, and keep them offline. They are the only way to restore your wallet.</p>${wordGrid(state.seed)}<button class="primary" id="backed-up">I've written them down</button>`
+      $('#backed-up').onclick = () => {
+        try {
+          localStorage.removeItem(BACKUP(state.address))
+        } catch {}
+        $('#panel-card').hidden = true
+        toast('Wallet backed up')
+        showView('home')
+      }
+    }
   app.querySelectorAll('[data-qa]').forEach((b) => (b.onclick = () => {
     const a = b.dataset.qa
     if (a === 'send' || a === 'receive') openPanel(a)
@@ -1366,6 +1420,8 @@ async function renderGuestCheckout(invoice) {
   } catch {}
   const wantsLanding = new URLSearchParams(location.search).has('home')
   if (pending?.invoice) renderGuestCheckout(pending)
+  // Partner links (escrow, circle invite) go straight to the express wallet.
+  else if (!hasVault() && (pending?.escrow_request || pending?.escrow || pending?.ajo_invite)) renderWelcome()
   else if (hasVault() && !wantsLanding) {
     const s = resumeSession()
     s ? openWallet(fromHex(s.seed), s.address) : renderUnlock()

@@ -29,6 +29,21 @@ const checkout = await orpay.createCheckout({
 // Redirect the customer to checkout.checkout_url
 ```
 
+## Test without money (sandbox)
+
+Create a **test key** (`orp_test_...`) in ORPay → Developers. Checkouts made
+with it are marked `"test": true` and can be paid instantly:
+
+```js
+const orpay = new ORPay({ apiKey: process.env.ORPAY_TEST_KEY })
+const checkout = await orpay.createCheckout({ amount: '5000', reference: 'order-1' })
+await orpay.sandboxPayCheckout(checkout.id) // your webhook gets invoice.paid (data.test === true)
+```
+
+In the Developers dashboard you can also send any escrow or checkout event
+(`escrow.funded`, `escrow.disputed`, ...) to your webhook with sample data.
+Ignore events with `data.test === true` in production.
+
 ## 3. Handle webhooks
 
 ```js

@@ -105,8 +105,15 @@ function appCard(a) {
           <div class="key-out" hidden></div>
           <button class="ghost small" data-act="key">${a.key_prefix ? 'Roll key' : 'Create API key'}</button>
         </div>
+        <div>
+          <p class="label">Test key <span class="chip-s info">Sandbox</span></p>
+          <p class="small-text">${a.test_key_prefix ? `<span class="mono">${ctx.esc(a.test_key_prefix)}…</span>` : 'Build and test without moving money.'} Checkouts made with it can be paid with <span class="mono">POST /api/v1/sandbox/checkout/{id}/pay</span>.</p>
+          <div class="test-key-out" hidden></div>
+          <button class="ghost small" data-act="testkey">${a.test_key_prefix ? 'Roll test key' : 'Create test key'}</button>
+        </div>
         <label>Webhook URL<input data-field="webhook_url" value="${ctx.esc(a.webhook_url ?? '')}" placeholder="https://your-app.com/orpay/webhook"></label>
-        ${a.webhook_url ? '<button class="ghost small" data-act="ping">Send test event</button>' : ''}
+        ${a.webhook_url ? `<button class="ghost small" data-act="ping">Send test event</button>
+        <div class="sim"><label>Simulate a webhook<select data-sim>${SIM_EVENTS.map((ev) => `<option>${ev}</option>`).join('')}</select></label><button class="ghost small" data-act="simulate">Send</button></div>` : ''}
         <label>Settlement wallet (receives payments)<input data-field="settlement_address" class="mono" value="${ctx.esc(a.settlement_address)}"></label>
         <label>Website <span class="muted">(your logo is taken from here automatically)</span><input data-field="website" value="${ctx.esc(a.website)}" placeholder="https://yourapp.com"></label>
         <div class="logo-row">
@@ -211,12 +218,44 @@ async function loadDashboard(el, id, a) {
     ${!e.recent?.length && !c.recent?.length ? '<p class="muted small-text">No checkouts or escrows yet. Create one with your API key and it shows up here.</p>' : ''}`
 }
 
+const SIM_EVENTS = ['invoice.paid', 'invoice.expired', 'escrow.funded', 'escrow.dispatched', 'escrow.milestone_released', 'escrow.disputed', 'escrow.resolved', 'escrow.completed', 'escrow.refunded', 'escrow.expired']
+
 function bindAppCards(apps) {
   for (const a of apps) {
     const card = ctx.$(`[data-app="${a.id}"]`)
     if (!card) continue
     const dash = card.querySelector('[data-dash]')
     if (dash) loadDashboard(dash, a.id, a)
+    const testKeyBtn = card.querySelector('[data-act="testkey"]')
+    if (testKeyBtn)
+      testKeyBtn.onclick = async () => {
+        if (a.test_key_prefix && !(await ask('The old test key stops working immediately.', { title: 'Roll test key?', ok: 'Roll key' }))) return
+        testKeyBtn.disabled = true
+        try {
+          const r = await api.rotateKey(ctx.state.seed, a.id, true)
+          const out = card.querySelector('.test-key-out')
+          out.hidden = false
+          out.innerHTML = `<div class="secret mono">${ctx.esc(r.api_key)}</div><p class="banner">Copy this test key now. It will not be shown again.</p>`
+          navigator.clipboard?.writeText(r.api_key).then(() => ctx.toast('Test key copied')).catch(() => {})
+        } catch (err) {
+          ctx.toast(err.message, 'err')
+        }
+        testKeyBtn.disabled = false
+      }
+    const sim = card.querySelector('[data-act="simulate"]')
+    if (sim)
+      sim.onclick = async () => {
+        const ev = card.querySelector('[data-sim]').value
+        sim.disabled = true
+        try {
+          const r = await api.sandboxEvent(ctx.state.seed, a.id, ev)
+          ctx.toast(r.ok ? `${ev} delivered in ${r.delivery?.ms ?? '?'} ms` : `Delivery failed: ${r.error}`, r.ok ? undefined : 'err')
+          if (dash) loadDashboard(dash, a.id, a)
+        } catch (err) {
+          ctx.toast(err.message, 'err')
+        }
+        sim.disabled = false
+      }
     const ping = card.querySelector('[data-act="ping"]')
     if (ping)
       ping.onclick = async () => {

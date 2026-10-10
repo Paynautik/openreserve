@@ -985,3 +985,8 @@ button.danger.solid { background: var(--danger, #e11d48); color: #fff; }
   .ask-actions button { flex: 1; }
 }
 @media (prefers-reduced-motion: reduce) { .ask, .ask-card { transition: none; } }
+.backup-nag { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
+.backup-nag button { width: auto; flex: none; }
+.sim { display: flex; align-items: flex-end; gap: 8px; }
+.sim label { flex: 1; }
+.sim button { width: auto; }
