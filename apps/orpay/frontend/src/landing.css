@@ -470,24 +470,6 @@ body:has(.lp) { background: #f7f7fc; }
 .lp-nav-cta .lp-btn { white-space: nowrap; }
 @media (max-width: 400px) { .lp-nav-cta [data-start] { padding: 8px 12px; font-size: .82rem; } .lp-nav .logo { font-size: 1.1rem; } }
 
-/* Lime accent variant (?accent=lime): indigo stays for the logo, lime marks energy. */
-.lp.lime { --lime: #c9fa55; --lime-ink: #1d3a12; --lime-text: #5f8f1f; }
-.lp.lime .lp-kicker, .lp.lime .lp-step-grid span { color: var(--lime-text); }
-.lp.lime .lp-pill .dot.on { background: #84cc16; box-shadow: 0 0 0 4px rgb(132 204 22 / .2); }
-.lp.lime .lp-hero::before { background: radial-gradient(circle, rgb(201 250 85 / .35), transparent 70%); }
-.lp.lime .lp-halo { border-color: rgb(132 204 22 / .35); box-shadow: 0 0 0 40px rgb(201 250 85 / .1), 0 0 0 84px rgb(201 250 85 / .06); }
-.lp.lime .lp-hero .lp-btn.ink, .lp.lime .lp-cta-panel .lp-btn.ink { background: var(--lime); color: var(--lime-ink); box-shadow: 0 10px 24px -12px rgb(132 204 22 / .8); }
-.lp.lime .lp-btn:hover { box-shadow: 0 12px 26px -12px rgb(132 204 22 / .7); }
-.lp.lime .lp-feat:hover { border-color: #bef264; }
-.lp.lime .lp-feat.wide a { color: var(--lime); }
-.lp.lime .lp-feat.wide > div > i { background: var(--lime); color: var(--lime-ink); }
-.lp.lime .lp-feat-art .t-steps .on { background: var(--lime); }
-.lp.lime .lp-cta-panel { background: var(--lime); border-color: #b5ea3f; }
-.lp.lime .lp-cta-panel h2 { color: var(--lime-ink); }
-.lp.lime .lp-cta-panel p { color: #3f5b2a; }
-.lp.lime .lp-cta-panel .lp-btn.ink { background: #1d3a12; color: #fff; }
-.lp.lime .lp-cta-panel::after { border-color: rgb(29 58 18 / .14); box-shadow: 0 0 0 30px rgb(29 58 18 / .04), 0 0 0 64px rgb(29 58 18 / .03); }
-.lp.lime .lp-menu-only { color: var(--lime-text); }
 
 /* v4: one row of compact cards + slim escrow band */
 .lp-feats { grid-template-columns: repeat(4, 1fr); gap: 12px; }
@@ -506,8 +488,6 @@ body:has(.lp) { background: #f7f7fc; }
 .lp-escrow a { display: inline-block; margin-top: 12px; color: #67e8f9; font-weight: 700; font-size: .86rem; text-decoration: none; }
 .lp-escrow .lp-feat-art { min-width: 230px; background: rgb(255 255 255 / .07); backdrop-filter: blur(6px); }
 .lp-escrow .lp-feat-art em { margin-top: 8px; font-style: normal; font-size: .72rem; color: #a5b4fc; }
-.lp.lime .lp-escrow a { color: var(--lime); }
-.lp.lime .lp-escrow-tag { background: var(--lime); color: var(--lime-ink); }
 @media (max-width: 960px) { .lp-feats { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 600px) {
   .lp-feats { grid-template-columns: 1fr 1fr; gap: 10px; }
