@@ -888,3 +888,4 @@ body.lp-dark-body { background: #070b1f !important; }
 .lp.dark .lp-demo-feed div { background: #f1f5f9; }
 .lp.y2050 .lp-hero .lp-btn.ink::before { content: none; }
 .lp.y2050 .lp-hero .lp-btn.ink { background: #0b1030; color: #fff; box-shadow: 0 0 0 1px rgb(99 102 241 / .5), 0 10px 30px -8px rgb(99 102 241 / .7), 0 0 40px -10px rgb(34 211 238 / .6); }
+.lp.y2050 .lp-uses article { opacity: 1; transform: none; }

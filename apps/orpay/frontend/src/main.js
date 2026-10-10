@@ -34,6 +34,21 @@ try {
 } catch {}
 startI18n()
 
+// Look: the 2050 design is the default; ?look=classic (remembered) restores
+// the previous one. Also switchable from the profile menu.
+{
+  const q = new URLSearchParams(location.search).get('look')
+  try {
+    if (q === 'classic') localStorage.setItem('orpay.look', 'classic')
+    if (q === '2050') localStorage.removeItem('orpay.look')
+  } catch {}
+  let classic = q === 'classic'
+  try {
+    classic = classic || (q !== '2050' && localStorage.getItem('orpay.look') === 'classic')
+  } catch {}
+  document.documentElement.classList.toggle('y2050', !classic)
+}
+
 const state = {
   seed: null,
   address: null,
@@ -200,6 +215,7 @@ function renderProfile() {
     ${item('m-limit', icon('lock'), 'Daily send limit', getLimit(state.address) ? `${formatMoney(getLimit(state.address).amount, getLimit(state.address).asset)} a day` : 'No limit set')}
     ${item('m-notify', icon('bell'), 'Notifications', 'Payments, circle turns, escrow updates')}
     ${item('m-lang', icon('globe'), 'Language', LANGS.find((l) => l.id === getLang())?.name ?? 'English')}
+    ${item('m-look', icon('globe'), 'Design', document.documentElement.classList.contains('y2050') ? '2050 (tap for classic)' : 'Classic (tap for 2050)')}
     ${item('m-theme', icon('moon'), 'Theme', { system: 'Follows your phone', light: 'Light', dark: 'Dark' }[localStorage.getItem(THEME) ?? 'system'])}
     ${item('m-lock', icon('logout'), 'Sign out', 'Lock the wallet on this device', 'danger')}
     ${item('m-forget', icon('trash'), 'Remove from this device', 'Needs your six or 24 words to sign in again', 'danger subtle')}
@@ -211,6 +227,14 @@ function renderProfile() {
   on('#m-invite', renderInvites)
   on('#m-six', renderSignInSetup)
   on('#m-limit', renderLimit)
+  on('#m-look', () => {
+    const to2050 = !document.documentElement.classList.contains('y2050')
+    document.documentElement.classList.toggle('y2050', to2050)
+    try {
+      to2050 ? localStorage.removeItem('orpay.look') : localStorage.setItem('orpay.look', 'classic')
+    } catch {}
+    renderProfile()
+  })
   on('#m-admin', () => (($('#panel-card').hidden = true), showView('admin', renderAdmin)))
   on('#m-words', async () => {
     if (!(await ask('Make sure nobody can see your screen. Anyone with these words can take your money.', { title: 'Show recovery words?', ok: 'Show words' }))) return
@@ -851,7 +875,7 @@ function renderHeader() {
   const h = $('#header')
   if (!h) return
   const net = state.status
-    ? `<span class="dot ${state.online ? 'on' : 'off'}"></span>${state.online ? `${esc(state.status.chain_id)} · block ${state.status.height}` : 'Offline'}`
+    ? `<span class="dot ${state.online ? 'on' : 'off'}"></span>${state.online ? (document.documentElement.classList.contains('y2050') ? `${/devnet|testnet|demo/.test(state.status.chain_id) ? 'Test net' : 'Mainnet'} · #${state.status.height.toLocaleString('en-NG')}` : `${esc(state.status.chain_id)} · block ${state.status.height}`) : 'Offline'}`
     : 'Connecting…'
   const who = state.username ?? ''
   if (h.dataset.who !== who || !h.firstChild) {

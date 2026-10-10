@@ -1054,3 +1054,52 @@ ul li.empty:has(.empty-ico) button { width: auto; margin: 8px auto 0; align-self
 :root[data-theme="dark"] .reminders { border-color: rgb(251 146 60 / .35); background: rgb(251 146 60 / .08); }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .reminders { border-color: rgb(251 146 60 / .35); background: rgb(251 146 60 / .08); } }
 .fee-note { margin: 10px 0 0; color: rgb(255 255 255 / .75); }
+
+/* ================= 2050 wallet ================= */
+@property --a { syntax: "<angle>"; inherits: false; initial-value: 0deg; }
+@keyframes y-spin { to { --a: 360deg; } }
+@keyframes y-pulse { 70% { box-shadow: 0 0 0 7px rgb(16 185 129 / 0); } 100% { box-shadow: 0 0 0 0 rgb(16 185 129 / 0); } }
+.y2050 { --mono: ui-monospace, SFMono-Regular, Menlo, monospace; }
+.y2050 body { background: radial-gradient(70% 40% at 90% -5%, rgb(99 102 241 / .10), transparent 70%), radial-gradient(60% 40% at -10% 10%, rgb(34 211 238 / .07), transparent 70%), var(--bg); background-attachment: fixed; }
+
+/* header: live network pill */
+.y2050 .net { flex: 0 1 auto; margin-right: auto; padding: 5px 10px; border-radius: 999px; background: var(--surface); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--brand-1) 30%, var(--border)); font: 600 .66rem/1 var(--mono); letter-spacing: .06em; text-transform: uppercase; color: color-mix(in srgb, var(--brand-1) 75%, var(--text)); }
+.y2050 .dot.on { animation: y-pulse 1.8s infinite; }
+
+/* labels and chips in mono */
+.y2050 .label, .y2050 .chip-s, .y2050 .activity li.day, .y2050 .section-head .chip-s { font-family: var(--mono); letter-spacing: .08em; }
+.y2050 .chip-s { text-transform: uppercase; font-size: .62rem; }
+
+/* cards: crisp indigo hairline + soft glow */
+.y2050 .card { border-color: color-mix(in srgb, var(--brand-1) 14%, var(--border)); box-shadow: 0 1px 2px rgb(15 23 42 / .04), 0 18px 40px -32px rgb(79 70 229 / .55); }
+
+/* balance card: animated spectrum border, grid and orbit glow */
+.y2050 .card.balance { position: relative; isolation: isolate; overflow: hidden; }
+.y2050 .card.balance > * { position: relative; z-index: 1; }
+.y2050 .card.balance::before { content: ""; position: absolute; inset: 0; z-index: 2; pointer-events: none; border-radius: inherit; padding: 1.5px; background: conic-gradient(from var(--a), #a5b4fc, #22d3ee, #c084fc, #a5b4fc); -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude; animation: y-spin 8s linear infinite; width: auto; height: auto; top: 0; right: 0; }
+.y2050 .card.balance::after { content: ""; position: absolute; inset: 0; z-index: 0; pointer-events: none; width: auto; height: auto; border-radius: 0; background-image: linear-gradient(rgb(255 255 255 / .05) 1px, transparent 1px), linear-gradient(90deg, rgb(255 255 255 / .05) 1px, transparent 1px); background-size: 26px 26px; mask-image: linear-gradient(120deg, transparent 30%, #000); }
+.y2050 .card.balance .label { font-family: var(--mono); }
+.y2050 .card.balance .label::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: #34d399; animation: y-pulse 1.8s infinite; }
+
+/* quick actions: glow ring on hover/focus */
+.y2050 .quick-actions i { position: relative; }
+.y2050 .quick-actions button:is(:hover, :focus-visible) i { box-shadow: 0 0 0 1.5px color-mix(in srgb, var(--brand-1) 50%, transparent), 0 12px 26px -12px rgb(79 70 229 / .7); }
+.y2050 .quick-actions button { font-family: var(--mono); font-size: .72rem; letter-spacing: .02em; }
+
+/* primary buttons: deep ink with spectrum glow */
+.y2050 button.primary { background: linear-gradient(135deg, #1e1b4b, #4338ca 60%, #0891b2); box-shadow: 0 0 0 1px rgb(129 140 248 / .4), 0 10px 26px -10px rgb(79 70 229 / .8), 0 0 30px -12px rgb(34 211 238 / .6); }
+
+/* activity rows */
+.y2050 .activity li:not(.day):not(.empty):hover { background: color-mix(in srgb, var(--brand-1) 5%, var(--surface)); }
+.y2050 .activity .amt { font-family: var(--mono); font-size: .86rem; letter-spacing: -.01em; }
+
+/* tab bar: floating glass dock */
+.y2050 .tabbar { box-shadow: 0 -1px 0 color-mix(in srgb, var(--brand-1) 14%, var(--border)), 0 -18px 40px -30px rgb(79 70 229 / .45); }
+.y2050 .tabbar button { font-family: var(--mono); font-size: .66rem; letter-spacing: .04em; }
+.y2050 .tabbar button[aria-current='page'] { background: color-mix(in srgb, var(--brand-1) 12%, var(--surface)); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--brand-1) 35%, transparent), 0 8px 18px -12px rgb(79 70 229 / .7); }
+
+/* success screen + sheets pick up the spectrum edge */
+.y2050 .success-card, .y2050 .ask-card { position: relative; isolation: isolate; }
+.y2050 .success-card::before, .y2050 .ask-card::before { content: ""; position: absolute; inset: 0; border-radius: inherit; padding: 1.5px; background: conic-gradient(from var(--a), #6366f1, #22d3ee, #a855f7, #6366f1); -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude; animation: y-spin 8s linear infinite; pointer-events: none; }
+
+@media (prefers-reduced-motion: reduce) { .y2050 .card.balance::before, .y2050 .dot.on, .y2050 .card.balance .label::before, .y2050 .success-card::before, .y2050 .ask-card::before { animation: none; } }
