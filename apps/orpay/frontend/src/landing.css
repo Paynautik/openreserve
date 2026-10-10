@@ -974,3 +974,7 @@ body.lp-dark-body { background: #070b1f !important; }
 .lp.y2050 .lp-escrow .lp-feat-art em { display: none; }
 @media (max-width: 960px) { .lp.y2050 .lp-escrow { grid-template-columns: 1fr auto; } .lp.y2050 .lp-escrow-flow { display: none; } }
 @media (max-width: 600px) { .lp.y2050 .lp-escrow { grid-template-columns: 1fr; } }
+
+/* Rings back to the original look (orbit removed); still centred on the phone */
+.lp.y2050 .lp-halo, .lp .lp-halo { width: 400px; height: 400px; border: 1px solid rgb(99 102 241 / .22); background: none; box-shadow: 0 0 0 40px rgb(99 102 241 / .05), 0 0 0 84px rgb(99 102 241 / .03); animation: none; }
+@media (max-width: 600px) { .lp.y2050 .lp-halo, .lp .lp-halo { width: 300px; height: 300px; } }

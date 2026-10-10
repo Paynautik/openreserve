@@ -46,7 +46,6 @@ export function renderLanding(app, { onStart, onSignIn, signInLabel }) {
 
         <div class="lp-phone-wrap">
           <span class="lp-halo"></span>
-          <span class="lp-orbit lp-only-2050" aria-hidden="true"><i></i><i></i><i></i></span>
           <div class="lp-switch" role="tablist" aria-label="Try ORPay">
             <button role="tab" data-pane="wallet" aria-selected="false">Wallet</button>
             <button role="tab" data-pane="escrow" aria-selected="true">Escrow</button>
