@@ -45,11 +45,42 @@ export function renderLanding(app, { onStart, onSignIn, signInLabel }) {
 
         <div class="lp-phone-wrap">
           <span class="lp-halo"></span>
+          <div class="lp-switch" role="tablist" aria-label="Try ORPay">
+            <button role="tab" data-pane="wallet" aria-selected="false">Wallet</button>
+            <button role="tab" data-pane="escrow" aria-selected="true">Escrow</button>
+            <button role="tab" data-pane="circles" aria-selected="false">Circles</button>
+          </div>
           <div class="lp-phone">
             <i class="side a"></i><i class="side b"></i><i class="side c"></i><i class="side d"></i>
             <div class="lp-screen">
               <div class="lp-status"><b>9:41</b><span class="island"></span><span class="lp-sig"><i></i><i></i><i></i><i></i><span class="batt"><span></span></span></span></div>
               <div class="lp-apphead"><span class="logo"><span class="logo-or">OR</span><span class="logo-pay">Pay</span></span><span class="me">RG</span></div>
+              <div class="lp-pane" data-pane-body="wallet" hidden>
+                <div class="lp-bal">
+                  <small>Available balance</small>
+                  <strong>₦248,500</strong>
+                  <span>+₦45,000 today</span>
+                </div>
+                <div class="lp-actions">
+                  <span><i class="c1">${svg(I.up)}</i>Send</span>
+                  <span><i class="c2">${svg(I.down)}</i>Receive</span>
+                  <span><i class="c3">${svg(I.escrow)}</i>Escrow</span>
+                  <span><i class="c4">${svg(I.ajo)}</i>Circles</span>
+                </div>
+                <div class="lp-recent-head"><b>Recent activity</b><span>Sample</span></div>
+                <div class="lp-tx"><i class="in">${svg(I.down)}</i><span><b>Circle payout</b><small>Today · 9:42 AM</small></span><em class="pos">+₦45,000</em></div>
+                <div class="lp-tx"><i class="out">${svg(I.up)}</i><span><b>@adaeze</b><small>Yesterday · fee ₦20</small></span><em>−₦12,000</em></div>
+              </div>
+              <div class="lp-pane" data-pane-body="circles" hidden>
+                <div class="lp-demo">
+                  <div class="lp-demo-tag">Interactive demo · no real money</div>
+                  <div class="lp-demo-item"><span class="lp-demo-thumb">${svg(I.ajo)}</span><span><b>Market women savings</b><small>₦20,000 each, every week</small></span></div>
+                  <div class="lp-demo-amt circ"><small>Round 3 pot · goes to @ngozi</small><strong id="lp-circ-pot">₦60,000</strong><span class="lp-circ-bar"><span id="lp-circ-fill"></span></span></div>
+                  <ul class="lp-circ-members" id="lp-circ-members"></ul>
+                  <button class="lp-demo-btn" id="lp-circ-btn" type="button">Pay my ₦20,000 share</button>
+                </div>
+              </div>
+              <div class="lp-pane" data-pane-body="escrow">
               <div class="lp-demo" id="lp-demo">
                 <div class="lp-demo-tag">Interactive demo · no real money</div>
                 <div class="lp-demo-item"><span class="lp-demo-thumb">${svg(I.escrow)}</span><span><b>iPhone 14 Pro</b><small>Seller: @gadgethub</small></span></div>
@@ -60,7 +91,8 @@ export function renderLanding(app, { onStart, onSignIn, signInLabel }) {
                 <p class="lp-demo-msg" id="lp-demo-msg" aria-live="polite"></p>
                 <button class="lp-demo-btn" id="lp-demo-btn" type="button"></button>
               </div>
-              <div class="lp-tabs"><span>Home</span><span>Circles</span><span class="on">Escrow</span><span>Profile</span></div>
+              </div>
+              <div class="lp-tabs"><span data-tab-for="wallet">Home</span><span data-tab-for="circles">Circles</span><span class="on" data-tab-for="escrow">Escrow</span><span>Profile</span></div>
               <span class="home-ind"></span>
             </div>
           </div>
@@ -116,6 +148,19 @@ export function renderLanding(app, { onStart, onSignIn, signInLabel }) {
         <article class="reveal"><b>Families & friends</b><p>Run a saving circle where everyone sees who paid and who collects next.</p></article>
         <article class="reveal"><b>Landlords & tenants</b><p>Hold rent or caution fees until keys are handed over.</p></article>
         <article class="reveal"><b>Small businesses</b><p>Accept payments and escrow in your own app with our API.</p></article>
+      </div>
+    </section>
+
+    <section class="lp-wrap lp-sec lp-trust" id="trust">
+      <div class="lp-head">
+        <p class="lp-kicker">How trust works</p>
+        <h2>No guesswork about<br>where your money is.</h2>
+      </div>
+      <div class="lp-trust-grid">
+        <article class="reveal"><i>${svg('<rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>')}</i><h3>Who holds the money</h3><p>Escrow funds sit in an escrow record on the OpenReserve ledger, not in anyone's account. They only move by the deal's rules: the buyer releases, the review period ends, or an arbiter decides.</p></article>
+        <article class="reveal"><i>${svg('<path d="M12 3v18M5 7h14M7 7l-3 6a3 3 0 0 0 6 0zM17 7l-3 6a3 3 0 0 0 6 0z"/>')}</i><h3>Who decides disputes</h3><p>A neutral arbiter named in the deal, approved by ORPay. They see the chat and photos, then split the money. Every decision is recorded on-chain.</p></article>
+        <article class="reveal"><i>${svg('<path d="M4 7h16M4 12h16M4 17h10"/>')}</i><h3>What it costs</h3><p>₦20 network fee per payment. No fee to hold money in escrow. An arbiter's fee, at most 5%, applies only if there is a dispute.</p></article>
+        <article class="reveal"><i>${svg(I.eye)}</i><h3>Anyone can check</h3><p>Every escrow, circle payment and payout is on the public <a href="/explorer.html">explorer</a>. Your keys stay on your phone; ORPay cannot spend your money.</p></article>
       </div>
     </section>
 
@@ -178,6 +223,8 @@ export function renderLanding(app, { onStart, onSignIn, signInLabel }) {
 
   app.querySelectorAll('[data-start]').forEach((b) => (b.onclick = onStart))
   escrowDemo(app)
+  circlesDemo(app)
+  phoneSwitcher(app)
   const menu = app.querySelector('#lp-menu'), links = app.querySelector('.lp-links')
   menu.onclick = () => menu.setAttribute('aria-expanded', String(links.classList.toggle('open')))
   links.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => (links.classList.remove('open'), menu.setAttribute('aria-expanded', 'false'))))
@@ -217,4 +264,50 @@ function escrowDemo(app) {
     show()
   }
   show()
+}
+
+// Wallet / Escrow / Circles tabs above the hero phone.
+function phoneSwitcher(app) {
+  const tabs = [...app.querySelectorAll('.lp-switch [data-pane]')]
+  const pick = (name) => {
+    tabs.forEach((t) => t.setAttribute('aria-selected', String(t.dataset.pane === name)))
+    app.querySelectorAll('[data-pane-body]').forEach((p) => (p.hidden = p.dataset.paneBody !== name))
+    app.querySelectorAll('[data-tab-for]').forEach((t) => t.classList.toggle('on', t.dataset.tabFor === name))
+  }
+  tabs.forEach((t) => (t.onclick = () => pick(t.dataset.pane)))
+}
+
+// Circles pane: pay your share and watch the round complete. Simulated.
+function circlesDemo(app) {
+  const ul = app.querySelector('#lp-circ-members')
+  const btn = app.querySelector('#lp-circ-btn')
+  if (!ul || !btn) return
+  const base = [['@ngozi', true, 'Collects this round'], ['@tunde', true, ''], ['@amaka', true, ''], ['You', false, ''], ['@bisi', false, '']]
+  let members, step
+  const draw = () => {
+    const paid = members.filter((m) => m[1]).length
+    ul.innerHTML = members.map(([n, ok, note]) => `<li class="${ok ? 'ok' : ''}"><span>${n}${note ? ` <small>${note}</small>` : ''}</span><em>${ok ? 'Paid' : 'Due'}</em></li>`).join('')
+    app.querySelector('#lp-circ-pot').textContent = `₦${(paid * 20000).toLocaleString('en-NG')}`
+    app.querySelector('#lp-circ-fill').style.width = `${(paid / members.length) * 100}%`
+  }
+  const reset = () => {
+    members = base.map((m) => [...m])
+    step = 0
+    btn.textContent = 'Pay my ₦20,000 share'
+    draw()
+  }
+  btn.onclick = () => {
+    step++
+    if (step === 1) {
+      members[3][1] = true
+      members[3][2] = '🔥 3 in a row'
+      btn.textContent = '@bisi pays →'
+    } else if (step === 2) {
+      members[4][1] = true
+      members[0][2] = 'Collected ₦100,000'
+      btn.textContent = 'Replay demo'
+    } else return reset()
+    draw()
+  }
+  reset()
 }

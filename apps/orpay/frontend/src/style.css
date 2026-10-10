@@ -1009,3 +1009,13 @@ button.danger.solid { background: var(--danger, #e11d48); color: #fff; }
 .admin-tiles .tile strong { font-size: clamp(1rem, 4.2vw, 1.25rem); overflow-wrap: anywhere; }
 .admin-list .who small { white-space: normal; overflow: visible; text-overflow: clip; }
 @media (max-width: 760px) { .admin-tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+/* Circle: your progress + streak */
+.my-progress .mp-line { margin: 0 0 8px; }
+.my-progress .mp-line strong { font-size: 1.25rem; font-variant-numeric: tabular-nums; }
+.mp-bar { position: relative; height: 10px; border-radius: 10px; background: var(--border); overflow: visible; margin: 4px 0 8px; }
+.mp-bar span { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, #10b981, #34d399); transition: width .6s cubic-bezier(.2,.8,.2,1); }
+.mp-bar i { position: absolute; top: -3px; width: 4px; height: 16px; margin-left: -2px; border-radius: 2px; background: var(--surface); box-shadow: 0 0 0 1px var(--border); }
+.mp-bar i.hit { background: #10b981; box-shadow: none; }
+.mp-bar i:last-child { margin-left: -4px; }
+.streak { font-size: .8rem; font-weight: 700; padding: 4px 10px; border-radius: 999px; background: #fff7ed; color: #c2410c; }

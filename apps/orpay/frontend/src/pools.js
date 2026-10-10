@@ -409,6 +409,29 @@ export async function renderPool(id, preloaded) {
   const askedMe = p.swap_with ? p.members.filter((m, j) => p.swap_with[j] === ctx.state.address) : []
   const events = annotate(history).reverse()
 
+  // Your progress: money put in over the whole circle, and how many rounds
+  // in a row you have paid (counting back from the latest round).
+  let progress = ''
+  if (me >= 0 && (p.status === 'active' || p.status === 'done')) {
+    const mine = events.filter((e) => e.op === 'contribute' && e.tx.from === ctx.state.address)
+    const putIn = mine.reduce((t, e) => t + BigInt(e.tx.amount ?? each), 0n)
+    const target = each * BigInt(n)
+    const pct = target > 0n ? Number((putIn * 100n) / target) : 0
+    const paidRounds = new Set(mine.map((e) => e.round))
+    if (p.paid[me]) paidRounds.add(p.round)
+    let streak = 0
+    for (let r = p.paid[me] || p.status === 'done' ? p.round : p.round - 1; r >= 0 && paidRounds.has(r); r--) streak++
+    const missed = Math.max(0, (p.status === 'done' ? n : p.round) - [...paidRounds].filter((r) => r < (p.status === 'done' ? n : p.round)).length)
+    const milestones = [25, 50, 75, 100]
+    progress = `
+    <section class="card my-progress">
+      <div class="section-head"><h2>Your progress</h2>${streak >= 2 ? `<span class="streak" title="Rounds paid in a row">🔥 ${streak} in a row</span>` : ''}</div>
+      <p class="mp-line"><strong>${money(putIn)}</strong> <span class="muted">of ${money(target)} saved through this circle</span></p>
+      <div class="mp-bar" role="progressbar" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100"><span data-w="${Math.min(pct, 100)}"></span>${milestones.map((m) => `<i class="${pct >= m ? 'hit' : ''}" data-left="${m}"></i>`).join('')}</div>
+      <p class="muted small-text">${pct >= 100 ? 'You have paid your full share. Well done!' : `${pct}% of your share paid`}${missed ? ` · ${missed} missed round${missed === 1 ? '' : 's'}` : streak ? ' · never missed a round' : ''}${p.claimed[me] ? ' · you have collected your pot' : ''}</p>
+    </section>`
+  }
+
   const rows = p.members
     .map((m, i) => {
       let state
@@ -508,6 +531,7 @@ export async function renderPool(id, preloaded) {
       <div class="stack" id="actions">${action}</div>
       <p class="error" id="err"></p>
     </section>
+    ${progress}
     ${autopay}
     <section class="card">
       <h2>Members & payout order</h2>
@@ -533,6 +557,7 @@ export async function renderPool(id, preloaded) {
   watchPool(p.id, JSON.stringify(data))
   // Set via the CSSOM: the production CSP forbids inline style attributes.
   root.querySelectorAll('[data-w]').forEach((el) => (el.style.width = `${el.dataset.w}%`))
+  root.querySelectorAll('[data-left]').forEach((el) => (el.style.left = `${el.dataset.left}%`))
   ctx.$('#back').onclick = renderPools
   fillTrust(root)
   ctx.$('#statement').onclick = () => {

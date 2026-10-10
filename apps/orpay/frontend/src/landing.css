@@ -549,3 +549,39 @@ body:has(.lp) { background: #f7f7fc; }
 @media (max-width: 520px) { .lp-uses { grid-template-columns: 1fr; } }
 .lp-foot { flex-wrap: wrap; }
 .lp-copy { flex-basis: 100%; margin: 4px 0 0; text-align: center; font-size: .78rem; color: var(--mute); }
+
+/* Wallet / Escrow / Circles switcher above the phone */
+.lp-phone-wrap { flex-direction: column; align-items: center; gap: 16px; }
+.lp-switch { position: relative; z-index: 2; display: inline-flex; gap: 4px; padding: 4px; border-radius: 999px; background: #fff; border: 1px solid var(--line); box-shadow: 0 8px 24px -14px rgb(15 23 42 / .35); }
+.lp-switch button { border: 0; background: none; padding: 7px 16px; border-radius: 999px; font: inherit; font-size: .85rem; font-weight: 600; color: var(--mute); cursor: pointer; }
+.lp-switch button[aria-selected="true"] { background: var(--ink); color: #fff; }
+.lp-switch button:focus-visible { outline: 3px solid #a5b4fc; outline-offset: 2px; }
+.lp-pane[hidden] { display: none; }
+.lp-demo-amt.circ { background: linear-gradient(135deg, #064e3b, #059669); }
+.lp-circ-bar { display: block; height: 5px; margin-top: 8px; border-radius: 5px; background: rgb(255 255 255 / .25); overflow: hidden; }
+.lp-circ-bar span { display: block; height: 100%; background: #fff; border-radius: inherit; transition: width .5s cubic-bezier(.2,.8,.2,1); }
+.lp-circ-members { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+.lp-circ-members li { display: flex; justify-content: space-between; align-items: center; padding: 5px 2px; font-size: .74rem; border-bottom: 1px solid #f1f5f9; }
+.lp-circ-members li small { color: #64748b; font-size: .62rem; margin-left: 4px; }
+.lp-circ-members em { font-style: normal; font-size: .64rem; font-weight: 700; color: #b45309; }
+.lp-circ-members li.ok em { color: #059669; }
+
+/* How trust works */
+.lp-trust-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+.lp-trust-grid article { padding: 18px; border-radius: 16px; background: #fff; border: 1px solid var(--line); }
+.lp-trust-grid i { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 11px; background: #eef2ff; color: #4f46e5; margin-bottom: 12px; }
+.lp-trust-grid i svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.lp-trust-grid h3 { margin: 0 0 6px; font-size: .98rem; letter-spacing: -.01em; }
+.lp-trust-grid p { margin: 0; color: var(--mute); font-size: .84rem; line-height: 1.55; }
+.lp-trust-grid a { color: #4f46e5; }
+.lp-trust { padding-top: 24px; }
+@media (max-width: 960px) { .lp-trust-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 520px) { .lp-trust-grid { grid-template-columns: 1fr; } }
+
+/* Conspicuous rings behind the phone */
+.lp-halo { width: 440px; height: 440px; top: calc(50% + 26px); border: 1.5px solid rgb(99 102 241 / .55);
+  background: radial-gradient(circle, rgb(99 102 241 / .10) 0 55%, transparent 56%);
+  box-shadow: 0 0 0 46px rgb(99 102 241 / .09), 0 0 0 47.5px rgb(99 102 241 / .35), 0 0 0 96px rgb(99 102 241 / .06), 0 0 0 97.5px rgb(99 102 241 / .25), 0 0 0 150px rgb(99 102 241 / .035), 0 0 0 151.5px rgb(99 102 241 / .16); }
+@media (max-width: 600px) { .lp-halo { width: 300px; height: 300px; box-shadow: 0 0 0 30px rgb(99 102 241 / .09), 0 0 0 31.5px rgb(99 102 241 / .35), 0 0 0 64px rgb(99 102 241 / .06), 0 0 0 65.5px rgb(99 102 241 / .22); } }
+@media (prefers-reduced-motion: no-preference) { .lp-halo { animation: halo-pulse 6s ease-in-out infinite; } }
+@keyframes halo-pulse { 50% { transform: translate(-50%, -50%) scale(1.03); } }
