@@ -5,6 +5,7 @@ import { api, assetLabel, formatAmount, formatMoney, node, parseAmount, poolOp, 
 import { renderSVG } from 'uqr'
 import { icon, moneyHTML, skeletonCard, skeletonRows, success } from './ui.js'
 import { fillTrust } from './trust.js'
+import { shareInviteCard } from './invitecard.js'
 
 let ctx // { state, $, esc, short, toast, nameOf, resolveRecipient, root }
 
@@ -46,8 +47,8 @@ export async function renderPools() {
   root.innerHTML = `
     <section class="card">
       <div class="section-head">
-        <h2>Savings pools</h2>
-        <button class="primary small" id="new-pool">New pool</button>
+        <h2>Saving circles</h2>
+        <button class="primary small" id="new-pool">New circle</button>
       </div>
       <p class="muted small-text">Members take turns receiving the pot. Every contribution and payout is recorded on-chain, so everyone can see who has paid, who has received and who is next.</p>
       <ul class="pool-list" id="pool-list">${skeletonRows(3)}</ul>
@@ -75,7 +76,7 @@ export async function renderPools() {
   const list = ctx.$('#pool-list')
   if (!list) return
   if (!pools.length) {
-    list.innerHTML = `<li class="empty"><span class="empty-ico">${icon('pools')}</span><strong>Start your first ajo</strong><small>Save together with friends, family or colleagues. Everyone sees who paid and who's next.</small><button class="primary small" id="empty-new">Start an ajo</button></li>`
+    list.innerHTML = `<li class="empty"><span class="empty-ico">${icon('pools')}</span><strong>Start your first saving circle</strong><small>Save together with friends, family or colleagues. Everyone sees who paid and who's next.</small><button class="primary small" id="empty-new">Start a circle</button></li>`
     ctx.$('#empty-new').onclick = renderCreate
     return
   }
@@ -122,10 +123,10 @@ function renderCreate() {
   const root = ctx.root()
   root.innerHTML = `
     <section class="card">
-      <button class="link back" id="back">← Pools</button>
-      <h2>New savings pool</h2>
+      <button class="link back" id="back">← Circles</button>
+      <h2>New saving circle</h2>
       <form id="f" class="stack" autocomplete="off">
-        <label>Pool name<input id="name" maxlength="64" placeholder="Family ajo" required></label>
+        <label>Circle name<input id="name" maxlength="64" placeholder="Family savings" required></label>
         <div class="suggest">
           <span class="suggest-label">Try one</span>
           <div class="templates" aria-label="Suggestions">
@@ -160,9 +161,9 @@ function renderCreate() {
         <label id="members-row" hidden>Members in payout order
           <textarea id="members" rows="5" placeholder="One per line: @username or address&#10;The first person receives the first pot."></textarea>
         </label>
-        <p class="hint">You are added as the first member unless you list yourself. Each member must join before the pool starts.</p>
+        <p class="hint">You are added as the first member unless you list yourself. Each member must join before the circle starts.</p>
         <p class="error" id="err"></p>
-        <button class="primary" id="go">Create pool</button>
+        <button class="primary" id="go">Create circle</button>
       </form>
     </section>`
   ctx.$('#back').onclick = renderPools
@@ -261,7 +262,7 @@ function renderCreate() {
     } catch (e2) {
       err.textContent = e2.message
       btn.disabled = false
-      btn.textContent = 'Create pool'
+      btn.textContent = 'Create circle'
     }
   }
 }
@@ -307,7 +308,7 @@ function renderGoal(p, history, money) {
   }
   root.innerHTML = `
     <section class="card pool-hero" data-pool-id="${p.id}">
-      <button class="link back light" id="back">← Pools</button>
+      <button class="link back light" id="back">← Circles</button>
       <div class="pool-title"><h2>${ctx.esc(p.name)}</h2><span class="chip-s light">Savings goal</span></div>
       <p class="label">Saved together</p>
       <p class="amount">${money(saved)}</p>
@@ -386,7 +387,7 @@ export async function renderPool(id, preloaded) {
   try {
     data ??= await node.pool(id)
   } catch (err) {
-    root.innerHTML = `<section class="card"><button class="link back" id="back">← Pools</button><p class="error">${ctx.esc(err.message)}</p></section>`
+    root.innerHTML = `<section class="card"><button class="link back" id="back">← Circles</button><p class="error">${ctx.esc(err.message)}</p></section>`
     ctx.$('#back').onclick = renderPools
     return
   }
@@ -436,8 +437,8 @@ export async function renderPool(id, preloaded) {
     .join('')
 
   let action = ''
-  if (me < 0) action = '<p class="muted small-text">You are viewing this pool. Only members can take part.</p>'
-  else if (p.status === 'forming' && !p.joined[me]) action = `<button class="primary" data-op="join">Join pool</button>`
+  if (me < 0) action = '<p class="muted small-text">You are viewing this circle. Only members can take part.</p>'
+  else if (p.status === 'forming' && !p.joined[me]) action = `<button class="primary" data-op="join">Join circle</button>`
   else if (p.status === 'forming') action = `<p class="muted small-text">Waiting for ${n - p.joined.filter(Boolean).length} member(s) to join.</p>`
   if (p.status === 'cancelled') action = '<p class="muted small-text">The organiser deleted this circle before it started. Any deposits were returned.</p>'
   if (p.status === 'forming' && p.creator === ctx.state.address) action += '<button class="link danger-link" id="cancel-circle">Delete this circle</button>'
@@ -466,7 +467,7 @@ export async function renderPool(id, preloaded) {
       btns.push(`<button class="ghost small" id="nudge">Remind ${n - paidCount} member${n - paidCount === 1 ? '' : 's'} who haven't paid</button>`)
     if (!btns.length) btns.push(`<p class="muted small-text">You've paid this round. ${receiver === ctx.state.address ? '' : `${label(receiver)} receives the pot once everyone has paid.`}</p>`)
     action = btns.join('')
-  } else action = '<p class="muted small-text">This pool has finished. Every member received their pot.</p>'
+  } else action = '<p class="muted small-text">This circle has finished. Every member received their pot.</p>'
 
   // Autopay: money set aside in the pool pays each round automatically.
   const prepaid = me >= 0 ? BigInt(p.prepaid?.[me] ?? 0) : 0n
@@ -476,7 +477,7 @@ export async function renderPool(id, preloaded) {
   const autopay = me < 0 || p.status === 'done' ? '' : `
     <section class="card autopay">
       <div class="section-head"><h2>Autopay</h2>${covered ? `<span class="chip-s ok">On · ${covered} round${covered === 1 ? '' : 's'}</span>` : '<span class="chip-s">Off</span>'}</div>
-      <p class="muted small-text">Set money aside in the pool and each round is paid for you automatically, even if you forget to open ORPay. It stays in the pool, not with anyone else, and you can stop any time to get back what hasn't been used.</p>
+      <p class="muted small-text">Set money aside in the circle and each round is paid for you automatically, even if you forget to open ORPay. It stays in the circle, not with anyone else, and you can stop any time to get back what hasn't been used.</p>
       ${canAdd ? `<div class="autopay-row">
         <label>Rounds to cover<select id="ap-rounds">${Array.from({ length: canAdd }, (_, k) => `<option value="${k + 1}" ${k + 1 === canAdd ? 'selected' : ''}>${k + 1} round${k ? 's' : ''} · ${money(each * BigInt(k + 1))}</option>`).join('')}</select></label>
         <button class="primary" id="ap-on">${covered ? 'Add rounds' : 'Turn on autopay'}</button>
@@ -487,7 +488,7 @@ export async function renderPool(id, preloaded) {
 
   root.innerHTML = `
     <section class="card pool-hero" data-pool-id="${p.id}">
-      <button class="link back light" id="back">← Pools</button>
+      <button class="link back light" id="back">← Circles</button>
       <div class="pool-title"><h2>${ctx.esc(p.name)}</h2>${statusChip(p)}<span class="chip-s light">${modeName(p.mode)}</span></div>
       <p class="label">Pool balance</p>
       <p class="amount">${money(p.balance)}</p>
@@ -513,12 +514,12 @@ export async function renderPool(id, preloaded) {
       <ul class="members">${rows}</ul>
     </section>
     <section class="card">
-      <div class="section-head"><h2>On-chain record</h2><button class="link" id="share">Share pool</button></div>
+      <div class="section-head"><h2>On-chain record</h2><span class="row"><button class="link" id="statement">Download statement</button><button class="link" id="share">Share circle</button></span></div>
       <ul class="timeline">${events
         .map((e) => {
           const who = label(e.tx.from)
           const text = {
-            create: `${who} created the pool`,
+            create: `${who} created the circle`,
             join: `${who} joined`,
             contribute: `${who} paid ${money(p.contribution)} · round ${e.round + 1}`,
             claim: `${who} took the ${money(pot)} pot · round ${e.round + 1}`,
@@ -534,9 +535,24 @@ export async function renderPool(id, preloaded) {
   root.querySelectorAll('[data-w]').forEach((el) => (el.style.width = `${el.dataset.w}%`))
   ctx.$('#back').onclick = renderPools
   fillTrust(root)
+  ctx.$('#statement').onclick = () => {
+    const plain = (a) => (ctx.nameOf(a) ? `@${ctx.nameOf(a)}` : a)
+    const cell = (v) => `"${String(v).replace(/"/g, '""')}"`
+    const action = { create: 'Created', join: 'Joined', contribute: 'Paid', claim: 'Received pot' }
+    const amountOf = (e) => (e.op === 'contribute' ? formatAmount(e.tx.amount ?? p.contribution) : e.op === 'claim' ? formatAmount(pot) : '')
+    const rows = [['Date', 'Member', 'Action', 'Round', `Amount (${assetLabel(p.asset ?? '')})`, 'Block', 'Transaction']]
+    for (const e of events) rows.push([new Date(e.time).toISOString(), plain(e.tx.from), action[e.op] ?? e.op, e.round != null && e.op !== 'create' && e.op !== 'join' ? e.round + 1 : '', amountOf(e), e.height, e.id])
+    const csv = `${p.name} saving circle statement\nCircle ID,${p.id}\nGenerated,${new Date().toISOString()}\n\n` + rows.map((r) => r.map(cell).join(',')).join('\n')
+    const a = document.createElement('a')
+    a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }))
+    a.download = `${p.name.replace(/[^\w-]+/g, '-').toLowerCase() || 'circle'}-statement.csv`
+    a.click()
+    setTimeout(() => URL.revokeObjectURL(a.href), 2000)
+    ctx.toast('Statement downloaded')
+  }
   ctx.$('#share').onclick = () => {
     const link = `${location.origin}/?pool=${p.id}`
-    navigator.clipboard.writeText(link).then(() => ctx.toast('Pool link copied'))
+    navigator.clipboard.writeText(link).then(() => ctx.toast('Circle link copied'))
   }
   const apRun = async (btn, args, done) => {
     const t = btn.textContent
@@ -623,11 +639,11 @@ export async function renderPool(id, preloaded) {
           await waitForCommit(txid)
           if (op === 'contribute' || op === 'claim')
             success({
-              title: op === 'claim' ? 'Your ajo pot is in!' : `Paid into ${ctx.esc(p.name)}`,
+              title: op === 'claim' ? 'Your pot is in!' : `Paid into ${ctx.esc(p.name)}`,
               amount: moneyHTML(money(op === 'claim' ? pot : BigInt(p.contribution) - BigInt(p.paid_amt?.[me] ?? 0))),
               lines: [['Circle', ctx.esc(p.name)], ['Round', `${p.round + 1} of ${n}`], ['Time', new Date().toLocaleString()]],
             })
-          else ctx.toast('Joined the pool')
+          else ctx.toast('Joined the circle')
           renderPool(p.id)
         } catch (err) {
           ctx.$('#err').textContent = err.message
@@ -657,7 +673,7 @@ export async function renderInvite(id) {
   const money = (x) => formatMoney(x, d.asset ?? '')
   root.innerHTML = `
     <section class="card pool-hero">
-      <button class="link back light" id="back">← Pools</button>
+      <button class="link back light" id="back">← Circles</button>
       <div class="pool-title"><h2>${ctx.esc(d.name)}</h2><span class="chip-s info">Invite</span></div>
       <p class="label">Each member pays</p>
       <p class="amount">${money(d.contribution)}</p>
@@ -671,18 +687,18 @@ export async function renderInvite(id) {
       ${organizer || joined ? `
         <div class="qr-wrap"><div class="qr" id="qr" role="img" aria-label="Invite QR code"></div>
         <p class="muted small-text">Share this so people can join with their ORPay wallet.</p></div>
-        <div class="row"><button class="primary" id="share">Share invite</button><button class="ghost" id="copy">Copy link</button></div>` : ''}
-      ${!joined ? `<p class="muted">${label(d.organizer)} invited you to a savings pool. You'll pay ${money(d.contribution)} each round${d.deposit ? ` plus a ${money(d.deposit)} deposit when it starts` : ''}, and receive the whole pot on your turn.</p>
-        <button class="primary" id="join" ${d.members.length >= d.slots ? 'disabled' : ''}>${d.members.length >= d.slots ? 'This pool is full' : 'Join this ajo'}</button>` : ''}
-      ${joined && !organizer ? `<p class="muted small-text">You're in. When ${label(d.organizer)} starts the pool you'll confirm your place${d.deposit ? ' and pay your deposit' : ''}.</p><button class="link" id="leave">Leave</button>` : ''}
+        <div class="row"><button class="primary" id="share">Share invite</button><button class="ghost" id="card">Share as image</button><button class="ghost" id="copy">Copy link</button></div>` : ''}
+      ${!joined ? `<p class="muted">${label(d.organizer)} invited you to a saving circle. You'll pay ${money(d.contribution)} each round${d.deposit ? ` plus a ${money(d.deposit)} deposit when it starts` : ''}, and receive the whole pot on your turn.</p>
+        <button class="primary" id="join" ${d.members.length >= d.slots ? 'disabled' : ''}>${d.members.length >= d.slots ? 'This circle is full' : 'Join this circle'}</button>` : ''}
+      ${joined && !organizer ? `<p class="muted small-text">You're in. When ${label(d.organizer)} starts the circle you'll confirm your place${d.deposit ? ' and pay your deposit' : ''}.</p><button class="link" id="leave">Leave</button>` : ''}
       <p class="error" id="err"></p>
     </section>
     <section class="card">
       <h2>Payout order</h2>
       <ul class="members">${d.members.map((m, i) => `<li class="${m === me ? 'me' : ''}"><span class="pos">${i + 1}</span><span class="who"><strong>${label(m)}</strong>${m === d.organizer ? '<span class="small-text muted">Organiser</span>' : ''}</span>
         ${organizer && d.members.length > 1 ? `<span class="row-actions"><button class="ghost small" data-up="${i}" ${i === 0 ? 'disabled' : ''}>↑</button><button class="ghost small" data-down="${i}" ${i === d.members.length - 1 ? 'disabled' : ''}>↓</button>${m !== d.organizer ? `<button class="ghost small" data-remove="${m}" aria-label="Remove">✕</button>` : ''}</span>` : ''}</li>`).join('')}</ul>
-      ${organizer && d.status === 'open' ? `<button class="primary" id="start" ${d.members.length < 2 ? 'disabled' : ''}>Start the pool with ${d.members.length} member${d.members.length === 1 ? '' : 's'}</button>
-        <p class="hint">Starting puts the pool on-chain with this order. Members then confirm${d.deposit ? ' and pay their deposit' : ''}.</p>
+      ${organizer && d.status === 'open' ? `<button class="primary" id="start" ${d.members.length < 2 ? 'disabled' : ''}>Start the circle with ${d.members.length} member${d.members.length === 1 ? '' : 's'}</button>
+        <p class="hint">Starting puts the circle on-chain with this order. Members then confirm${d.deposit ? ' and pay their deposit' : ''}.</p>
         <button class="link danger-link" id="delete-invite">Delete this circle</button>` : ''}
       ${d.status === 'cancelled' ? '<p class="banner">The organiser deleted this circle.</p>' : ''}
     </section>`
@@ -694,6 +710,23 @@ export async function renderInvite(id) {
     share.onclick = async () => {
       if (navigator.share) await navigator.share({ title: `Join ${d.name} on ORPay`, url: d.invite_url }).catch(() => {})
       else navigator.clipboard.writeText(d.invite_url).then(() => ctx.toast('Invite link copied'))
+    }
+  const card = ctx.$('#card')
+  if (card)
+    card.onclick = async () => {
+      card.disabled = true
+      card.textContent = 'Making image…'
+      try {
+        const how = await shareInviteCard({
+          name: d.name, amount: money(d.contribution), members: d.members.length, slots: d.slots,
+          cadence: d.round_secs ? cadence(d.round_secs) : 'Flexible', organiser: ctx.nameOf(d.organizer) ? `@${ctx.nameOf(d.organizer)}` : 'A friend', url: d.invite_url,
+        })
+        if (how === 'downloaded') ctx.toast('Invite image saved')
+      } catch (err) {
+        ctx.toast(err.message, 'err')
+      }
+      card.disabled = false
+      card.textContent = 'Share as image'
     }
   const copy = ctx.$('#copy')
   if (copy) copy.onclick = () => navigator.clipboard.writeText(d.invite_url).then(() => ctx.toast('Invite link copied'))

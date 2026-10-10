@@ -270,6 +270,7 @@ export async function renderEscrow(id, preloaded, focus) {
   if (role === 'seller' && e.status === 'funded') {
     acts.push(`<div class="row"><label>Courier<select id="courier"><option value="">Delivering myself / pickup</option><option>GIG Logistics</option><option>Kwik</option><option>DHL</option><option>Bolt Send</option><option>Other courier</option></select></label></div>`)
     acts.push('<label>Tracking number or delivery note<input id="note" maxlength="120" placeholder="e.g. GL12345, or link to delivered work"></label>')
+    acts.push('<label class="proof-pick">Proof of delivery <span class="muted">(photo of the parcel, waybill or finished work)</span><input id="proof" type="file" accept="image/*" capture="environment" multiple></label><p class="muted small-text">Add a tracking number or at least one photo. The buyer and arbiter see it.</p>')
     acts.push('<button class="primary" data-op="dispatch">Mark dispatched / delivered</button>')
   }
   if (role === 'seller' && e.status === 'dispatched') {
@@ -440,7 +441,15 @@ export async function renderEscrow(id, preloaded, focus) {
       b.textContent = 'Confirming…'
       try {
         const args = { seed: ctx.state.seed, op, id: e.id, asset: e.asset ?? '' }
-        if (op === 'dispatch') args.memo = [ctx.$('#courier')?.value, ctx.$('#note')?.value.trim()].filter(Boolean).join(' · ').slice(0, 140)
+        if (op === 'dispatch') {
+          args.memo = [ctx.$('#courier')?.value, ctx.$('#note')?.value.trim()].filter(Boolean).join(' · ').slice(0, 140)
+          const files = [...(ctx.$('#proof')?.files ?? [])].slice(0, 4)
+          if (!ctx.$('#note')?.value.trim() && !files.length) throw new Error('Add a tracking number or a photo as proof of delivery')
+          if (files.length) {
+            b.textContent = 'Uploading proof…'
+            await api.postEscrowMessage(ctx.state.seed, e.id, `Proof of delivery${args.memo ? `: ${args.memo}` : ''}`, await Promise.all(files.map((f) => encodeFile(f))))
+          }
+        }
         if (op === 'resolve') args.toSeller = parseAmount(ctx.$('#split').value || '0')
         await waitForCommit(await escrowOp(args))
         if (op === 'release' && checklist.length)

@@ -510,3 +510,6 @@ body:has(.lp) { background: #f7f7fc; }
 @media (max-width: 960px) { .lp-escrow { grid-template-columns: 1fr auto; } .lp-escrow-flow { display: none; } }
 @media (max-width: 600px) { .lp-escrow { grid-template-columns: 1fr; gap: 18px; } }
 @media (min-width: 961px) { .lp-escrow { grid-template-columns: minmax(0, 27rem) 1fr auto; } .lp-escrow-flow { justify-self: center; } }
+.lp-hero-grid > * { min-width: 0; }
+@media (max-width: 960px) { .lp-hero-grid { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 400px) { .lp-hero h1 { font-size: 2.6rem; } .lp-built { flex-wrap: wrap; justify-content: center; } }

@@ -251,11 +251,11 @@ func (s *server) pushEvents(a types.Address) []notification {
 					if due.Before(now) {
 						when = "is overdue"
 					}
-					once(fmt.Sprintf("due-%s-%d", p.ID, p.Round), notification{Title: p.Name, Body: fmt.Sprintf("Your %s ajo payment %s.", money(p.Contribution, p.Asset), when), URL: url, Tag: "ajo-" + p.ID})
+					once(fmt.Sprintf("due-%s-%d", p.ID, p.Round), notification{Title: p.Name, Body: fmt.Sprintf("Your %s circle payment %s.", money(p.Contribution, p.Asset), when), URL: url, Tag: "ajo-" + p.ID})
 				}
 			}
 			if i == p.Round && !slices.Contains(p.Paid, false) {
-				once(fmt.Sprintf("pot-%s-%d", p.ID, p.Round), notification{Title: p.Name, Body: "Everyone has paid. Your ajo pot is ready to collect.", URL: url, Tag: "ajo-" + p.ID})
+				once(fmt.Sprintf("pot-%s-%d", p.ID, p.Round), notification{Title: p.Name, Body: "Everyone has paid. Your pot is ready to collect.", URL: url, Tag: "ajo-" + p.ID})
 			}
 		}
 

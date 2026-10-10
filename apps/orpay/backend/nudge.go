@@ -35,7 +35,7 @@ func (s *server) nudgePool(w http.ResponseWriter, r *http.Request) {
 		} `json:"pool"`
 	}
 	if err := s.node.GetJSON("/v1/pools/"+id, &resp); err != nil {
-		writeErr(w, http.StatusNotFound, errors.New("pool not found"))
+		writeErr(w, http.StatusNotFound, errors.New("circle not found"))
 		return
 	}
 	p := resp.Pool

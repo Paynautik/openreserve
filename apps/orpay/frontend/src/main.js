@@ -17,6 +17,7 @@ import { haptic, icon, moneyHTML, numpad, skeletonRows, slider, success } from '
 import { bioEnabled, bioSupported, disableBio, enableBio, unlockBio } from './bio.js'
 import { newSignInWords, parseSignInWords, sealSignIn, signInToken, unsealSignIn } from './signin.js'
 import { clearVault, hasVault, saveVault, unlockVault, vaultAddress } from './vault.js'
+import { getLimit, overLimit, setLimit, spentToday } from './limits.js'
 
 const app = document.getElementById('app')
 
@@ -157,7 +158,8 @@ function renderProfile() {
     ${item('m-six', icon('key'), 'Six-word sign-in', 'Open this wallet on another device')}
     ${item('m-words', icon('words'), 'Recovery words', 'Your offline backup')}
     ${item('m-bio', icon('finger'), 'Face ID / fingerprint', bioEnabled() ? 'On: unlock without your password' : 'Unlock without typing your password')}
-    ${item('m-notify', icon('bell'), 'Notifications', 'Payments, ajo turns, escrow updates')}
+    ${item('m-limit', icon('lock'), 'Daily send limit', getLimit(state.address) ? `${formatMoney(getLimit(state.address).amount, getLimit(state.address).asset)} a day` : 'No limit set')}
+    ${item('m-notify', icon('bell'), 'Notifications', 'Payments, circle turns, escrow updates')}
     ${item('m-lang', icon('globe'), 'Language', LANGS.find((l) => l.id === getLang())?.name ?? 'English')}
     ${item('m-theme', icon('moon'), 'Theme', { system: 'Follows your phone', light: 'Light', dark: 'Dark' }[localStorage.getItem(THEME) ?? 'system'])}
     ${item('m-lock', icon('logout'), 'Sign out', 'Lock the wallet on this device', 'danger')}
@@ -169,6 +171,7 @@ function renderProfile() {
   on('#m-receive', () => openPanel('receive'))
   on('#m-invite', renderInvites)
   on('#m-six', renderSignInSetup)
+  on('#m-limit', renderLimit)
   on('#m-words', () => {
     if (!confirm('Show your 24 recovery words? Make sure nobody can see your screen.')) return
     showPanel('Recovery words')
@@ -220,7 +223,7 @@ function renderProfile() {
 async function renderInvites() {
   showPanel('Invite friends')
   const link = `${location.origin}/?ref=${encodeURIComponent(state.username)}`
-  const text = `Join me on ORPay: save in ajo and buy safely with escrow. ${link}`
+  const text = `Join me on ORPay: save in a circle and buy safely with escrow. ${link}`
   $('#panel').innerHTML = `
     <p class="muted small-text">Share your link. Everyone who joins and makes their first payment counts as your referral.</p>
     <div class="invite-link"><span class="mono">${esc(link)}</span><button class="ghost small" id="inv-copy">Copy</button></div>
@@ -635,7 +638,7 @@ function homeHTML() {
         <button data-qa="send"><i>${qaIcon.send}</i>Send</button>
         <button data-qa="receive"><i>${qaIcon.receive}</i>Receive</button>
         <button data-qa="escrow"><i>${qaIcon.escrow}</i>Escrow</button>
-        <button data-qa="ajo"><i>${qaIcon.ajo}</i>Ajo</button>
+        <button data-qa="ajo"><i>${qaIcon.ajo}</i>Circles</button>
       </nav>
       <section id="reminders"></section>
       <section class="card" id="panel-card" hidden>
@@ -675,7 +678,7 @@ async function checkReminders(force = false) {
     const msg = `${p.name}: your ${formatMoney(p.contribution, p.asset ?? '')} is ${due < Date.now() ? 'overdue' : 'due soon'}`
     toast(msg, due < Date.now() ? 'err' : 'ok')
     try {
-      if (document.hidden && Notification.permission === 'granted') new Notification('ORPay ajo', { body: msg, icon: '/icon-192.png' })
+      if (document.hidden && Notification.permission === 'granted') new Notification('ORPay saving circle', { body: msg, icon: '/icon-192.png' })
     } catch {}
   }
 }
@@ -685,7 +688,7 @@ function renderReminders() {
   if (!el) return
   const due = state.due ?? []
   el.innerHTML = due.length
-    ? `<div class="card reminders"><h2>Ajo payments due</h2><ul class="x-list">${due
+    ? `<div class="card reminders"><h2>Circle payments due</h2><ul class="x-list">${due
         .map(({ p, due }) => {
           const overdue = due && due < Date.now()
           return `<li><span class="x-badge ${overdue ? 'bad' : ''}">◎</span><span class="who"><strong>${esc(p.name)}</strong><small>${formatMoney(p.contribution, p.asset ?? '')} · ${
@@ -774,7 +777,7 @@ function renderWallet() {
     <main class="wallet" id="view"></main>
     <nav class="tabbar" aria-label="Main">
       <button data-view="home"><span class="ti">${icon('home')}</span>Home</button>
-      <button data-view="pools"><span class="ti">${icon('pools')}</span>Pools</button>
+      <button data-view="pools"><span class="ti">${icon('pools')}</span>Circles</button>
       <button data-view="escrow"><span class="ti">${icon('escrow')}</span>Escrow</button>
       <button data-view="developers"><span class="ti">${icon('code')}</span>Developers</button>
     </nav>`
@@ -953,6 +956,59 @@ function renderSend(prefill = {}) {
   }
 }
 
+function renderLimit() {
+  showPanel('Daily send limit')
+  const cur = getLimit(state.address)
+  const asset = cur?.asset ?? currencies()[0]
+  const spent = spentToday(state.history, state.address, asset)
+  $('#panel').innerHTML = `
+    <form class="stack" id="lim-form">
+      <p class="muted">Cap how much can leave this wallet in a day. Lowering it is instant; raising or removing it asks for your password.</p>
+      <label>Limit per day (${esc(assetLabel(asset))})<input id="lim" inputmode="decimal" placeholder="e.g. 50,000" value="${cur ? formatAmount(cur.amount) : ''}"></label>
+      <p class="muted small-text">Sent today: ${esc(formatMoney(spent, asset))}</p>
+      <label id="lim-pw-row" hidden>Wallet password<input id="lim-pw" type="password" autocomplete="current-password"></label>
+      <p class="error" id="lim-err"></p>
+      <button class="primary">Save limit</button>
+      ${cur ? '<button type="button" class="ghost" id="lim-off">Remove limit</button>' : ''}
+    </form>`
+  const needsPw = (next) => cur && hasVault() && (next === null || next > cur.amount)
+  const apply = async (next) => {
+    const err = $('#lim-err')
+    err.textContent = ''
+    if (needsPw(next)) {
+      const row = $('#lim-pw-row')
+      if (row.hidden) {
+        row.hidden = false
+        $('#lim-pw').focus()
+        err.textContent = 'Enter your password to raise or remove the limit.'
+        return
+      }
+      try {
+        await unlockVault($('#lim-pw').value)
+      } catch {
+        err.textContent = 'Wrong password.'
+        return
+      }
+    }
+    setLimit(state.address, next === null ? null : { asset, amount: next })
+    toast(next === null ? 'Daily limit removed' : `Limit set: ${formatMoney(next, asset)} a day`)
+    renderProfile()
+  }
+  $('#lim-form').onsubmit = (e) => {
+    e.preventDefault()
+    let v
+    try {
+      v = parseAmount($('#lim').value.replace(/,/g, ''))
+    } catch {
+      $('#lim-err').textContent = 'Enter an amount.'
+      return
+    }
+    if (v <= 0n) return ($('#lim-err').textContent = 'Enter an amount above zero.')
+    apply(v)
+  }
+  if ($('#lim-off')) $('#lim-off').onclick = () => apply(null)
+}
+
 function renderReview({ to, label, amount, memo, asset }) {
   $('#panel').innerHTML = `
     <div class="review">
@@ -968,6 +1024,11 @@ function renderReview({ to, label, amount, memo, asset }) {
       <button class="link" id="cancel">${icon('back')} Change details</button>
     </div>`
   $('#cancel').onclick = () => renderSend({ asset })
+  const left = overLimit(state.address, state.history, asset, amount)
+  if (left !== null) {
+    $('#err').textContent = `This is over your daily send limit. You can send ${formatMoney(left, asset)} more today, or change the limit in your profile.`
+    return
+  }
   $('#slide-slot').append(slider('Slide to send', async (reset) => {
     const who = label.startsWith('@') ? label : short(to)
     try {
@@ -1068,7 +1129,7 @@ function renderReceive() {
       try {
         await enablePush()
         nb.textContent = 'Notifications are on'
-        toast("You'll be notified about payments, ajo due dates and escrow updates")
+        toast("You'll be notified about payments, circle due dates and escrow updates")
       } catch (err) {
         toast(err.message, 'err')
       }
@@ -1198,12 +1259,12 @@ function escrowActivity(e) {
 
 function poolActivity(e) {
   const when = new Date(e.time).toLocaleString([], { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })
-  const text = { create: 'Created a savings pool', join: 'Joined a savings pool', contribute: 'Pool contribution', claim: 'Received pool payout' }[e.tx.pool.op]
+  const text = { create: 'Created a saving circle', join: 'Joined a saving circle', contribute: 'Pool contribution', claim: 'Received circle payout' }[e.tx.pool.op]
   const id = e.tx.pool.op === 'create' ? e.id : e.tx.pool.id
   return `
     <li class="clickable" data-pool="${id}">
       <span class="icon pool" aria-hidden="true">${icon('pools')}</span>
-      <span class="who"><strong>${text}</strong><small>${when} · tap to view pool</small></span>
+      <span class="who"><strong>${text}</strong><small>${when} · tap to view circle</small></span>
       <span class="amt">${e.tx.pool.op === 'claim' ? '<span class="in">payout</span>' : ''}</span>
     </li>`
 }

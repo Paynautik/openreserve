@@ -35,7 +35,7 @@ export function renderLanding(app, { onStart, onSignIn, signInLabel }) {
         <div class="lp-hero-copy">
           <span class="lp-pill"><span class="dot on"></span><span id="lp-live">Live on the OpenReserve network</span></span>
           <h1>Money moves.<br><span class="lp-grad">Trust stays.</span></h1>
-          <p class="lp-lead">Send naira, save with your ajo and buy safely with escrow. Every payment is visible on-chain.</p>
+          <p class="lp-lead">Send naira, save in a circle and buy safely with escrow. Every payment is visible on-chain.</p>
           <div class="lp-cta">
             <button class="lp-btn ink lg" data-start>Get started free</button>
             <a class="lp-btn ghost lg" href="#how">How escrow works</a>
@@ -59,12 +59,12 @@ export function renderLanding(app, { onStart, onSignIn, signInLabel }) {
                 <span><i class="c1">${svg(I.up)}</i>Send</span>
                 <span><i class="c2">${svg(I.down)}</i>Receive</span>
                 <span><i class="c3">${svg(I.escrow)}</i>Escrow</span>
-                <span><i class="c4">${svg(I.ajo)}</i>Ajo</span>
+                <span><i class="c4">${svg(I.ajo)}</i>Circles</span>
               </div>
               <div class="lp-recent-head"><b>Recent activity</b><span>See all</span></div>
-              <div class="lp-tx"><i class="in">${svg(I.down)}</i><span><b>Ajo payout</b><small>Today · 9:42 AM</small></span><em class="pos">+₦45,000</em></div>
+              <div class="lp-tx"><i class="in">${svg(I.down)}</i><span><b>Circle payout</b><small>Today · 9:42 AM</small></span><em class="pos">+₦45,000</em></div>
               <div class="lp-tx"><i class="out">${svg(I.escrow)}</i><span><b>Escrow · iPhone 14</b><small>Yesterday · 4:20 PM</small></span><em>−₦42,000</em></div>
-              <div class="lp-tabs"><span class="on">Home</span><span>Pools</span><span>Escrow</span><span>Profile</span></div>
+              <div class="lp-tabs"><span class="on">Home</span><span>Circles</span><span>Escrow</span><span>Profile</span></div>
               <span class="home-ind"></span>
             </div>
           </div>
