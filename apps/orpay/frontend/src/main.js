@@ -1448,10 +1448,11 @@ async function renderGuestCheckout(invoice) {
   else if (pending?.invoice) renderGuestCheckout(pending)
   // Partner links (escrow, circle invite) go straight to the express wallet.
   else if (!hasVault() && (pending?.escrow_request || pending?.escrow || pending?.ajo_invite)) renderWelcome()
-  else if (hasVault() && !wantsLanding) {
-    const s = resumeSession()
-    s ? openWallet(fromHex(s.seed), s.address) : renderUnlock()
-  }
+  // Open straight into the wallet only when it's already unlocked in this
+  // tab or a payment link is waiting; otherwise show the landing page, whose
+  // "Open wallet" button leads to the unlock screen.
+  else if (hasVault() && !wantsLanding && resumeSession()) openWallet(fromHex(resumeSession().seed), resumeSession().address)
+  else if (hasVault() && pending) renderUnlock()
   else showLanding()
 }
 
