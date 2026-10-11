@@ -1076,3 +1076,4 @@ body.lp-dark-body { background: #070b1f !important; }
 .lp.y2050 [data-pane-body="wallet"] .lp-tx em { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .66rem; }
 .lp-navlive { white-space: nowrap; }
 @media (max-width: 700px) { .lp.y2050 .lp-navlive.lp-only-2050 { display: none !important; } }
+.lp-install svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; margin-right: 6px; }

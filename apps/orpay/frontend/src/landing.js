@@ -4,6 +4,7 @@
 import './landing.css'
 import { API_BASE } from './orp.js'
 import { circleTerm } from './region.js'
+import { canInstall, install, onInstallChange } from './install.js'
 
 const svg = (d) => `<svg viewBox="0 0 24 24" aria-hidden="true">${d}</svg>`
 const I = {
@@ -41,6 +42,7 @@ export function renderLanding(app, { onStart, onSignIn, signInLabel }) {
           <div class="lp-cta">
             <button class="lp-btn ink lg" data-start>Get started free</button>
             <a class="lp-btn ghost lg" href="/?demo">Try the demo</a>
+            <button class="lp-btn ghost lg lp-install" type="button" hidden>${svg('<path d="M12 3v12M7 10l5 5 5-5M5 21h14"/>')} Install app</button>
           </div>
           <p class="lp-built"><img src="/favicon.png" alt="">Built on the <b>OpenReserve Protocol</b><span class="lp-built-sep"> · </span><span class="lp-built-fee">transfers from ₦10</span></p>
         </div>
@@ -291,6 +293,13 @@ escrow = orpay.create_escrow(
   app.querySelectorAll('[data-start]').forEach((b) => (b.onclick = onStart))
   escrowDemo(app)
   codeTabs(app)
+  const ib = app.querySelector('.lp-install')
+  if (ib) {
+    const sync = () => (ib.hidden = !canInstall())
+    sync()
+    onInstallChange(sync)
+    ib.onclick = () => install()
+  }
   // Header shrinks a little once the page scrolls.
   const nav = app.querySelector('.lp-nav')
   if (nav) {

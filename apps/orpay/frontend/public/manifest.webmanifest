@@ -1,13 +1,13 @@
 {
   "name": "ORPay",
   "short_name": "ORPay",
-  "description": "Send money, save together and pay safely with escrow on OpenReserve.",
+  "description": "Send naira, save together in an ajo and buy safely with escrow. Built on OpenReserve.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#f4f6fb",
-  "theme_color": "#1d4ed8",
+  "theme_color": "#4f46e5",
   "icons": [
     {
       "src": "/icon-192.png",
@@ -26,6 +26,45 @@
       "type": "image/png",
       "sizes": "512x512",
       "purpose": "maskable"
+    }
+  ],
+  "id": "/",
+  "categories": [
+    "finance"
+  ],
+  "shortcuts": [
+    {
+      "name": "Send money",
+      "short_name": "Send",
+      "url": "/?tab=send",
+      "icons": [
+        {
+          "src": "/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Receive money",
+      "short_name": "Receive",
+      "url": "/?tab=receive",
+      "icons": [
+        {
+          "src": "/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Explorer",
+      "short_name": "Explorer",
+      "url": "/explorer",
+      "icons": [
+        {
+          "src": "/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
     }
   ]
 }

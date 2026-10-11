@@ -20,6 +20,7 @@ import { newSignInWords, parseSignInWords, sealSignIn, signInToken, unsealSignIn
 import { clearVault, hasVault, saveVault, unlockVault, vaultAddress } from './vault.js'
 import { getLimit, overLimit, setLimit, spentToday } from './limits.js'
 import { exitDemo, installDemo, isDemo } from './demo.js'
+import { installBanner } from './install.js'
 
 const app = document.getElementById('app')
 
@@ -524,6 +525,9 @@ async function openWallet(seed, address) {
   state.seed = seed
   state.address = address
   if (!state.demo) saveSession(seed, address)
+  // App shortcuts (long-press the installed icon): /?tab=send or /?tab=receive
+  const tabQ = new URLSearchParams(location.search).get('tab')
+  if (tabQ === 'send' || tabQ === 'receive') setTimeout(() => openPanel(tabQ), 300)
   watchIdle()
   renderWallet()
   if (!pullToRefresh.on) (pullToRefresh(), (pullToRefresh.on = true))
@@ -699,6 +703,7 @@ function homeHTML() {
         <button data-qa="ajo"><i>${qaIcon.ajo}</i>Circles</button>
       </nav>
       ${needsBackup() ? `<div class="banner warn backup-nag"><span><b>Back up your wallet.</b> Write down your 24 recovery words so you never lose access.</span><button class="small primary" id="do-backup">Back up</button></div>` : ''}
+      <div id="install-slot"></div>
       <section id="reminders"></section>
       <section class="card" id="panel-card" hidden>
         <div class="section-head"><h2 id="panel-title">Send</h2><button class="link" id="panel-close" aria-label="Close">Close</button></div>
@@ -760,6 +765,7 @@ function renderReminders() {
 }
 
 function bindHome() {
+  if (!state.demo) installBanner($('#reminders')?.parentElement && $('#install-slot'))
   if ($('#do-backup'))
     $('#do-backup').onclick = async () => {
       if (!(await ask('Make sure nobody can see your screen. Anyone with these words can take your money.', { title: 'Back up your wallet', ok: 'Show words' }))) return
@@ -814,6 +820,9 @@ async function refresh() {
     ])
     const changed = JSON.stringify(history) !== JSON.stringify(state.history)
     Object.assign(state, { status, account, history, online: true })
+    try {
+      if (!state.demo) localStorage.setItem(`orpay.last.${state.address}`, JSON.stringify({ status, account, history, at: Date.now() }))
+    } catch {}
     notifyIncoming(history)
     checkReminders()
     renderBalance()
@@ -826,6 +835,17 @@ async function refresh() {
     }
   } catch {
     state.online = false
+    // Offline: show the last balance and activity we saw, marked as such.
+    if (!state.account) {
+      try {
+        const last = JSON.parse(localStorage.getItem(`orpay.last.${state.address}`) ?? 'null')
+        if (last) {
+          Object.assign(state, { status: last.status, account: last.account, history: last.history, stale: last.at })
+          renderBalance()
+          renderActivity()
+        }
+      } catch {}
+    }
     renderHeader()
   }
 }
@@ -863,7 +883,7 @@ function renderHeader() {
   const h = $('#header')
   if (!h) return
   const net = state.status
-    ? `<span class="dot ${state.online ? 'on' : 'off'}"></span>${state.online ? (document.documentElement.classList.contains('y2050') ? `${/devnet|testnet|demo/.test(state.status.chain_id) ? 'Test net' : 'Mainnet'} · #${state.status.height.toLocaleString('en-NG')}` : `${esc(state.status.chain_id)} · block ${state.status.height}`) : 'Offline'}`
+    ? `<span class="dot ${state.online ? 'on' : 'off'}"></span>${state.online ? (document.documentElement.classList.contains('y2050') ? `${/devnet|testnet|demo/.test(state.status.chain_id) ? 'Test net' : 'Mainnet'} · #${state.status.height.toLocaleString('en-NG')}` : `${esc(state.status.chain_id)} · block ${state.status.height}`) : state.stale ? `Offline · saved ${new Date(state.stale).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}` : 'Offline'}`
     : 'Connecting…'
   const who = state.username ?? ''
   if (h.dataset.who !== who || !h.firstChild) {
