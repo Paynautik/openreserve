@@ -171,7 +171,7 @@ export function renderLanding(app, { onStart, onSignIn, signInLabel }) {
     <section class="lp-wrap lp-sec lp-calc" id="ajo-calc">
       <div class="lp-head">
         <p class="lp-kicker">Ajo calculator</p>
-        <h2>See your pot before you start.</h2>
+        <h2>See your pot<br>before you start.</h2>
       </div>
       <div class="calc">
         <form class="calc-in" id="calc" onsubmit="return false">
@@ -182,15 +182,11 @@ export function renderLanding(app, { onStart, onSignIn, signInLabel }) {
           <label>Your turn to collect <output id="c-t-out">3</output><input id="c-t" type="range" min="1" max="5" value="3"></label>
         </form>
         <div class="calc-out" aria-live="polite">
-          <small class="calc-k">YOUR POT</small>
-          <strong id="c-pot">₦100,000</strong>
+          <div class="calc-ring"><svg viewBox="0 0 220 220" id="c-ring" aria-hidden="true"></svg>
+            <div class="calc-center"><small class="calc-k">YOUR POT</small><strong id="c-pot">₦100,000</strong><span id="c-when-short"></span></div>
+          </div>
           <p id="c-when"></p>
-          <ol class="calc-track" id="c-track"></ol>
-          <dl class="calc-dl">
-            <dt>You pay in total</dt><dd id="c-total"></dd>
-            <dt>Circle lasts</dt><dd id="c-len"></dd>
-            <dt>ORPay fee</dt><dd>None for ajo · network fee from ₦10 per payment</dd>
-          </dl>
+          <div class="calc-facts"><span><small>YOU PAY</small><b id="c-total"></b></span><span><small>LASTS</small><b id="c-len"></b></span><span><small>ORPAY FEE</small><b>₦0</b></span></div>
           <button class="lp-btn ink" data-start>Start this ajo</button>
         </div>
       </div>
@@ -581,9 +577,18 @@ function ajoCalc(app) {
     const date = new Date(Date.now() + every * 864e5 * t)
     const unit = every === 7 ? 'week' : 'month'
     $('c-when').textContent = `You collect in ${unit} ${t}, around ${date.toLocaleDateString([], { day: 'numeric', month: 'short' })}.${t === 1 ? ' First in line: like an interest-free advance.' : t === n ? ' Last in line: like a disciplined savings plan.' : ''}`
-    $('c-total').textContent = `${ngn(a * n)} (${ngn(a)} × ${n} ${unit}s)`
+    $('c-total').textContent = ngn(a * n)
     $('c-len').textContent = `${n} ${unit}${n === 1 ? '' : 's'}`
-    $('c-track').innerHTML = Array.from({ length: n }, (_, i) => `<li class="${i + 1 === t ? 'me' : i + 1 < t ? 'before' : ''}" title="${unit} ${i + 1}">${i + 1 === t ? 'You' : i + 1}</li>`).join('')
+    $('c-when-short').textContent = `${unit} ${t} of ${n}`
+    // Members around a circle; payouts go clockwise, yours glows.
+    const R = 92, C = 110
+    $('c-ring').innerHTML = `<circle cx="${C}" cy="${C}" r="${R}" class="track"/><circle cx="${C}" cy="${C}" r="${R}" class="arc" pathLength="100" stroke-dasharray="${(t / n) * 100} 100" transform="rotate(-90 ${C} ${C})"/>` +
+      Array.from({ length: n }, (_, i) => {
+        const ang = (i / n) * 2 * Math.PI - Math.PI / 2
+        const x = C + R * Math.cos(ang), y = C + R * Math.sin(ang)
+        const cls = i + 1 === t ? 'me' : i + 1 < t ? 'before' : ''
+        return `<g class="m ${cls}"><circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${i + 1 === t ? 13 : 9}"/><text x="${x.toFixed(1)}" y="${(y + 3.5).toFixed(1)}">${i + 1 === t ? 'YOU' : i + 1}</text></g>`
+      }).join('')
   }
   ;['c-n', 'c-t'].forEach((id) => ($(id).oninput = draw))
   $('c-amt').oninput = () => {
