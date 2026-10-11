@@ -1157,3 +1157,8 @@ ul li.empty:has(.empty-ico) button { width: auto; margin: 8px auto 0; align-self
 @media (max-width: 560px) { .y2050 dl.x-dl { grid-template-columns: 1fr; } .y2050 dl.x-dl dd { border-top: 0; padding-top: 0; } }
 @media (prefers-reduced-motion: reduce) { .y2050 body:not(.x-home) .x-main > section.card:first-child::before { animation: none; } }
 .y2050 dl.summary.x-dl { padding: 0; background: var(--surface); border: 0; }
+.x-offline { display: grid; justify-items: start; gap: 10px; }
+.x-offline h2 { margin: 4px 0 0; font-size: 1.25rem !important; letter-spacing: -.02em !important; text-transform: none !important; font-family: inherit !important; }
+.x-offline p { margin: 0; max-width: 60ch; line-height: 1.55; }
+.x-offline button { width: auto; }
+.x-offline .x-live { background: #fff1f2; color: #be123c; box-shadow: inset 0 0 0 1px #fecdd3; }

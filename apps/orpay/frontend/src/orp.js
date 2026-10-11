@@ -184,9 +184,24 @@ export async function signMessage(message, seed) {
 // the native app is built with VITE_API_BASE=https://<your domain>.
 export const API_BASE = (import.meta.env?.VITE_API_BASE ?? '').replace(/\/$/, '')
 
+// Raised when no OpenReserve node answers (e.g. the site is deployed but
+// the network is not hosted yet). UIs show a friendly offline state.
+export function offlineError() {
+  const e = new Error("The OpenReserve network isn't reachable from this site right now.")
+  e.offline = true
+  return e
+}
+
 // Node API.
 async function call(path, opts) {
-  const res = await fetch(API_BASE + path, opts)
+  let res
+  try {
+    res = await fetch(API_BASE + path, opts)
+  } catch {
+    throw offlineError()
+  }
+  // A static host with no node behind it answers API paths with an HTML page.
+  if (!(res.headers.get('content-type') ?? '').includes('json') && res.ok) throw offlineError()
   const body = await res.json().catch(() => ({}))
   if (!res.ok) throw new Error(body.error || `Request failed (${res.status})`)
   return body

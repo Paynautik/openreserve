@@ -101,6 +101,13 @@ async function search(q) {
 }
 
 const go = (path) => (location.hash = `#/${path}`)
+const offline = () =>
+  shell(`<section class="card x-offline">
+    <span class="x-live"><span class="dot off"></span>Network offline</span>
+    <h2>The explorer can't reach the network yet</h2>
+    <p class="muted">This site is live, but the OpenReserve node it reads from isn't online right now. Nothing is wrong with your data: every block and payment is stored on the ledger and will show here once the network is reachable.</p>
+    <button class="primary small" id="x-retry">Try again</button>
+  </section>`) || (document.getElementById('x-retry') && (document.getElementById('x-retry').onclick = () => route()))
 const notFound = (msg) => shell(`<section class="card"><h2>Not found</h2><p class="muted">${esc(msg)}</p></section>`)
 
 let timer
@@ -252,7 +259,8 @@ async function route() {
     if (!view) return notFound('Unknown page.')
     await view(decodeURIComponent(id))
   } catch (err) {
-    notFound(err.message)
+    if (err.offline) offline()
+    else notFound(err.message)
   }
   window.scrollTo(0, 0)
 }
