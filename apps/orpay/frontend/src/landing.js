@@ -264,8 +264,29 @@ escrow = orpay.create_escrow(
       <span class="logo" aria-label="ORPay"><span class="logo-or">OR</span><span class="logo-pay">Pay</span></span>
       <span class="lp-proto"><img src="/favicon.png" alt="">Built on the <b>OpenReserve Protocol</b></span>
       <a href="/explorer.html">Explorer →</a>
-      <span class="lp-netpill lp-only-2050"><i class="b-live"></i><span id="lp-net">Network live</span></span>
       <p class="lp-copy">© ${new Date().getFullYear()} Paynautik. ORPay is a Paynautik product.</p>
+    </footer>
+
+    <footer class="lp-foot2 lp-only-2050-block">
+      <div class="lp-wrap">
+        <div class="f2-top">
+          <div class="f2-brand">
+            <span class="logo" aria-label="ORPay"><span class="logo-or">OR</span><span class="logo-pay">Pay</span></span>
+            <p>Money you can see and trust. Escrow, ajo and payments on an open ledger.</p>
+          </div>
+          <nav class="f2-cols" aria-label="Footer">
+            <div><b>Product</b><a href="#product">Wallet</a><a href="#escrow">Escrow</a><a href="#uses">Ajo / saving circles</a><a href="/?demo">Try the demo</a></div>
+            <div><b>Build</b><a href="#developers">Developers</a><a href="#developers">Sandbox keys</a><a href="/explorer.html">Explorer</a></div>
+            <div><b>Protocol</b><a href="https://github.com/Paynautik/openreserve" target="_blank" rel="noopener">OpenReserve on GitHub ↗</a><a href="https://github.com/Paynautik/openreserve/blob/main/LICENSE" target="_blank" rel="noopener">Apache-2.0 licence ↗</a></div>
+          </nav>
+        </div>
+        <div class="f2-mark" aria-hidden="true">ORPay</div>
+        <div class="f2-bar">
+          <span class="f2-net"><i class="b-live"></i><span id="lp-net">Network live</span></span>
+          <span class="f2-proto"><img src="/favicon.png" alt="">Built on the OpenReserve Protocol</span>
+          <span>© ${new Date().getFullYear()} Paynautik · ORPay is a Paynautik product</span>
+        </div>
+      </div>
     </footer>
   </div>`
 
