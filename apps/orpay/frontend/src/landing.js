@@ -187,7 +187,8 @@ export function renderLanding(app, { onStart, onSignIn, signInLabel }) {
           </div>
           <p id="c-when"></p>
           <p id="c-ends" class="calc-ends"></p>
-          <div class="calc-facts"><span><small>YOU PAY</small><b id="c-total"></b></span><span><small>LASTS</small><b id="c-len"></b></span><span><small>ORPAY FEE</small><b>₦0</b></span></div>
+          <div class="calc-facts"><span><small>YOU PAY</small><b id="c-total"></b></span><span><small>LASTS</small><b id="c-len"></b></span><button type="button" class="calc-fee" id="c-fee-btn" aria-expanded="false" aria-controls="c-fee-note"><small>ORPAY FEE</small><b id="c-fee"></b></button></div>
+          <p id="c-fee-note" class="calc-fee-note" hidden></p>
           <button class="lp-btn ink" data-start>Start this ajo</button>
         </div>
       </div>
@@ -564,6 +565,7 @@ function codeTabs(app) {
 function ajoCalc(app) {
   const $ = (id) => app.querySelector('#' + id)
   if (!$('calc')) return
+  const FEE_PER_TRANSFER = 10
   let every = 7
   const ngn = (n) => '₦' + Math.round(n).toLocaleString('en-NG')
   const amount = () => Number(($('c-amt').value || '0').replace(/[^\d]/g, '')) || 0
@@ -578,7 +580,11 @@ function ajoCalc(app) {
     const date = new Date(Date.now() + every * 864e5 * t)
     const unit = every === 7 ? 'week' : 'month'
     $('c-when').textContent = `You collect in ${unit} ${t}, around ${date.toLocaleDateString([], { day: 'numeric', month: 'short' })}.${t === 1 ? ' First in line: like an interest-free advance.' : t === n ? ' Last in line: like a disciplined savings plan.' : ''}`
-    $('c-total').textContent = ngn(a * n)
+    // ORPay charges from ₦10 a transfer. You make one transfer each round, so the fee is added to what you pay.
+    const fee = FEE_PER_TRANSFER * n
+    $('c-total').textContent = ngn(a * n + fee)
+    $('c-fee').textContent = ngn(fee)
+    $('c-fee-note').textContent = `${ngn(FEE_PER_TRANSFER)} a transfer × ${n} payment${n === 1 ? '' : 's'} = ${ngn(fee)}. It is included in YOU PAY, so you pay ${ngn(a * n)} into the pot plus ${ngn(fee)} in fees.`
     const days = n * every
     $('c-len').textContent = `${days} days`
     const ends = new Date(Date.now() + days * 864e5)
@@ -595,6 +601,11 @@ function ajoCalc(app) {
       }).join('')
   }
   ;['c-n', 'c-t'].forEach((id) => ($(id).oninput = draw))
+  $('c-fee-btn').onclick = () => {
+    const open = $('c-fee-btn').getAttribute('aria-expanded') !== 'true'
+    $('c-fee-btn').setAttribute('aria-expanded', String(open))
+    $('c-fee-note').hidden = !open
+  }
   $('c-amt').oninput = () => {
     const v = amount()
     $('c-amt').value = v ? v.toLocaleString('en-NG') : ''
