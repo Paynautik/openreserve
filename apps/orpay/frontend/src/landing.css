@@ -999,3 +999,19 @@ body.lp-dark-body { background: #070b1f !important; }
 .lp.y2050 .lp-demo-feed em { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .64rem; }
 .lp.y2050 .lp-demo-feed i { border-radius: 50%; }
 @media (prefers-reduced-motion: reduce) { .lp.y2050 .lp-demo-amt::after, .lp.y2050 .lp-demo-steps li.now::before, .lp.y2050 .lp-demo-tag::before { animation: none; } }
+
+/* 2050 how-escrow-works */
+.lp.y2050 .lp-how { background: linear-gradient(180deg, #fff, #f8f9ff); }
+.lp.y2050 .lp-how .lp-sec { padding-block: 64px; }
+.lp.y2050 .lp-howlist { counter-reset: hw; }
+.lp.y2050 .lp-howlist::before { height: 2px; background: linear-gradient(90deg, #c7d2fe 0%, #6366f1 20%, #22d3ee 35%, #c7d2fe 50%, #c7d2fe 100%); background-size: 200% 100%; animation: lp-flow 4s linear infinite; }
+@keyframes lp-flow { from { background-position: 100% 0; } to { background-position: -100% 0; } }
+.lp.y2050 .lp-howlist li { counter-increment: hw; }
+.lp.y2050 .lp-howlist i { font-size: 0; background: #fff; color: #4338ca; box-shadow: 0 0 0 1.5px #a5b4fc, 0 0 0 6px #f8f9ff, 0 0 20px -2px rgb(99 102 241 / .55); }
+.lp.y2050 .lp-howlist i::before { content: "0" counter(hw); font: 700 .74rem/1 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .02em; }
+.lp.y2050 .lp-howlist li:last-child i { background: #0b1030; color: #fff; box-shadow: 0 0 0 1.5px #6366f1, 0 0 0 6px #f8f9ff, 0 0 24px -2px rgb(34 211 238 / .7); }
+.lp.y2050 .lp-howlist b { font-size: .92rem; }
+.lp.y2050 .lp-howlist small { font-size: .78rem; color: #64748b; }
+@media (max-width: 640px) { .lp.y2050 .lp-howlist::before { background: linear-gradient(180deg, #c7d2fe 0%, #6366f1 20%, #22d3ee 35%, #c7d2fe 50%, #c7d2fe 100%); background-size: 100% 200%; animation: lp-flow-v 4s linear infinite; } }
+@keyframes lp-flow-v { from { background-position: 0 100%; } to { background-position: 0 -100%; } }
+@media (prefers-reduced-motion: reduce) { .lp.y2050 .lp-howlist::before { animation: none; } }
