@@ -730,6 +730,7 @@ function homeHTML() {
       </nav>
       ${needsBackup() ? `<div class="banner warn backup-nag"><span><b>Back up your wallet.</b> Write down your 24 recovery words so you never lose access.</span><button class="small primary" id="do-backup">Back up</button></div>` : ''}
       <div id="install-slot"></div>
+      <section id="requests-in"></section>
       <section id="reminders"></section>
       <section class="card" id="panel-card" hidden>
         <div class="section-head"><h2 id="panel-title">Send</h2><button class="link" id="panel-close" aria-label="Close">Close</button></div>
@@ -791,6 +792,7 @@ function renderReminders() {
 }
 
 function bindHome() {
+  if (!state.demo) loadRequests()
   if (!state.demo) installBanner($('#reminders')?.parentElement && $('#install-slot'))
   if ($('#do-backup'))
     $('#do-backup').onclick = async () => {
@@ -1094,7 +1096,7 @@ function renderSend(prefill = {}) {
       if (asset === 'NGN' && amount % 10_000n !== 0n) throw new Error('Naira amounts can have at most 2 decimals.')
       const total = amount + feeFor(state.status, asset, amount)
       if (state.account && total > balanceOf(asset)) throw new Error(`Not enough ${asset === 'NGN' ? 'naira' : 'ORP'} for amount plus fee.`)
-      renderReview({ to, label: toInput.value.trim(), amount, memo: $('#memo').value, asset })
+      renderReview({ to, label: toInput.value.trim(), amount, memo: $('#memo').value, asset, requestId: prefill.requestId })
     } catch (e2) {
       err.textContent = e2.message
     }
@@ -1154,7 +1156,45 @@ function renderLimit() {
   if ($('#lim-off')) $('#lim-off').onclick = () => apply(null)
 }
 
-function renderReview({ to, label, amount, memo, asset }) {
+// Money requests: incoming (to pay) on Home, outgoing (waiting) in Receive.
+async function loadRequests() {
+  if (!state.seed || state.demo) return
+  let r
+  try {
+    r = await api.requests(state.seed)
+  } catch {
+    return
+  }
+  const open = (xs) => xs.filter((x) => x.status === 'open')
+  const inc = open(r.incoming), out = open(r.outgoing)
+  await resolveAddrs([...inc.map((x) => x.from), ...out.map((x) => x.to)]).catch(() => {})
+  const who = (a) => (state.names.get(a) ? `@${esc(state.names.get(a))}` : short(a))
+  const el = $('#requests-in')
+  if (el)
+    el.innerHTML = inc.length
+      ? `<div class="card requests"><h2>Requests for you</h2><ul class="req-list">${inc.map((x) => `
+        <li><span class="who"><strong>${who(x.from)} asks for ${esc(formatMoney(x.amount, x.asset ?? ''))}</strong><small>${x.memo ? esc(x.memo) + ' · ' : ''}${new Date(x.created_at).toLocaleDateString([], { day: 'numeric', month: 'short' })}</small></span>
+        <span class="row-actions"><button class="ghost small" data-rq-no="${x.id}">Decline</button><button class="primary small" data-rq-pay="${x.id}">Pay</button></span></li>`).join('')}</ul></div>`
+      : ''
+  el?.querySelectorAll('[data-rq-pay]').forEach((b) => (b.onclick = () => {
+    const x = inc.find((y) => y.id === b.dataset.rqPay)
+    const n = state.names.get(x.from)
+    openPanel('send')
+    renderSend({ to: n ? '@' + n : x.from, amount: formatAmount(x.amount), memo: x.memo || 'Request', asset: x.asset ?? '', requestId: x.id })
+  }))
+  el?.querySelectorAll('[data-rq-no]').forEach((b) => (b.onclick = async () => {
+    if (!(await ask('They will be told you declined.', { title: 'Decline this request?', ok: 'Decline', danger: true }))) return
+    api.requestAction(state.seed, b.dataset.rqNo, 'decline').then(() => (toast('Request declined'), loadRequests())).catch((e) => toast(e.message, 'err'))
+  }))
+  const o = $('#ask-out')
+  if (o)
+    o.innerHTML = out.length
+      ? `<p class="label">Waiting to be paid</p><ul class="req-list">${out.map((x) => `<li><span class="who"><strong>${who(x.to)} · ${esc(formatMoney(x.amount, x.asset ?? ''))}</strong><small>${x.memo ? esc(x.memo) : 'No note'}</small></span><button class="link" data-rq-cancel="${x.id}">Cancel</button></li>`).join('')}</ul>`
+      : ''
+  o?.querySelectorAll('[data-rq-cancel]').forEach((b) => (b.onclick = () => api.requestAction(state.seed, b.dataset.rqCancel, 'cancel').then(() => (toast('Request cancelled'), loadRequests())).catch((e) => toast(e.message, 'err'))))
+}
+
+function renderReview({ to, label, amount, memo, asset, requestId }) {
   $('#panel').innerHTML = `
     <div class="review">
       <p class="label">You're sending</p>
@@ -1178,6 +1218,7 @@ function renderReview({ to, label, amount, memo, asset }) {
     const who = label.startsWith('@') ? label : short(to)
     try {
       const id = await send({ seed: state.seed, to, amount, memo, asset })
+      if (requestId) waitForCommit(id).then(() => api.requestAction(state.seed, requestId, 'paid', { tx: id })).then(loadRequests).catch(() => {})
       const t = await waitForCommit(id)
       refresh()
       $('#panel-card').hidden = true
@@ -1206,8 +1247,20 @@ function renderReceive() {
           <p class="muted mono small-text">${short(state.address)}</p>
         </div>
       </div>
+      <form id="ask" class="request ask-form">
+        <p class="label">Ask someone to pay you</p>
+        <input id="ask-to" placeholder="@username" autocomplete="off" autocapitalize="none">
+        <div class="row">
+          <input id="ask-amount" inputmode="decimal" placeholder="Amount" required>
+          <input id="ask-memo" maxlength="120" placeholder="What for?">
+        </div>
+        <p class="error" id="ask-err"></p>
+        <button class="primary" id="ask-go">Send request</button>
+      </form>
+      <div id="ask-out"></div>
+      <p class="label or-label">Or share a pay link</p>
       <form id="req" class="request">
-        <p class="label">Request a specific amount</p>
+        
         <div class="row">
           <input id="req-amount" inputmode="decimal" placeholder="Amount (optional)">
           <input id="req-memo" maxlength="140" placeholder="What for? (optional)">
@@ -1215,7 +1268,7 @@ function renderReceive() {
         <p class="error" id="req-err"></p>
       </form>
       <div class="row">
-        <button class="primary" id="share">Share pay link</button>
+        <button class="ghost" id="share">Share pay link</button>
         <button class="ghost" id="copy">Copy link</button>
       </div>
       <button class="link" id="copy-addr">Copy full address</button>
@@ -1260,6 +1313,32 @@ function renderReceive() {
   }
   $('#copy-addr').onclick = () => navigator.clipboard.writeText(state.address).then(() => toast('Address copied'))
   if ($('#claim')) $('#claim').onclick = renderClaim
+  $('#ask').onsubmit = async (e) => {
+    e.preventDefault()
+    const err = $('#ask-err')
+    err.textContent = ''
+    const asset = currencies()[0]
+    let amount
+    try {
+      amount = parseAmount($('#ask-amount').value.replace(/,/g, ''))
+      if (amount <= 0n) throw new Error('Enter an amount above zero.')
+    } catch (ex) {
+      err.textContent = ex.message
+      return
+    }
+    const btn = $('#ask-go')
+    btn.disabled = true
+    try {
+      await api.createRequest(state.seed, { to: $('#ask-to').value.trim(), amount: formatAmount(amount).replace(/,/g, ''), asset, memo: $('#ask-memo').value.trim() })
+      toast('Request sent')
+      $('#ask-to').value = $('#ask-amount').value = $('#ask-memo').value = ''
+      loadRequests()
+    } catch (ex) {
+      err.textContent = ex.message
+    }
+    btn.disabled = false
+  }
+  loadRequests()
   $('#sixwords').onclick = renderSignInSetup
   $('#reveal').onclick = async (e) => {
     if (await ask('Make sure nobody can see your screen.', { title: 'Show recovery words?', ok: 'Show words' })) e.target.outerHTML = wordGrid(state.seed)

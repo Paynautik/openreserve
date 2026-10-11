@@ -1190,3 +1190,17 @@ body:has(main.narrow) main.narrow { background: #fff; border: 1px solid color-mi
 .y2050 main.narrow input, .y2050 main.narrow textarea { font-family: var(--sans, inherit); font-size: .95rem; letter-spacing: 0; text-transform: none; color: var(--text); }
 .y2050 main.narrow .trust { font-family: var(--mono); font-size: .7rem; letter-spacing: .02em; }
 @media (prefers-reduced-motion: reduce) { .y2050 main.narrow::before { animation: none; } }
+
+/* Money requests */
+.requests h2 { margin-bottom: 6px; }
+.req-list { list-style: none; margin: 0; padding: 0; }
+.req-list li { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-top: 1px solid var(--border); }
+.req-list li:first-child { border-top: 0; }
+.req-list .who { flex: 1; min-width: 0; display: grid; gap: 2px; }
+.req-list small { color: var(--muted); font-size: .78rem; }
+.req-list .row-actions { display: flex; gap: 6px; flex: none; }
+.req-list button { width: auto; }
+.ask-form { display: grid; gap: 8px; }
+.or-label { margin-top: 6px; }
+.y2050 .requests { position: relative; isolation: isolate; }
+.y2050 .requests::before { content: ""; position: absolute; inset: 0; z-index: -1; border-radius: inherit; padding: 1.5px; background: conic-gradient(from var(--a), #6366f1, #22d3ee, #a855f7, #6366f1); -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude; animation: y-spin 8s linear infinite; opacity: .6; pointer-events: none; }
