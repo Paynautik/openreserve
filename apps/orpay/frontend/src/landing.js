@@ -21,6 +21,7 @@ export function renderLanding(app, { onStart, onSignIn, signInLabel }) {
   <div class="lp${document.documentElement.classList.contains('y2050') ? ' y2050' : ''}">
     <nav class="lp-nav">
       <a class="logo" href="#top" aria-label="ORPay"><span class="logo-or">OR</span><span class="logo-pay">Pay</span></a>
+      <span class="lp-navlive lp-only-2050" title="Network status"><i class="b-live"></i><span id="lp-navnet">LIVE</span></span>
       <div class="lp-links">
         <a href="#product">Product</a><a href="#escrow">Escrow</a><a href="#developers">Developers</a><a href="/explorer.html">Explorer</a><a href="#" class="lp-menu-only" data-signin>${signInLabel}</a>
       </div>
@@ -292,6 +293,13 @@ escrow = orpay.create_escrow(
   app.querySelectorAll('[data-start]').forEach((b) => (b.onclick = onStart))
   escrowDemo(app)
   codeTabs(app)
+  // Header shrinks a little once the page scrolls.
+  const nav = app.querySelector('.lp-nav')
+  if (nav) {
+    const onScroll = () => nav.classList.toggle('scrolled', window.scrollY > 24)
+    window.addEventListener('scroll', onScroll, { passive: true })
+    onScroll()
+  }
   circlesDemo(app)
   phoneSwitcher(app)
   const menu = app.querySelector('#lp-menu'), links = app.querySelector('.lp-links')
@@ -477,5 +485,13 @@ function codeTabs(app) {
   }))
   const net = app.querySelector('#lp-net')
   if (net)
-    fetch(API_BASE + '/v1/status').then((r) => r.json()).then((s) => (net.textContent = `${/devnet|testnet/.test(s.chain_id) ? 'Test network' : 'Network'} · block ${s.height.toLocaleString('en-NG')}`)).catch(() => (net.textContent = 'Network launching'))
+    fetch(API_BASE + '/v1/status').then((r) => r.json()).then((s) => {
+      net.textContent = `${/devnet|testnet/.test(s.chain_id) ? 'Test network' : 'Network'} · block ${s.height.toLocaleString('en-NG')}`
+      const n = app.querySelector('#lp-navnet')
+      if (n) n.textContent = `LIVE · #${s.height.toLocaleString("en-NG")}`
+    }).catch(() => {
+      net.textContent = 'Network launching'
+      const n = app.querySelector('#lp-navnet')
+      if (n) n.textContent = 'SOON'
+    })
 }
