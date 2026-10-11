@@ -1,7 +1,7 @@
 // OpenReserve block explorer: a public, read-only view of the chain. Every
 // number here comes straight from a node's API; nothing is cached or edited.
 import './style.css'
-import { API_BASE, api, formatMoney, isAddress, node, txID } from './orp.js'
+import { API_BASE, api, formatMoney, isAddress, node, offlineError, txID } from './orp.js'
 
 document.documentElement.dataset.theme = 'light' // light only
 // 2050 design unless the visitor chose classic (shared with the wallet).
@@ -149,7 +149,13 @@ async function txRow({ tx, height, time }) {
 }
 
 async function call(path) {
-  const r = await fetch(API_BASE + path)
+  let r
+  try {
+    r = await fetch(API_BASE + path)
+  } catch {
+    throw offlineError()
+  }
+  if (r.ok && !(r.headers.get('content-type') ?? '').includes('json')) throw offlineError()
   if (!r.ok) throw new Error((await r.json().catch(() => ({}))).error || r.statusText)
   return r.json()
 }
