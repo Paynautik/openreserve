@@ -187,7 +187,7 @@ export function renderLanding(app, { onStart, onSignIn, signInLabel }) {
           </div>
           <p id="c-when"></p>
           <p id="c-ends" class="calc-ends"></p>
-          <div class="calc-facts"><span><small>YOU PAY</small><b id="c-total"></b></span><span><small>LASTS</small><b id="c-len"></b></span><button type="button" class="calc-fee" id="c-fee-btn" aria-expanded="false" aria-controls="c-fee-note"><small>ORPAY FEE</small><b id="c-fee"></b></button></div>
+          <div class="calc-facts"><span><small>YOU PAY (EST.)</small><b id="c-total"></b></span><span><small>LASTS</small><b id="c-len"></b></span><button type="button" class="calc-fee" id="c-fee-btn" aria-expanded="false" aria-controls="c-fee-note"><small>EST. ORPAY FEE</small><b id="c-fee"></b></button></div>
           <p id="c-fee-note" class="calc-fee-note" hidden></p>
           <button class="lp-btn ink" data-start>Start this ajo</button>
         </div>
@@ -584,7 +584,7 @@ function ajoCalc(app) {
     const fee = FEE_PER_TRANSFER * n
     $('c-total').textContent = ngn(a * n + fee)
     $('c-fee').textContent = ngn(fee)
-    $('c-fee-note').textContent = `${ngn(FEE_PER_TRANSFER)} a transfer × ${n} payment${n === 1 ? '' : 's'} = ${ngn(fee)}. It is included in YOU PAY, so you pay ${ngn(a * n)} into the pot plus ${ngn(fee)} in fees.`
+    $('c-fee-note').textContent = `Estimate: ${ngn(FEE_PER_TRANSFER)} a transfer × ${n} payment${n === 1 ? '' : 's'} = ${ngn(fee)}, included in YOU PAY (${ngn(a * n)} into the pot plus ${ngn(fee)} in fees).`
     const days = n * every
     $('c-len').textContent = `${days} days`
     const ends = new Date(Date.now() + days * 864e5)
