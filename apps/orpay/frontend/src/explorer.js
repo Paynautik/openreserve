@@ -6,6 +6,10 @@ import { API_BASE, api, formatMoney, isAddress, node, offlineError, txID } from 
 document.documentElement.dataset.theme = 'light' // light only
 // 2050 design unless the visitor chose classic (shared with the wallet).
 try {
+  if (localStorage.getItem('orpay.lookV') !== '2') {
+    localStorage.removeItem('orpay.look')
+    localStorage.setItem('orpay.lookV', '2')
+  }
   document.documentElement.classList.toggle('y2050', localStorage.getItem('orpay.look') !== 'classic')
 } catch {
   document.documentElement.classList.add('y2050')

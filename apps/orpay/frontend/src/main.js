@@ -64,6 +64,11 @@ startI18n()
 {
   const q = new URLSearchParams(location.search).get('look')
   try {
+    // 2050 became the default for everyone: clear older saved 'classic' choices once.
+    if (localStorage.getItem('orpay.lookV') !== '2') {
+      localStorage.removeItem('orpay.look')
+      localStorage.setItem('orpay.lookV', '2')
+    }
     if (q === 'classic') localStorage.setItem('orpay.look', 'classic')
     if (q === '2050') localStorage.removeItem('orpay.look')
   } catch {}
