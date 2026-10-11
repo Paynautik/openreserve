@@ -186,6 +186,7 @@ export function renderLanding(app, { onStart, onSignIn, signInLabel }) {
             <div class="calc-center"><small class="calc-k">YOUR POT</small><strong id="c-pot">₦100,000</strong><span id="c-when-short"></span></div>
           </div>
           <p id="c-when"></p>
+          <p id="c-ends" class="calc-ends"></p>
           <div class="calc-facts"><span><small>YOU PAY</small><b id="c-total"></b></span><span><small>LASTS</small><b id="c-len"></b></span><span><small>ORPAY FEE</small><b>₦0</b></span></div>
           <button class="lp-btn ink" data-start>Start this ajo</button>
         </div>
@@ -578,7 +579,10 @@ function ajoCalc(app) {
     const unit = every === 7 ? 'week' : 'month'
     $('c-when').textContent = `You collect in ${unit} ${t}, around ${date.toLocaleDateString([], { day: 'numeric', month: 'short' })}.${t === 1 ? ' First in line: like an interest-free advance.' : t === n ? ' Last in line: like a disciplined savings plan.' : ''}`
     $('c-total').textContent = ngn(a * n)
-    $('c-len').textContent = `${n} ${unit}${n === 1 ? '' : 's'}`
+    const days = n * every
+    $('c-len').textContent = `${days} days`
+    const ends = new Date(Date.now() + days * 864e5)
+    $('c-ends').textContent = `Runs ${n} ${unit}${n === 1 ? '' : 's'} (${days} days) and ends around ${ends.toLocaleDateString([], { day: 'numeric', month: 'short', year: 'numeric' })}.`
     $('c-when-short').textContent = `${unit} ${t} of ${n}`
     // Members around a circle; payouts go clockwise, yours glows.
     const R = 92, C = 110

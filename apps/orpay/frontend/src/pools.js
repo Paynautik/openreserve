@@ -28,6 +28,14 @@ const dueIn = (ms) => {
   const hours = Math.max(1, Math.floor(d / 3_600_000))
   return `due in ${hours} hour${hours === 1 ? '' : 's'}`
 }
+// Total length of a circle: one round per member.
+const runLength = (secs, n) => {
+  const days = Math.round((secs * n) / 86400)
+  const months = secs === 2592000 ? n : 0
+  const weeks = days % 7 === 0 && !months ? days / 7 : 0
+  return `${days} days${months ? ` (${months} month${months === 1 ? '' : 's'})` : weeks ? ` (${weeks} week${weeks === 1 ? '' : 's'})` : ''}`
+}
+const endDate = (p) => (p.round_secs && p.started_at ? new Date(p.started_at + p.members.length * p.round_secs * 1000) : null)
 const dueAt = (p) => (p.round_secs && p.status === 'active' ? p.started_at + (p.round + 1) * p.round_secs * 1000 : 0)
 const cadence = (secs) => ({ 604800: 'weekly', 1209600: 'every 2 weeks', 2592000: 'monthly' })[secs] ?? `every ${Math.round(secs / 86400)} days`
 
@@ -524,7 +532,7 @@ export async function renderPool(id, preloaded) {
       ${p.status === 'active' ? `
       <div class="progress" role="progressbar" aria-valuenow="${paidCount}" aria-valuemax="${n}"><span data-w="${(paidCount / n) * 100}"></span></div>
       <p class="progress-label">${paidCount} of ${n} paid this round · ${label(receiver)} receives${nextUp ? ` · next: ${label(nextUp)}` : ''}${dueAt(p) ? ` · ${dueIn(dueAt(p))} (${new Date(dueAt(p)).toLocaleDateString()})` : ''}</p>` : ''}
-      ${p.round_secs ? `<p class="progress-label">Rounds ${cadence(p.round_secs)}${p.deposit ? ` · deposit ${money(p.deposit)} per member` : ''}</p>` : ''}
+      ${p.round_secs ? `<p class="progress-label">Rounds ${cadence(p.round_secs)} · runs ${runLength(p.round_secs, n)}${endDate(p) ? ` · ends ${endDate(p).toLocaleDateString([], { day: 'numeric', month: 'short', year: 'numeric' })}` : ''}${p.deposit ? ` · deposit ${money(p.deposit)} per member` : ''}</p>` : ''}
     </section>
     ${askedMe.length ? `<p class="banner warn">${askedMe.map(label).join(', ')} asked to swap payout turns with you. Tap "Accept swap" next to their name to trade places.</p>` : ''}
     <section class="card">
@@ -706,6 +714,7 @@ export async function renderInvite(id) {
       <div class="pool-stats">
         <div><span>Members</span><strong>${d.members.length} of ${d.slots}</strong></div>
         <div><span>Rounds</span><strong>${d.round_secs ? cadence(d.round_secs) : 'no due dates'}</strong></div>
+        ${d.round_secs ? `<div><span>Runs</span><strong>${runLength(d.round_secs, d.slots)}</strong></div>` : ''}
         <div><span>Deposit</span><strong>${d.deposit ? money(d.deposit) : 'none'}</strong></div>
       </div>
     </section>

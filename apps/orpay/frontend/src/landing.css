@@ -1161,3 +1161,4 @@ body.lp-dark-body { background: #070b1f !important; }
 .lp.y2050 .lp-uses article:hover > i { background: var(--tint); color: #fff; }
 .lp.y2050 .lp-uses article > i { transition: background .2s, color .2s; }
 .calc-in input[type="range"] { height: 4px !important; min-height: 0 !important; padding: 0 !important; border: 0 !important; box-shadow: none !important; margin: 8px 0 !important; border-radius: 4px !important; }
+.calc-out .calc-ends { margin-top: -4px; font: 600 .72rem/1.4 ui-monospace, SFMono-Regular, Menlo, monospace; color: #6366f1; letter-spacing: .02em; }
