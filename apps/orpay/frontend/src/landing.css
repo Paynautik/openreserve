@@ -1041,3 +1041,4 @@ body.lp-dark-body { background: #070b1f !important; }
 @media (max-width: 860px) { .f2-top { grid-template-columns: 1fr; gap: 24px; } }
 @media (max-width: 520px) { .f2-cols { grid-template-columns: 1fr 1fr; } .f2-bar { justify-content: center; text-align: center; } }
 @media (prefers-reduced-motion: reduce) { .lp-foot2::before, .f2-net .b-live { animation: none; } }
+.f2-bar { margin-top: 32px; }

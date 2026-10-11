@@ -280,7 +280,6 @@ escrow = orpay.create_escrow(
             <div><b>Protocol</b><a href="https://github.com/Paynautik/openreserve" target="_blank" rel="noopener">OpenReserve on GitHub ↗</a><a href="https://github.com/Paynautik/openreserve/blob/main/LICENSE" target="_blank" rel="noopener">Apache-2.0 licence ↗</a></div>
           </nav>
         </div>
-        <div class="f2-mark" aria-hidden="true">ORPay</div>
         <div class="f2-bar">
           <span class="f2-net"><i class="b-live"></i><span id="lp-net">Network live</span></span>
           <span class="f2-proto"><img src="/favicon.png" alt="">Built on the OpenReserve Protocol</span>
