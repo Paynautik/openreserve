@@ -265,7 +265,6 @@ escrow = orpay.create_escrow(
       <span class="logo" aria-label="ORPay"><span class="logo-or">OR</span><span class="logo-pay">Pay</span></span>
       <span class="lp-proto"><img src="/favicon.png" alt="">Built on the <b>OpenReserve Protocol</b></span>
       <a href="/explorer.html">Explorer →</a>
-      <p class="lp-copy">© ${new Date().getFullYear()} Paynautik. ORPay is a Paynautik product.</p>
     </footer>
 
     <footer class="lp-foot2 lp-only-2050-block">
@@ -284,7 +283,6 @@ escrow = orpay.create_escrow(
         <div class="f2-bar">
           <span class="f2-net"><i class="b-live"></i><span id="lp-net">Network live</span></span>
           <span class="f2-proto"><img src="/favicon.png" alt="">Built on the OpenReserve Protocol</span>
-          <span>© ${new Date().getFullYear()} Paynautik · ORPay is a Paynautik product</span>
         </div>
       </div>
     </footer>
