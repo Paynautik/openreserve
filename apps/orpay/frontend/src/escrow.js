@@ -38,6 +38,28 @@ function trackingLine(t) {
 }
 
 const total = (e) => e.milestones.reduce((s, m) => s + BigInt(m), 0n)
+// What happens next on an escrow, from this wallet's point of view.
+// mine = it's waiting on you; urgent = a deadline has passed.
+function nextStep(e, role) {
+  const now = Date.now()
+  const reviewEnds = e.dispatched_at ? e.dispatched_at + e.review_secs * 1000 : 0
+  switch (e.status) {
+    case 'disputed':
+      return role === 'arbiter'
+        ? { mine: true, text: 'Review the evidence and decide how to split the money.' }
+        : { mine: false, text: `${label(e.arbiter)} is reviewing the dispute. The money stays locked until they decide.` }
+    case 'funded':
+      if (role === 'seller') return { mine: true, urgent: now > e.ship_by, text: now > e.ship_by ? 'The ship-by date has passed. Ship now and mark it dispatched, or the buyer can take a refund.' : `Ship by ${when(e.ship_by)}, then mark it dispatched.` }
+      if (role === 'buyer') return now > e.ship_by ? { mine: true, urgent: true, text: `${label(e.seller)} missed the ship-by date. You can reclaim your money.` } : { mine: false, text: `Waiting for ${label(e.seller)} to ship by ${when(e.ship_by)}.` }
+      return null
+    case 'dispatched':
+      if (role === 'buyer') return { mine: true, urgent: now > reviewEnds, text: now > reviewEnds ? 'Your review period has ended, so the seller can now claim the money.' : `Inspect it and release by ${when(reviewEnds)}. If you do nothing, it releases to the seller then.` }
+      if (role === 'seller') return now > reviewEnds ? { mine: true, text: 'The buyer\'s review period is over. Claim your payment.' } : { mine: false, text: `Waiting for the buyer to inspect. You're paid automatically after ${when(reviewEnds)}.` }
+      return null
+  }
+  return null
+}
+
 const when = (ms) => new Date(ms).toLocaleString([], { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })
 
 export async function renderEscrows() {
@@ -84,10 +106,8 @@ export async function renderEscrows() {
     .map((e) => {
       const role = roleOf(e)
       const other = role === 'buyer' ? e.seller : e.buyer
-      const needsMe =
-        (role === 'buyer' && (e.status === 'funded' || e.status === 'dispatched')) ||
-        (role === 'seller' && e.status === 'funded') ||
-        (role === 'arbiter' && e.status === 'disputed')
+      const step = nextStep(e, role)
+      const needsMe = step?.mine
       return `
         <li><button class="pool-row" data-id="${e.id}">
           <span class="pool-avatar escrow-avatar">⛨</span>
@@ -95,7 +115,7 @@ export async function renderEscrows() {
             <strong>${e.ref ? `#${ctx.esc(e.ref)}` : 'Escrow'} · ${formatMoney(total(e), e.asset ?? '')}</strong>
             <small>${role === 'arbiter' ? 'You arbitrate' : `${role === 'buyer' ? 'To' : 'From'} ${label(other)}`} · ${e.released}/${e.milestones.length} released</small>
           </span>
-          ${needsMe ? '<span class="chip-s warn">Action needed</span>' : statusChip(e.status)}
+          ${needsMe ? `<span class="chip-s ${step.urgent ? 'bad' : 'warn'}">Your turn</span>` : statusChip(e.status)}
         </button></li>`
     })
     .join('')
@@ -320,6 +340,10 @@ export async function renderEscrow(id, preloaded, focus) {
       </div>
       ${BigInt(e.platform_fee ?? 0) > 0n ? `<p class="small-text fee-note">ORPay fee ${money(e.platform_fee)} (from the seller's payout${BigInt(e.platform_fee_paid ?? 0) > 0n ? `, ${money(e.platform_fee_paid)} paid` : ''}). Nothing if refunded.</p>` : ''}
     </section>
+    ${(() => {
+      const st = nextStep(e, role)
+      return st ? `<div class="next-step ${st.mine ? 'mine' : ''} ${st.urgent ? 'urgent' : ''}" role="status"><span class="ns-k">${st.mine ? 'YOUR TURN' : 'NEXT'}</span><p>${st.text}</p></div>` : ''
+    })()}
     <section class="card"><h2>Status</h2><ol class="steps">${steps}</ol></section>
     <section class="card"><div class="stack" id="actions">${acts.join('')}</div><p class="error" id="err"></p></section>
     <section class="card"><h2>Milestones</h2><ul class="milestones">${ms}</ul></section>

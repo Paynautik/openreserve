@@ -1204,3 +1204,12 @@ body:has(main.narrow) main.narrow { background: #fff; border: 1px solid color-mi
 .or-label { margin-top: 6px; }
 .y2050 .requests { position: relative; isolation: isolate; }
 .y2050 .requests::before { content: ""; position: absolute; inset: 0; z-index: -1; border-radius: inherit; padding: 1.5px; background: conic-gradient(from var(--a), #6366f1, #22d3ee, #a855f7, #6366f1); -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude; animation: y-spin 8s linear infinite; opacity: .6; pointer-events: none; }
+
+/* Escrow: what happens next */
+.next-step { display: flex; align-items: flex-start; gap: 12px; padding: 12px 14px; border-radius: 16px; background: var(--surface); box-shadow: inset 0 0 0 1px var(--border); }
+.next-step p { margin: 0; font-size: .9rem; line-height: 1.45; color: var(--text); }
+.next-step .ns-k { flex: none; margin-top: 2px; padding: 4px 8px; border-radius: 999px; font: 700 .6rem/1 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .1em; background: var(--surface-2); color: var(--muted); }
+.next-step.mine { background: color-mix(in srgb, var(--brand-1) 6%, var(--surface)); box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--brand-1) 40%, transparent), 0 10px 24px -18px rgb(79 70 229 / .7); }
+.next-step.mine .ns-k { background: var(--brand-1); color: #fff; }
+.next-step.urgent { background: color-mix(in srgb, var(--danger) 6%, var(--surface)); box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--danger) 45%, transparent); }
+.next-step.urgent .ns-k { background: var(--danger); }

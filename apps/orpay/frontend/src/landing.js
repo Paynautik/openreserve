@@ -91,7 +91,11 @@ export function renderLanding(app, { onStart, onSignIn, signInLabel }) {
               <div class="lp-demo" id="lp-demo">
                 <div class="lp-demo-tag">Interactive demo · no real money</div>
                 <div class="lp-demo-item"><span class="lp-demo-prod" aria-hidden="true"><svg viewBox="0 0 40 52"><defs><linearGradient id="lpPhoneScr" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6366f1"/><stop offset=".6" stop-color="#8b5cf6"/><stop offset="1" stop-color="#22d3ee"/></linearGradient></defs><rect x="6" y="2" width="28" height="48" rx="6" fill="#0b1030"/><rect x="8" y="4" width="24" height="44" rx="4.5" fill="url(#lpPhoneScr)"/><rect x="16" y="6" width="8" height="2.4" rx="1.2" fill="#0b1030"/><circle cx="14" cy="14" r="3" fill="#0b1030" opacity=".55"/></svg></span><span><b>iPhone 14 Pro</b><small>Seller: @gadgethub · <span class="lp-held">in escrow</span></small></span></div>
-                <div class="lp-demo-amt"><small id="lp-demo-label">Price</small><strong>₦420,000</strong></div>
+                <div class="lp-demo-ctl">
+                  <div class="lp-seg" role="radiogroup" aria-label="View as"><button type="button" role="radio" data-role="buyer" aria-checked="true">Buyer</button><button type="button" role="radio" data-role="seller" aria-checked="false">Seller</button></div>
+                  <div class="lp-seg" role="radiogroup" aria-label="Price"><button type="button" role="radio" data-amt="50000" aria-checked="false">₦50k</button><button type="button" role="radio" data-amt="420000" aria-checked="true">₦420k</button><button type="button" role="radio" data-amt="2000000" aria-checked="false">₦2m</button></div>
+                </div>
+                <div class="lp-demo-amt"><small id="lp-demo-label">Price</small><strong id="lp-demo-amount">₦420,000</strong><span class="lp-demo-fee" id="lp-demo-fee"></span></div>
                 <ol class="lp-demo-steps" id="lp-demo-steps">
                   <li>Agreed</li><li>Funded</li><li>Shipped</li><li>Released</li>
                 </ol>
@@ -161,6 +165,34 @@ export function renderLanding(app, { onStart, onSignIn, signInLabel }) {
         <article class="reveal"><i class="c4">${svg(I.ajo)}</i><span><b>Saving circles</b><small>Ajo, susu, chama, done in the open.</small></span></article>
         <article class="reveal"><i class="c3">${svg('<path d="M3 11 12 4l9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-5h4v5"/>')}</i><span><b>Rent & deposits</b><small>Held until the keys change hands.</small></span></article>
         <article class="reveal"><i class="c5">${svg('<path d="m8 8-4 4 4 4M16 8l4 4-4 4"/>')}</i><span><b>Businesses</b><small>Escrow and checkout via our API.</small></span></article>
+      </div>
+    </section>
+
+    <section class="lp-wrap lp-sec lp-calc" id="ajo-calc">
+      <div class="lp-head">
+        <p class="lp-kicker">Ajo calculator</p>
+        <h2>See your pot before you start.</h2>
+      </div>
+      <div class="calc">
+        <form class="calc-in" id="calc" onsubmit="return false">
+          <label>Members <output id="c-n-out">5</output><input id="c-n" type="range" min="2" max="20" value="5"></label>
+          <label>Each person pays (₦)<input id="c-amt" inputmode="numeric" value="20,000"></label>
+          <div class="calc-chips" id="c-amt-chips"><button type="button" data-v="5000">₦5k</button><button type="button" data-v="20000">₦20k</button><button type="button" data-v="50000">₦50k</button><button type="button" data-v="100000">₦100k</button></div>
+          <label>How often<span class="lp-seg calc-seg" role="radiogroup"><button type="button" role="radio" data-f="7" aria-checked="true">Weekly</button><button type="button" role="radio" data-f="30" aria-checked="false">Monthly</button></span></label>
+          <label>Your turn to collect <output id="c-t-out">3</output><input id="c-t" type="range" min="1" max="5" value="3"></label>
+        </form>
+        <div class="calc-out" aria-live="polite">
+          <small class="calc-k">YOUR POT</small>
+          <strong id="c-pot">₦100,000</strong>
+          <p id="c-when"></p>
+          <ol class="calc-track" id="c-track"></ol>
+          <dl class="calc-dl">
+            <dt>You pay in total</dt><dd id="c-total"></dd>
+            <dt>Circle lasts</dt><dd id="c-len"></dd>
+            <dt>ORPay fee</dt><dd>None for ajo · network fee from ₦10 per payment</dd>
+          </dl>
+          <button class="lp-btn ink" data-start>Start this ajo</button>
+        </div>
       </div>
     </section>
 
@@ -292,6 +324,7 @@ escrow = orpay.create_escrow(
 
   app.querySelectorAll('[data-start]').forEach((b) => (b.onclick = onStart))
   escrowDemo(app)
+  ajoCalc(app)
   codeTabs(app)
   const ib = app.querySelector('.lp-install')
   if (ib) {
@@ -357,28 +390,53 @@ escrow = orpay.create_escrow(
 
 // Hero phone: click through a simulated escrow deal. Nothing is sent.
 function escrowDemo(app) {
-  const steps = [
-    { label: 'Price', msg: 'You and @gadgethub agreed the price and terms.', btn: 'Pay into escrow' },
-    { label: 'Held in escrow', msg: 'Your ₦420,000 is locked. The seller can see it but cannot touch it.', btn: 'Seller ships it →' },
-    { label: 'Held in escrow', msg: 'Shipped with GIG Logistics. Inspect it when it arrives.', btn: 'Inspect and release' },
-    { label: 'Paid to seller', msg: 'You approved the phone, so the seller got paid. Problem? You could have opened a dispute instead.', btn: 'Replay demo' },
-  ]
+  // Mirrors the real fee: 1.5% of the deal, min ₦200, max ₦10,000, paid by the seller on release.
+  const fee = (n) => Math.min(Math.max(Math.round(n * 0.015), 200), 10000, n)
+  const ngn = (n) => '₦' + n.toLocaleString('en-NG')
+  let role = 'buyer', amt = 420000, at = 0
+  const script = () => {
+    const f = fee(amt)
+    return role === 'buyer'
+      ? [
+          { label: 'Price', msg: `You and @gadgethub agreed ${ngn(amt)} for the phone.`, btn: 'Pay into escrow' },
+          { label: 'Held in escrow', msg: `Your ${ngn(amt)} is locked. The seller can see it but can't touch it.`, btn: 'Seller ships it →' },
+          { label: 'Held in escrow', msg: 'Shipped with GIG Logistics. Inspect it when it arrives.', btn: 'Inspect and release' },
+          { label: 'Paid to seller', msg: `You approved it, so the seller was paid. Buyers pay no escrow fee. Problem? You'd open a dispute instead.`, btn: 'Replay demo' },
+        ]
+      : [
+          { label: 'Price', msg: `You agreed to sell the phone for ${ngn(amt)}.`, btn: 'Buyer pays →' },
+          { label: 'Held in escrow', msg: `The buyer's ${ngn(amt)} is locked, so you can ship with confidence.`, btn: 'Mark shipped' },
+          { label: 'Held in escrow', msg: 'Waiting for the buyer to inspect. If they go quiet, it releases to you automatically.', btn: 'Buyer releases →' },
+          { label: 'You received', msg: `${ngn(amt - f)} is yours. ORPay's fee was ${ngn(f)} (${f === 10000 ? 'capped at ₦10,000' : f === 200 ? 'the ₦200 minimum' : '1.5%'}), charged only because the deal completed.`, btn: 'Replay demo' },
+        ]
+  }
   const lis = [...app.querySelectorAll('#lp-demo-steps li')]
   const btn = app.querySelector('#lp-demo-btn')
   if (!btn) return
-  let at = 0
   const show = () => {
+    const st = script()[at]
     lis.forEach((li, i) => li.classList.toggle('done', i <= at))
     lis.forEach((li, i) => li.classList.toggle('now', i === at + 1 && at < 3))
-    app.querySelector('#lp-demo-label').textContent = steps[at].label
-    app.querySelector('#lp-demo-msg').textContent = steps[at].msg
-    btn.textContent = steps[at].btn
+    app.querySelector('#lp-demo-label').textContent = st.label
+    app.querySelector('#lp-demo-amount').textContent = role === 'seller' && at === 3 ? ngn(amt - fee(amt)) : ngn(amt)
+    app.querySelector('#lp-demo-fee').textContent = `Escrow fee ${ngn(fee(amt))} · paid by seller on release`
+    app.querySelector('#lp-demo-msg').textContent = st.msg
+    btn.textContent = st.btn
     app.querySelector('#lp-demo').classList.toggle('released', at === 3)
   }
   btn.onclick = () => {
     at = at === 3 ? 0 : at + 1
     show()
   }
+  const pick = (sel, attr, set) =>
+    app.querySelectorAll(sel).forEach((b) => (b.onclick = () => {
+      app.querySelectorAll(sel).forEach((x) => x.setAttribute('aria-checked', String(x === b)))
+      set(b.dataset[attr])
+      at = 0
+      show()
+    }))
+  pick('[data-role]', 'role', (v) => (role = v))
+  pick('[data-amt]', 'amt', (v) => (amt = Number(v)))
   show()
 }
 
@@ -501,4 +559,43 @@ function codeTabs(app) {
       const n = app.querySelector('#lp-navnet')
       if (n) n.textContent = 'SOON'
     })
+}
+
+// Ajo calculator: pot, payout date for your turn, total paid. Everyone pays
+// the same each round and collects the whole pot once, so you get back
+// exactly what you put in; the benefit is getting a lump sum early.
+function ajoCalc(app) {
+  const $ = (id) => app.querySelector('#' + id)
+  if (!$('calc')) return
+  let every = 7
+  const ngn = (n) => '₦' + Math.round(n).toLocaleString('en-NG')
+  const amount = () => Number(($('c-amt').value || '0').replace(/[^\d]/g, '')) || 0
+  const draw = () => {
+    const n = Number($('c-n').value)
+    $('c-t').max = String(n)
+    if (Number($('c-t').value) > n) $('c-t').value = String(n)
+    const t = Number($('c-t').value), a = amount()
+    $('c-n-out').textContent = n
+    $('c-t-out').textContent = t
+    $('c-pot').textContent = ngn(a * n)
+    const date = new Date(Date.now() + every * 864e5 * t)
+    const unit = every === 7 ? 'week' : 'month'
+    $('c-when').textContent = `You collect in ${unit} ${t}, around ${date.toLocaleDateString([], { day: 'numeric', month: 'short' })}.${t === 1 ? ' First in line: like an interest-free advance.' : t === n ? ' Last in line: like a disciplined savings plan.' : ''}`
+    $('c-total').textContent = `${ngn(a * n)} (${ngn(a)} × ${n} ${unit}s)`
+    $('c-len').textContent = `${n} ${unit}${n === 1 ? '' : 's'}`
+    $('c-track').innerHTML = Array.from({ length: n }, (_, i) => `<li class="${i + 1 === t ? 'me' : i + 1 < t ? 'before' : ''}" title="${unit} ${i + 1}">${i + 1 === t ? 'You' : i + 1}</li>`).join('')
+  }
+  ;['c-n', 'c-t'].forEach((id) => ($(id).oninput = draw))
+  $('c-amt').oninput = () => {
+    const v = amount()
+    $('c-amt').value = v ? v.toLocaleString('en-NG') : ''
+    draw()
+  }
+  app.querySelectorAll('#c-amt-chips [data-v]').forEach((b) => (b.onclick = () => (($('c-amt').value = Number(b.dataset.v).toLocaleString('en-NG')), draw())))
+  app.querySelectorAll('.calc-seg [data-f]').forEach((b) => (b.onclick = () => {
+    app.querySelectorAll('.calc-seg [data-f]').forEach((x) => x.setAttribute('aria-checked', String(x === b)))
+    every = Number(b.dataset.f)
+    draw()
+  }))
+  draw()
 }
