@@ -1175,3 +1175,18 @@ ul li.empty:has(.empty-ico) button { width: auto; margin: 8px auto 0; align-self
 .ios-steps li { display: flex; align-items: center; gap: 10px; font-size: .9rem; color: var(--text); }
 .ios-steps span { flex: none; width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; background: color-mix(in srgb, var(--brand-1) 12%, #fff); color: var(--brand-1); font-weight: 700; font-size: .78rem; }
 .ios-steps svg { width: 16px; height: 16px; fill: none; stroke: var(--brand-1); stroke-width: 2; vertical-align: -3px; }
+
+/* Onboarding / sign-in / unlock: light (dark backdrop retired) */
+body:has(main.narrow) {
+  background: radial-gradient(55% 45% at 100% 0%, rgb(99 102 241 / .14), transparent 70%), radial-gradient(50% 40% at 0% 100%, rgb(34 211 238 / .10), transparent 70%), linear-gradient(180deg, #fbfbff, #f1f2ff);
+}
+body:has(main.narrow) main.narrow { background: #fff; border: 1px solid color-mix(in srgb, var(--brand-1) 14%, var(--border)); box-shadow: 0 30px 70px -40px rgb(79 70 229 / .55); }
+.y2050 body:has(main.narrow)::before { content: ""; position: fixed; inset: 0; pointer-events: none; background-image: linear-gradient(rgb(99 102 241 / .05) 1px, transparent 1px), linear-gradient(90deg, rgb(99 102 241 / .05) 1px, transparent 1px); background-size: 34px 34px; mask-image: radial-gradient(70% 60% at 50% 30%, #000, transparent); }
+.y2050 main.narrow { position: relative; isolation: isolate; }
+.y2050 main.narrow::before { content: ""; position: absolute; inset: 0; z-index: -1; border-radius: inherit; padding: 1.5px; background: conic-gradient(from var(--a), #6366f1, #22d3ee, #a855f7, #6366f1); -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude; animation: y-spin 10s linear infinite; opacity: .55; pointer-events: none; }
+.y2050 main.narrow h1 { background: linear-gradient(90deg, #0b1030, #4338ca 75%, #0891b2); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.y2050 main.narrow label { font-family: var(--mono); font-size: .66rem; letter-spacing: .1em; text-transform: uppercase; color: #4f46e5; }
+.y2050 main.narrow label input, .y2050 main.narrow label textarea { font-family: inherit; letter-spacing: normal; text-transform: none; }
+.y2050 main.narrow input, .y2050 main.narrow textarea { font-family: var(--sans, inherit); font-size: .95rem; letter-spacing: 0; text-transform: none; color: var(--text); }
+.y2050 main.narrow .trust { font-family: var(--mono); font-size: .7rem; letter-spacing: .02em; }
+@media (prefers-reduced-motion: reduce) { .y2050 main.narrow::before { animation: none; } }

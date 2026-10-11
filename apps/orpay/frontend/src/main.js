@@ -4,12 +4,38 @@ import {
   payLink, readPayLink, registerMessage, seedToWords, send, signMessage, waitForCommit, wordsToSeed,
 } from './orp.js'
 import { renderSVG } from 'uqr'
-import { duePools, initPools, renderInvite, renderPool, renderPools } from './pools.js'
-import { initCheckout, renderCheckout } from './checkout.js'
-import { initDevelopers, renderDevelopers } from './developers.js'
-import { initAdmin, renderAdmin } from './admin.js'
-import { confirmDeposit, initMoney, renderAddMoney, renderWithdraw } from './money.js'
-import { initEscrow, renderEscrow, renderEscrows, renderFundRequest } from './escrow.js'
+// Feature screens load on first use (smaller first download on cheap
+// phones). Each module is initialised with the shared ctx when it loads.
+const lazyMod = (load, init) => {
+  let p
+  return () => (p ??= load().then((m) => (m[init](ctx), m)))
+}
+const poolsMod = lazyMod(() => import('./pools.js'), 'initPools')
+const checkoutMod = lazyMod(() => import('./checkout.js'), 'initCheckout')
+const devMod = lazyMod(() => import('./developers.js'), 'initDevelopers')
+const adminMod = lazyMod(() => import('./admin.js'), 'initAdmin')
+const moneyMod = lazyMod(() => import('./money.js'), 'initMoney')
+const escrowMod = lazyMod(() => import('./escrow.js'), 'initEscrow')
+const via = (mod, name) => (...a) => mod().then((m) => m[name](...a))
+const renderInvite = via(poolsMod, 'renderInvite')
+const renderPool = via(poolsMod, 'renderPool')
+const renderPools = via(poolsMod, 'renderPools')
+const renderCheckout = via(checkoutMod, 'renderCheckout')
+const renderDevelopers = via(devMod, 'renderDevelopers')
+const renderAdmin = via(adminMod, 'renderAdmin')
+const confirmDeposit = via(moneyMod, 'confirmDeposit')
+const renderAddMoney = via(moneyMod, 'renderAddMoney')
+const renderWithdraw = via(moneyMod, 'renderWithdraw')
+const renderEscrow = via(escrowMod, 'renderEscrow')
+const renderEscrows = via(escrowMod, 'renderEscrows')
+const renderFundRequest = via(escrowMod, 'renderFundRequest')
+// Kept here (tiny, used on Home): circles where this wallet still owes this round.
+function duePools(pools, me) {
+  return pools.filter((p) => {
+    const i = p.members.indexOf(me)
+    return i >= 0 && p.status === 'active' && !p.paid[i]
+  })
+}
 import { renderLanding } from './landing.js'
 import { fillTrust, showTrustCard, trustChip, trustOf } from './trust.js'
 import { radarBanner, riskOf } from './radar.js'
@@ -1459,12 +1485,6 @@ function cobrand(partner) {
   if (/^#[0-9a-f]{6}$/i.test(partner.brand_color ?? '')) root.style.setProperty('--partner', partner.brand_color)
   else root.style.removeProperty('--partner')
 }
-initPools(ctx)
-initCheckout(ctx)
-initDevelopers(ctx)
-initAdmin(ctx)
-initMoney(ctx)
-initEscrow(ctx)
 
 async function renderGuestCheckout(invoice) {
   app.innerHTML = `
