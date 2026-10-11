@@ -1,50 +1,55 @@
 <!doctype html><html><head><meta charset="utf-8"><style>
 *{box-sizing:border-box;margin:0}
-body{width:1200px;height:630px;overflow:hidden;font-family:Inter,-apple-system,"SF Pro Display","Segoe UI",system-ui,sans-serif;color:#0b1030;
-background:radial-gradient(55% 70% at 85% 20%,rgba(99,102,241,.16),transparent 70%),radial-gradient(45% 60% at 5% 100%,rgba(34,211,238,.12),transparent 70%),#f7f8ff}
-.grid{position:absolute;inset:0;background-image:linear-gradient(rgba(99,102,241,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(99,102,241,.06) 1px,transparent 1px);background-size:40px 40px;-webkit-mask-image:radial-gradient(70% 80% at 70% 40%,#000,transparent)}
-.wrap{position:relative;display:flex;height:100%;padding:64px 72px;gap:48px;align-items:center}
-.left{flex:1}
-.brand{display:flex;align-items:center;gap:14px;font-weight:800;font-size:34px;letter-spacing:-.02em}
-.brand img{width:58px;height:58px;border-radius:16px;box-shadow:0 10px 24px -10px rgba(79,70,229,.7)}
-.brand .pay{background:linear-gradient(90deg,#4b8df8,#6d45f5);-webkit-background-clip:text;color:transparent}
+body{width:1200px;height:630px;overflow:hidden;position:relative;font-family:Inter,-apple-system,"SF Pro Display","Segoe UI",system-ui,sans-serif;color:#0b1030;background:linear-gradient(180deg,#fbfbff,#f1f2ff)}
 .mono{font-family:"SF Mono",ui-monospace,Menlo,monospace}
-.pill{display:inline-flex;align-items:center;gap:10px;margin:34px 0 18px;padding:9px 16px;border-radius:999px;background:#fff;box-shadow:inset 0 0 0 1.5px #c7d2fe;font-size:16px;font-weight:700;letter-spacing:.12em;color:#3730a3}
+.glow{position:absolute;right:-120px;top:-60px;width:760px;height:760px;border-radius:50%;background:radial-gradient(circle,rgba(99,102,241,.22),rgba(34,211,238,.08) 45%,transparent 68%)}
+.ring{position:absolute;left:900px;top:395px;width:520px;height:520px;translate:-50% -50%;border-radius:50%;border:1.5px solid rgba(99,102,241,.25);box-shadow:0 0 0 60px rgba(99,102,241,.05),0 0 0 61.5px rgba(99,102,241,.14),0 0 0 125px rgba(99,102,241,.03),0 0 0 126.5px rgba(99,102,241,.09)}
+.left{position:absolute;left:80px;top:70px;width:640px}
+.brand{display:flex;align-items:center;gap:16px;font-weight:800;font-size:38px;letter-spacing:-.02em}
+.brand img{width:64px;height:64px;border-radius:18px;box-shadow:0 12px 28px -12px rgba(79,70,229,.8)}
+.pay{background:linear-gradient(90deg,#4b8df8,#6d45f5);-webkit-background-clip:text;color:transparent}
+h1{margin-top:44px;font-size:84px;white-space:nowrap;line-height:.95;letter-spacing:-.055em;font-weight:900}
+h1 span{background:linear-gradient(90deg,#4b8df8,#6d45f5 45%,#a855f7 72%,#22d3ee);-webkit-background-clip:text;color:transparent}
+p{margin-top:24px;font-size:26px;line-height:1.35;color:#475569;letter-spacing:-.01em}
+.bar{position:absolute;left:80px;bottom:44px;display:flex;align-items:center;gap:14px;font-size:17px;font-weight:700;letter-spacing:.14em;color:#4338ca}
 .dot{width:10px;height:10px;border-radius:50%;background:#34d399;box-shadow:0 0 0 5px rgba(52,211,153,.2)}
-h1{font-size:76px;line-height:.98;letter-spacing:-.05em;font-weight:900}
-h1 span{background:linear-gradient(90deg,#4b8df8,#6d45f5 45%,#a855f7 75%,#22d3ee);-webkit-background-clip:text;color:transparent}
-p{margin-top:20px;font-size:25px;color:#475569;line-height:1.4}
-.chips{display:flex;gap:10px;margin-top:26px}
-.chip{padding:9px 14px;border-radius:999px;background:#fff;box-shadow:inset 0 0 0 1.5px #e0e7ff;font-size:15px;font-weight:700;letter-spacing:.08em;color:#3730a3}
-.card{width:400px;padding:26px;border-radius:30px;background:#fff;box-shadow:0 0 0 1.5px rgba(99,102,241,.25),0 40px 80px -40px rgba(79,70,229,.7);position:relative}
-.card:before{content:"";position:absolute;inset:-2px;border-radius:32px;padding:2px;background:conic-gradient(from 210deg,#6366f1,#22d3ee,#a855f7,#6366f1);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude}
-.tag{font-size:13px;font-weight:700;letter-spacing:.14em;color:#4f46e5}
-.item{display:flex;align-items:center;gap:14px;margin:16px 0}
-.thumb{width:54px;height:54px;border-radius:16px;background:linear-gradient(135deg,#eef2ff,#e0f2fe);display:grid;place-items:center}
-.item b{font-size:21px}.item small{display:block;font-size:15px;color:#64748b;margin-top:3px}
-.amt{border-radius:20px;padding:18px 20px;color:#fff;background:linear-gradient(135deg,#1e1b4b,#4338ca 65%,#0e7490)}
-.amt small{font-size:12px;letter-spacing:.14em;opacity:.8}.amt strong{display:block;font-size:40px;letter-spacing:-.03em;margin-top:4px}
-.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:16px}
-.steps i{height:6px;border-radius:6px;background:#e2e8f0}.steps i.on{background:#10b981;box-shadow:0 0 10px rgba(16,185,129,.6)}.steps i.now{background:#22d3ee;box-shadow:0 0 10px rgba(34,211,238,.7)}
-.labels{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:8px;font-size:11px;font-weight:700;letter-spacing:.08em;color:#94a3b8}
-.labels span.on{color:#0b1030}
-.foot{position:absolute;left:72px;right:72px;bottom:30px;display:flex;justify-content:space-between;font-size:16px;font-weight:600;color:#64748b;letter-spacing:.06em}
-</style></head><body><div class="grid"></div>
-<div class="wrap">
- <div class="left">
-  <div class="brand"><img src="icon-512.png"><span>OR<span class="pay">Pay</span></span></div>
-  <div class="pill mono"><span class="dot"></span>ESCROW · AJO · PAYMENTS</div>
-  <h1>Money moves.<br><span>Trust stays.</span></h1>
-  <p>Buy safely with escrow, save together in an ajo.<br>Every payment visible on an open ledger.</p>
-  <div class="chips mono"><span class="chip">TRANSFERS FROM ₦10</span><span class="chip">ESCROW PROTECTED</span></div>
- </div>
- <div class="card">
-  <div class="tag mono">● HELD IN ESCROW</div>
-  <div class="item"><div class="thumb"><svg width="26" height="36" viewBox="0 0 40 52"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6366f1"/><stop offset=".6" stop-color="#8b5cf6"/><stop offset="1" stop-color="#22d3ee"/></linearGradient></defs><rect x="6" y="2" width="28" height="48" rx="6" fill="#0b1030"/><rect x="8" y="4" width="24" height="44" rx="4.5" fill="url(#g)"/></svg></div><div><b>iPhone 14 Pro</b><small>Released when you approve</small></div></div>
-  <div class="amt"><small class="mono">LOCKED · NOT IN ANYONE'S ACCOUNT</small><strong>₦420,000</strong></div>
-  <div class="steps"><i class="on"></i><i class="on"></i><i class="now"></i><i></i></div>
-  <div class="labels mono"><span class="on">AGREED</span><span class="on">FUNDED</span><span class="on">SHIPPED</span><span>RELEASED</span></div>
- </div>
+.sep{color:#c7d2fe}
+.url{color:#64748b;letter-spacing:.06em;font-weight:600}
+/* phone */
+.phone{position:absolute;left:900px;top:110px;translate:-50% 0;width:330px;height:600px;border-radius:52px;background:#0b1030;padding:12px;box-shadow:0 50px 90px -40px rgba(30,27,75,.75),0 0 0 2px #1e2554}
+.screen{width:100%;height:100%;border-radius:42px;background:linear-gradient(180deg,#f8f9ff,#fff 45%);padding:20px 20px;overflow:hidden;position:relative}
+.island{width:110px;height:30px;border-radius:20px;background:#0b1030;margin:0 auto 18px}
+.row{display:flex;align-items:center;justify-content:space-between}
+.app{display:flex;align-items:center;gap:8px;font-weight:800;font-size:19px}.app img{width:28px;height:28px;border-radius:8px}
+.me{width:34px;height:34px;border-radius:50%;background:#fff;box-shadow:0 0 0 1px #e2e8f0;display:grid;place-items:center;font-size:12px;font-weight:700}
+.tag{display:inline-flex;align-items:center;gap:7px;margin-top:16px;padding:6px 10px;border-radius:999px;background:#fff;box-shadow:inset 0 0 0 1px #c7d2fe;font-size:10px;font-weight:700;letter-spacing:.12em;color:#4338ca}
+.tag i{width:7px;height:7px;border-radius:50%;background:#34d399}
+.item{display:flex;align-items:center;gap:12px;margin:16px 0 14px}
+.thumb{width:46px;height:46px;border-radius:14px;background:linear-gradient(135deg,#eef2ff,#e0f2fe);display:grid;place-items:center}
+.item b{font-size:17px}.item small{display:block;font-size:12.5px;color:#64748b;margin-top:2px}.item em{font-style:normal;color:#059669;font-weight:700}
+.amt{position:relative;border-radius:20px;padding:16px 18px;color:#fff;background:linear-gradient(135deg,#1e1b4b,#4338ca 65%,#0e7490);overflow:hidden}
+.amt:before{content:"";position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.07) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.07) 1px,transparent 1px);background-size:16px 16px}
+.amt small{position:relative;font-size:9.5px;letter-spacing:.14em;opacity:.85}.amt strong{position:relative;display:block;font-size:34px;letter-spacing:-.03em;margin-top:3px}
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-top:14px}
+.steps i{height:5px;border-radius:5px;background:#e2e8f0}.steps i.on{background:#10b981;box-shadow:0 0 8px rgba(16,185,129,.6)}.steps i.now{background:#22d3ee;box-shadow:0 0 8px rgba(34,211,238,.7)}
+.labels{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-top:7px;font-size:8.5px;font-weight:700;letter-spacing:.08em;color:#94a3b8}.labels .on{color:#0b1030}
+.btn{margin-top:16px;border-radius:14px;padding:13px;text-align:center;color:#fff;font-weight:700;font-size:15px;background:#0b1030;box-shadow:0 0 0 1px rgba(99,102,241,.45),0 10px 22px -10px rgba(99,102,241,.8)}
+</style></head><body>
+<div class="glow"></div><div class="ring"></div>
+<div class="left">
+ <div class="brand"><img src="icon-512.png"><span>OR<span class="pay">Pay</span></span></div>
+ <h1>Money moves.<br><span>Trust stays.</span></h1>
+ <p>Escrow that pays only when it arrives.<br>Ajo that everyone can see.</p>
 </div>
-<div class="foot mono"><span>orpay.pages.dev</span><span>BUILT ON THE OPENRESERVE PROTOCOL</span></div>
+<div class="bar mono"><span class="dot"></span>ESCROW <span class="sep">·</span> AJO <span class="sep">·</span> PAYMENTS <span class="sep">—</span> <span class="url">orpay.pages.dev</span></div>
+<div class="phone"><div class="screen">
+ <div class="island"></div>
+ <div class="row"><span class="app"><img src="icon-512.png"><span>OR<span class="pay">Pay</span></span></span><span class="me">RG</span></div>
+ <div class="tag mono"><i></i>HELD IN ESCROW</div>
+ <div class="item"><div class="thumb"><svg width="22" height="30" viewBox="0 0 40 52"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6366f1"/><stop offset=".6" stop-color="#8b5cf6"/><stop offset="1" stop-color="#22d3ee"/></linearGradient></defs><rect x="6" y="2" width="28" height="48" rx="6" fill="#0b1030"/><rect x="8" y="4" width="24" height="44" rx="4.5" fill="url(#g)"/></svg></div><div><b>iPhone 14 Pro</b><small>@gadgethub · <em>shipped</em></small></div></div>
+ <div class="amt"><small class="mono">LOCKED · NOT IN ANYONE'S ACCOUNT</small><strong>₦420,000</strong></div>
+ <div class="steps"><i class="on"></i><i class="on"></i><i class="now"></i><i></i></div>
+ <div class="labels mono"><span class="on">AGREED</span><span class="on">FUNDED</span><span class="on">SHIPPED</span><span>RELEASED</span></div>
+ <div class="btn">Inspect &amp; release</div>
+</div></div>
 </body></html>
