@@ -4,6 +4,12 @@ import './style.css'
 import { API_BASE, api, formatMoney, isAddress, node, txID } from './orp.js'
 
 document.documentElement.dataset.theme = 'light' // light only
+// 2050 design unless the visitor chose classic (shared with the wallet).
+try {
+  document.documentElement.classList.toggle('y2050', localStorage.getItem('orpay.look') !== 'classic')
+} catch {
+  document.documentElement.classList.add('y2050')
+}
 
 const app = document.getElementById('app')
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c])
@@ -68,6 +74,7 @@ const icon = {
   height: '<path d="M4 7h16M4 12h16M4 17h10"/>',
   supply: '<circle cx="12" cy="12" r="8"/><path d="M12 8v8M9.5 10.5h4a1.5 1.5 0 0 1 0 3h-3a1.5 1.5 0 0 0 0 3h4"/>',
   naira: '<path d="M7 18V6l10 12V6M5 10.5h14M5 13.5h14"/>',
+  coin: '<circle cx="12" cy="12" r="8"/><path d="M9 9.5h4.5a2 2 0 0 1 0 4H9.5a2 2 0 0 0 0 4H15M12 7v2M12 17.5v-.5"/>',
   accounts: '<circle cx="9" cy="9" r="3.2"/><path d="M3.5 18a5.5 5.5 0 0 1 11 0M16 7.5a3 3 0 0 1 0 5.5M17.5 18a5 5 0 0 0-2-4"/>',
   block: '<rect x="4" y="4" width="16" height="16" rx="3"/><path d="M4 10h16"/>',
   tx: '<path d="M5 9h13l-3-3M19 15H6l3 3"/>',
@@ -114,7 +121,7 @@ async function home() {
     <section class="x-stats">
       ${stat('height', 'Block height', st.height.toLocaleString(), st.height ? `last block ${ago(st.tip_time)}` : 'no blocks yet')}
       ${stat('supply', 'ORP supply', formatMoney(st.supply, ''), `${formatMoney(st.burned, '')} burned in fees`)}
-      ${assets.map((a) => stat('naira', `${esc(a.name || a.symbol)} issued`, formatMoney(a.supply, a.symbol), `issuer ${short(a.issuer)}`)).join('')}
+      ${assets.map((a) => stat(a.symbol === 'NGN' ? 'naira' : 'coin', `${esc(a.name || a.symbol)} issued`, formatMoney(a.supply, a.symbol), `issuer ${short(a.issuer)}`)).join('')}
       ${stat('accounts', 'Accounts', st.accounts.toLocaleString(), `${st.mempool_size} pending transaction${st.mempool_size === 1 ? '' : 's'}`)}
     </section>
     ${stats ? transparency(stats) : ''}
