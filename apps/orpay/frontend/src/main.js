@@ -152,12 +152,15 @@ function pendingRequest() {
   }
 }
 
-// The landing page shows its desktop layout on phones (fixed 1100px
-// viewport); every app screen uses the normal phone layout.
+// The landing page shows its desktop layout on tablets (fixed 1100px
+// viewport); phones and every app screen use the normal phone layout.
 const MOBILE_VP = 'width=device-width, initial-scale=1.0, viewport-fit=cover'
 function setViewport(desktop) {
   const m = document.querySelector('meta[name="viewport"]')
-  if (m) m.setAttribute('content', desktop && !window.Capacitor ? 'width=1100' : MOBILE_VP)
+  // Phones are too narrow for the desktop layout to stay readable, so only
+  // tablets (600px+) get the fixed desktop viewport.
+  const big = Math.min(screen.width, screen.height) >= 600
+  if (m) m.setAttribute('content', desktop && big && !window.Capacitor ? 'width=1100' : MOBILE_VP)
 }
 
 function renderWelcome() {
