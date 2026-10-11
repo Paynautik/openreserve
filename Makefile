@@ -71,3 +71,10 @@ testnet-stop:
 
 clean:
 	rm -rf $(BIN)
+
+# Android test app (debug APK) from the ORPay wallet. Needs the Android SDK and JDK 21
+# (brew install openjdk@21). Output: apps/orpay/frontend/android/app/build/outputs/apk/debug/app-debug.apk
+orpay-apk:
+	cd apps/orpay/frontend && npm run build:native && cd android && \
+		JAVA_HOME="$$(brew --prefix openjdk@21)/libexec/openjdk.jdk/Contents/Home" \
+		ANDROID_HOME="$$HOME/Library/Android/sdk" ./gradlew assembleDebug
