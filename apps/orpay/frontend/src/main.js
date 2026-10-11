@@ -152,7 +152,16 @@ function pendingRequest() {
   }
 }
 
+// The landing page shows its desktop layout on phones (fixed 1100px
+// viewport); every app screen uses the normal phone layout.
+const MOBILE_VP = 'width=device-width, initial-scale=1.0, viewport-fit=cover'
+function setViewport(desktop) {
+  const m = document.querySelector('meta[name="viewport"]')
+  if (m) m.setAttribute('content', desktop && !window.Capacitor ? 'width=1100' : MOBILE_VP)
+}
+
 function renderWelcome() {
+  setViewport(false)
   const pending = pendingRequest()
   if (pending && (pending.invoice || pending.escrow_request || pending.escrow || pending.ajo_invite)) {
     app.innerHTML = `
@@ -187,6 +196,7 @@ function renderWelcome() {
 // Sign in on this device with @username and six words. The 24 recovery
 // words are the fallback if the six are lost.
 function renderSignIn() {
+  setViewport(false)
   app.innerHTML = `
     <main class="narrow">
       <div class="brand brand-row"><button class="link back" id="back">← Back</button><span class="logo" aria-label="ORPay"><span class="logo-or">OR</span><span class="logo-pay">Pay</span></span></div>
@@ -378,6 +388,7 @@ function wordGrid(seed) {
 }
 
 function showBackup(seed) {
+  setViewport(false)
   app.innerHTML = `
     <main class="narrow">
       <div class="brand brand-row"><button class="link back" id="back">← Back</button><span class="logo" aria-label="ORPay"><span class="logo-or">OR</span><span class="logo-pay">Pay</span></span></div>
@@ -417,6 +428,7 @@ function renderImport() {
 }
 
 function renderSetPassword(seed, { express = false } = {}) {
+  setViewport(false)
   app.innerHTML = `
     <main class="narrow">
       <div class="brand"><span class="logo" aria-label="ORPay"><span class="logo-or">OR</span><span class="logo-pay">Pay</span></span></div>
@@ -443,6 +455,7 @@ function renderSetPassword(seed, { express = false } = {}) {
 }
 
 function renderUnlock() {
+  setViewport(false)
   const addr = vaultAddress()
   app.innerHTML = `
     <main class="narrow">
@@ -548,6 +561,7 @@ function watchIdle() {
 }
 
 async function openWallet(seed, address) {
+  setViewport(false)
   state.seed = seed
   state.address = address
   if (!state.demo) saveSession(seed, address)
@@ -1566,6 +1580,7 @@ function cobrand(partner) {
 }
 
 async function renderGuestCheckout(invoice) {
+  setViewport(false)
   app.innerHTML = `
     <header id="header"><span class="logo" aria-label="ORPay"><span class="logo-or">OR</span><span class="logo-pay">Pay</span></span><span class="net"></span>
       <button class="chip" id="signin">${hasVault() ? 'Unlock wallet' : 'Open ORPay'}</button></header>
@@ -1599,6 +1614,7 @@ async function renderGuestCheckout(invoice) {
 
 // Demo mode: a throwaway in-memory wallet on sample data (see demo.js).
 async function startDemo() {
+  setViewport(false)
   const seed = new Uint8Array(32).fill(7)
   const address = await addressOf(seed)
   installDemo(address)
@@ -1624,6 +1640,7 @@ function openSaved() {
 // The public landing page. People who already have a wallet on this device
 // can reach it at /?home or from the logo; its buttons lead to their wallet.
 function showLanding() {
+  setViewport(true)
   const has = hasVault()
   renderLanding(app, {
     onStart: has ? openSaved : async () => showBackup(await newSeed()),
