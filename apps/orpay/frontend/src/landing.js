@@ -41,7 +41,7 @@ export function renderLanding(app, { onStart, onSignIn, signInLabel }) {
           <p class="lp-lead">Send naira, save in ${circleTerm() ? `${/^[aeiou]/.test(circleTerm()) ? 'an' : 'a'} ${circleTerm()}` : 'a circle'} and buy safely with escrow. Every payment is visible on-chain.</p>
           <div class="lp-cta">
             <button class="lp-btn ink lg" data-start>Get started free</button>
-            <a class="lp-btn ghost lg" href="/?demo">Try the demo</a>
+            <a class="lp-btn ghost lg" href="/?demo">Explore the app</a>
             <button class="lp-btn ghost lg lp-install" type="button" hidden>${svg('<path d="M12 3v12M7 10l5 5 5-5M5 21h14"/>')} Install app</button>
           </div>
           <p class="lp-built"><img src="/favicon.png" alt="">Built on the <b>OpenReserve Protocol</b><span class="lp-built-sep"> · </span><span class="lp-built-fee">transfers from ₦10</span></p>
@@ -288,7 +288,7 @@ escrow = orpay.create_escrow(
         </div>
         <div class="lp-cta-btns">
           <button class="lp-btn ink lg" data-start>Create a free wallet</button>
-          <a class="lp-btn ghost lg lp-only-2050" href="/?demo">Try the demo</a>
+          <a class="lp-btn ghost lg lp-only-2050" href="/?demo">Explore the app</a>
         </div>
       </div>
     </section>
@@ -307,7 +307,7 @@ escrow = orpay.create_escrow(
             <p>Money you can see and trust. Escrow, ajo and payments on an open ledger.</p>
           </div>
           <nav class="f2-cols" aria-label="Footer">
-            <div><b>Product</b><a href="#product">Wallet</a><a href="#escrow">Escrow</a><a href="#uses">Ajo / saving circles</a><a href="/?demo">Try the demo</a></div>
+            <div><b>Product</b><a href="#product">Wallet</a><a href="#escrow">Escrow</a><a href="#uses">Ajo / saving circles</a><a href="/?demo">Explore the app</a></div>
             <div><b>Build</b><a href="#developers">Developers</a><a href="#developers">Sandbox keys</a><a href="/explorer.html">Explorer</a></div>
             <div><b>Protocol</b><a href="https://github.com/Paynautik/openreserve" target="_blank" rel="noopener">OpenReserve on GitHub ↗</a><a href="https://github.com/Paynautik/openreserve/blob/main/LICENSE" target="_blank" rel="noopener">Apache-2.0 licence ↗</a></div>
           </nav>
