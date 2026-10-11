@@ -1015,3 +1015,5 @@ body.lp-dark-body { background: #070b1f !important; }
 @media (max-width: 640px) { .lp.y2050 .lp-howlist::before { background: linear-gradient(180deg, #c7d2fe 0%, #6366f1 20%, #22d3ee 35%, #c7d2fe 50%, #c7d2fe 100%); background-size: 100% 200%; animation: lp-flow-v 4s linear infinite; } }
 @keyframes lp-flow-v { from { background-position: 0 100%; } to { background-position: 0 -100%; } }
 @media (prefers-reduced-motion: reduce) { .lp.y2050 .lp-howlist::before { animation: none; } }
+.lp.y2050 .lp-howlist i { display: flex; align-items: center; justify-content: center; padding: 0; line-height: 0; text-indent: 0; }
+.lp.y2050 .lp-howlist i::before { display: block; line-height: 1; margin: 0; letter-spacing: 0; transform: translateY(.5px); }
