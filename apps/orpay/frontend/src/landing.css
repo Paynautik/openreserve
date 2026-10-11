@@ -1206,3 +1206,74 @@ body.lp-dark-body { background: #070b1f !important; }
   .lp-switch button { padding: 5px 7px; font-size: .6rem; }
   .lp-phone { zoom: .46; }
 }
+
+/* ===== Phones: desktop-style arrangement for every section ===== */
+@media (max-width: 600px) {
+  .lp-wrap { padding-inline: 14px; }
+  .lp-head { margin-bottom: 20px; }
+  .lp-head h2, .lp-life2 .lp-head h2, .lp-trust .lp-head h2, .lp-calc .lp-head h2 { font-size: 1.5rem !important; }
+
+  /* escrow strip: text left, amount right */
+  .lp.y2050 .lp-escrow, .lp-escrow { grid-template-columns: minmax(0, 1fr) 118px !important; flex-direction: row !important; align-items: center !important; gap: 10px !important; padding: 12px !important; }
+  .lp-escrow h3 { font-size: .92rem !important; margin: 4px 0 2px !important; }
+  .lp-escrow p { font-size: .7rem !important; line-height: 1.4; }
+  .lp-escrow a { font-size: .68rem !important; }
+  .lp-escrow .lp-feat-art { min-width: 0 !important; width: auto !important; padding: 8px 10px !important; }
+  .lp-escrow .lp-feat-art b { font-size: .9rem !important; }
+  .lp-escrow .lp-feat-art small { font-size: .5rem !important; }
+
+  /* live tiles: 3 across */
+  .lp.y2050 .lp-bento { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; gap: 6px !important; }
+  .lp.y2050 .lp-bento article { min-height: 0 !important; padding: 26px 8px 9px !important; border-radius: 12px !important; gap: 3px !important; }
+  .lp.y2050 .b-tag { top: 9px !important; left: 8px !important; font-size: .46rem !important; letter-spacing: .06em !important; }
+  .lp.y2050 .lp-bento strong, .lp.y2050 .b-hero strong { font-size: .95rem !important; }
+  .lp.y2050 .lp-bento small { font-size: .56rem !important; line-height: 1.3; }
+
+  /* how escrow works: 4 steps in a row */
+  .lp-howlist { grid-template-columns: repeat(4, minmax(0, 1fr)) !important; gap: 4px !important; }
+  .lp-howlist::before { top: 15px !important; bottom: auto !important; left: 12% !important; right: 12% !important; width: auto !important; height: 2px !important; }
+  .lp-howlist li { grid-template-columns: 1fr !important; justify-items: center !important; text-align: center !important; }
+  .lp-howlist i { grid-row: auto !important; width: 30px !important; height: 30px !important; margin-bottom: 6px !important; }
+  .lp-howlist b { font-size: .7rem !important; }
+  .lp-howlist small { font-size: .56rem !important; line-height: 1.3; }
+
+  /* ajo calculator: controls left, result right */
+  .calc { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important; }
+  .calc-in { border-right: 1px solid var(--line) !important; border-bottom: 0 !important; padding: 12px !important; gap: 10px !important; }
+  .calc-out { padding: 12px 8px !important; gap: 6px !important; }
+  .calc-in label { font-size: .5rem !important; gap: 6px !important; }
+  .calc-in label output { font-size: .7rem !important; }
+  .calc-in input:not([type="range"]) { font-size: .78rem !important; padding: 6px 8px !important; }
+  .calc-chips { flex-wrap: wrap; gap: 3px !important; }
+  .calc-chips button { padding: 3px 6px !important; font-size: .52rem !important; }
+  .calc-seg button { font-size: .52rem !important; padding: 4px 7px !important; }
+  .calc-ring { width: 130px !important; height: 130px !important; }
+  .calc-center strong { font-size: 1rem !important; }
+  .calc-center span, .calc-k { font-size: .46rem !important; }
+  .calc-out p, .calc-out #c-when { font-size: .6rem !important; }
+  .calc-out .calc-ends, .calc-out .calc-note { font-size: .54rem !important; }
+  .calc-facts { gap: 4px !important; }
+  .calc-facts span, .calc-fee { padding: 4px 6px !important; }
+  .calc-facts small, .calc-fee small { font-size: .44rem !important; }
+  .calc-facts b, .calc-fee b { font-size: .62rem !important; }
+  .calc-fee::after { font-size: .42rem !important; }
+  .calc-out .lp-btn { padding: 7px 11px !important; font-size: .7rem !important; }
+
+  /* developers: pitch left, code right */
+  .lp-split { grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr) !important; gap: 10px !important; align-items: start; }
+  .lp-dark h2 { font-size: 1.35rem !important; }
+  .lp.y2050 .lp-biz li { font-size: .52rem !important; padding: 5px 8px !important; }
+  .lp-biz { gap: 5px !important; }
+  .lp-dark .lp-btn { padding: 7px 10px; font-size: .7rem; }
+  .lp-term-tabs button { font-size: .5rem !important; padding: 3px 5px !important; }
+  .lp-term-bar > i { width: 6px; height: 6px; }
+  .lp-term .lp-code { font-size: .44rem !important; padding: 10px !important; line-height: 1.5; }
+  .lp-term-foot { font-size: .44rem !important; padding: 6px 8px !important; }
+
+  /* footer: brand + three columns in a row */
+  .f2-top { grid-template-columns: 1fr !important; gap: 14px !important; }
+  .f2-cols { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; gap: 8px !important; }
+  .f2-cols a { font-size: .68rem !important; }
+  .f2-bar { flex-direction: row !important; justify-content: space-between !important; font-size: .5rem !important; padding: 8px 10px !important; }
+}
+@media (max-width: 600px) { .lp-term .lp-code { white-space: pre-wrap !important; word-break: break-word; overflow: hidden !important; } }
