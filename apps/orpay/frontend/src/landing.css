@@ -1174,3 +1174,35 @@ body.lp-dark-body { background: #070b1f !important; }
 .calc-in input[type="range"]::-webkit-slider-thumb { width: 22px; height: 22px; }
 .calc-in input[type="range"]::-moz-range-thumb { width: 22px; height: 22px; }
 .calc-out .calc-note { margin: 0; font-size: .74rem; color: #64748b; max-width: 40ch; }
+
+/* Phones: keep the desktop hero composition (copy left, phone right), readable */
+@media (max-width: 600px) {
+  .lp-hero { padding: 92px 0 36px; }
+  .lp-hero-grid { grid-template-columns: minmax(0, 1.15fr) minmax(0, .85fr) !important; gap: 6px; align-items: center; }
+  .lp-hero-copy { text-align: left !important; }
+  .lp-hero h1 { font-size: clamp(1.75rem, 8.4vw, 2.2rem) !important; letter-spacing: -.05em; margin-bottom: 10px; }
+  .lp-lead { margin-inline: 0 !important; font-size: .82rem; line-height: 1.5; margin-bottom: 14px; }
+  .lp-pill { margin-bottom: 14px; font-size: .6rem !important; padding: 4px 8px; }
+  .lp-hero-copy .lp-cta { justify-content: flex-start !important; gap: 6px; }
+  .lp-hero-copy .lp-cta .lp-btn.lg { padding: 9px 13px; font-size: .78rem; }
+  .lp-built { justify-content: flex-start !important; font-size: .66rem; margin-top: 12px; }
+  .lp-built img { width: 14px; height: 14px; }
+  /* phone mock-up at 52% size, still interactive */
+  .lp-phone-wrap { gap: 8px; }
+  .lp-switch { transform: scale(.78); transform-origin: center; margin-bottom: -6px; }
+  .lp-phone { zoom: .52; }
+  .lp-halo { width: 220px !important; height: 220px !important; }
+  .lp-install { display: none !important; }
+}
+@media (max-width: 600px) {
+  .lp-hero .lp-wrap { padding-inline: 14px; }
+  .lp-hero-grid { grid-template-columns: minmax(0, 1fr) 150px !important; gap: 12px; }
+  .lp-hero h1 { font-size: clamp(1.6rem, 7.6vw, 2rem) !important; }
+  .lp-lead { font-size: .76rem; }
+  .lp-built-fee, .lp-built-sep, .lp-built > :not(img):not(b) { display: none !important; }
+  .lp-built { flex-wrap: nowrap; gap: 6px; }
+  .lp-built b { font-size: .64rem; }
+  .lp-switch { transform: none; margin: 0; padding: 3px; }
+  .lp-switch button { padding: 5px 7px; font-size: .6rem; }
+  .lp-phone { zoom: .46; }
+}
